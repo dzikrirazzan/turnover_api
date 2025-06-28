@@ -73,7 +73,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'turnover_prediction.urls'
+ROOT_URLCONF = 'backend.turnover_prediction.urls'
 
 TEMPLATES = [
     {
