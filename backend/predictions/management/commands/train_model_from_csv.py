@@ -39,7 +39,9 @@ class Command(BaseCommand):
         model_name = 'production_model_from_csv'
         # Save the model
         model_path = get_model_save_path(model_name)
+        self.stdout.write(f"Attempting to save model to: {model_path}")
         predictor.save_model(model_path)
+        self.stdout.write(self.style.SUCCESS(f"Model saved successfully to: {model_path}"))
         
         # Get feature importance
         feature_importance = predictor.get_feature_importance()

@@ -1,4 +1,3 @@
-
 import requests
 import json
 
@@ -40,10 +39,7 @@ def main():
         auth_header = response.json().get("auth_header")
         headers = {"Authorization": auth_header}
 
-        # --- CSV Data ---
-        print("--- Testing CSV Data ---")
-
-        # --- Core API ---
+        # --- Testing Core API ---
         print("--- Testing Core API ---")
         
         # Get departments
@@ -74,6 +70,42 @@ def main():
         # Get active model
         print("Testing: GET /api/models/active/")
         response = requests.get(f"{BASE_URL}/api/models/active/", headers=headers)
+        print_response(response)
+
+        # --- Testing ML Prediction with Custom Data ---
+        print("--- Testing ML Prediction with Custom Data ---")
+        
+        # Sample employee data for prediction (adjust values as needed)
+        sample_employee_data = {
+            "satisfaction_level": 0.4,
+            "last_evaluation": 0.5,
+            "number_project": 2,
+            "average_monthly_hours": 150,
+            "time_spend_company": 3,
+            "work_accident": False,
+            "promotion_last_5years": False,
+            "salary": "low",
+            "department": "sales"
+        }
+        
+        print("Testing: POST /api/predictions/predict/ with custom data (Low Risk Example)")
+        response = requests.post(f"{BASE_URL}/api/predictions/predict/", headers=headers, json=sample_employee_data)
+        print_response(response)
+
+        # Another sample for high risk
+        high_risk_employee_data = {
+            "satisfaction_level": 0.1,
+            "last_evaluation": 0.9,
+            "number_project": 6,
+            "average_monthly_hours": 280,
+            "time_spend_company": 5,
+            "work_accident": False,
+            "promotion_last_5years": False,
+            "salary": "low",
+            "department": "technical"
+        }
+        print("Testing: POST /api/predictions/predict/ with custom data (High Risk Example)")
+        response = requests.post(f"{BASE_URL}/api/predictions/predict/", headers=headers, json=high_risk_employee_data)
         print_response(response)
 
 if __name__ == "__main__":

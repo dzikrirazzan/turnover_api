@@ -232,12 +232,18 @@ class TurnoverPredictor:
         Load a trained model
         """
         if os.path.exists(filepath):
-            model_data = joblib.load(filepath)
-            self.best_model = model_data['model']
-            self.feature_names = model_data['feature_names']
-            self.scaler = model_data['scaler']
-            return True
-        return False
+            try:
+                model_data = joblib.load(filepath)
+                self.best_model = model_data['model']
+                self.feature_names = model_data['feature_names']
+                self.scaler = model_data['scaler']
+                return True
+            except Exception as e:
+                print(f"[ERROR] Failed to load model from {filepath}: {e}")
+                return False
+        else:
+            print(f"[ERROR] Model file not found at: {filepath}")
+            return False
 
 # Utility functions for Django integration
 def get_model_save_path(model_name):
