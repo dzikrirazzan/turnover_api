@@ -7,10 +7,8 @@ import pathlib
 
 def main():
     """Run administrative tasks."""
-    # Add the parent directory of the 'backend' directory to the Python path
-    # This ensures that 'backend.turnover_prediction' can be imported
-    backend_dir = pathlib.Path(__file__).resolve().parent
-    sys.path.append(str(backend_dir))
+    # Add the backend directory to the Python path
+    sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), 'backend'))
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.turnover_prediction.settings')
     try:
