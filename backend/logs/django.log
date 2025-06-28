@@ -1,0 +1,584 @@
+Watching for file changes with StatReloader
+"GET /api/employees/statistics/ HTTP/1.1" 200 667
+Error making prediction: 'left'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/ml_utils.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/ml_utils.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/ml_utils.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"POST /api/predictions/predict/ HTTP/1.1" 200 128
+"GET /api/models/active/ HTTP/1.1" 200 1997
+"GET /api/employees/?limit=5 HTTP/1.1" 200 9020
+"POST /api/employees/100/predict_turnover/ HTTP/1.1" 200 171
+"GET /api/employees/statistics/ HTTP/1.1" 200 667
+"GET /api/departments/ HTTP/1.1" 200 536
+"GET /api/employees/?limit=3 HTTP/1.1" 200 9020
+"POST /api/predictions/predict/ HTTP/1.1" 200 126
+"POST /api/predictions/predict/ HTTP/1.1" 200 125
+"POST /api/predictions/bulk_predict/ HTTP/1.1" 200 276
+"GET /api/employees/?limit=1 HTTP/1.1" 200 9020
+"POST /api/employees/100/predict_turnover/ HTTP/1.1" 200 171
+"GET /api/models/ HTTP/1.1" 200 2049
+"GET /api/models/active/ HTTP/1.1" 200 1997
+"POST /api/employees/ HTTP/1.1" 201 327
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Forbidden: /api/
+"GET /api/?id=7105199c-7c09-4e47-91cb-7e23ea8d3f59&vscodeBrowserReqId=1750684991175 HTTP/1.1" 403 5232
+"GET /api/employees/statistics/ HTTP/1.1" 200 706
+"GET /api/departments/ HTTP/1.1" 200 536
+"GET /api/employees/?limit=3 HTTP/1.1" 200 9032
+"POST /api/predictions/predict/ HTTP/1.1" 200 126
+"POST /api/predictions/predict/ HTTP/1.1" 200 125
+"POST /api/predictions/bulk_predict/ HTTP/1.1" 200 276
+"GET /api/employees/?limit=1 HTTP/1.1" 200 9032
+"POST /api/employees/101/predict_turnover/ HTTP/1.1" 200 167
+"GET /api/models/ HTTP/1.1" 200 2049
+"GET /api/models/active/ HTTP/1.1" 200 1997
+"POST /api/employees/ HTTP/1.1" 201 327
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/turnover_prediction/settings.py changed, reloading.
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/turnover_prediction/settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Forbidden: /api/employees/statistics/
+"GET /api/employees/statistics/ HTTP/1.1" 403 39
+Forbidden: /api/departments/
+"GET /api/departments/ HTTP/1.1" 403 39
+Forbidden: /api/employees/
+"GET /api/employees/?limit=3 HTTP/1.1" 403 39
+Forbidden: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 403 39
+Forbidden: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 403 39
+Forbidden: /api/predictions/bulk_predict/
+"POST /api/predictions/bulk_predict/ HTTP/1.1" 403 39
+Forbidden: /api/employees/
+"GET /api/employees/?limit=1 HTTP/1.1" 403 39
+Forbidden: /api/models/
+"GET /api/models/ HTTP/1.1" 403 39
+Forbidden: /api/models/active/
+"GET /api/models/active/ HTTP/1.1" 403 39
+Forbidden: /api/employees/
+"POST /api/employees/ HTTP/1.1" 403 39
+"GET /api/employees/statistics/ HTTP/1.1" 200 982
+"GET /api/departments/ HTTP/1.1" 200 777
+"GET /api/employees/?limit=3 HTTP/1.1" 200 9155
+"POST /api/predictions/predict/ HTTP/1.1" 200 116
+"POST /api/predictions/predict/ HTTP/1.1" 200 98
+"POST /api/predictions/bulk_predict/ HTTP/1.1" 200 218
+"GET /api/employees/?limit=1 HTTP/1.1" 200 9155
+"POST /api/employees/44997/predict_turnover/ HTTP/1.1" 200 234
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"POST /api/employees/ HTTP/1.1" 201 327
+"GET /admin/?id=bdcae6ac-9f65-4763-affa-be613afd065e&vscodeBrowserReqId=1750692385078 HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/%3Fid%3Dbdcae6ac-9f65-4763-affa-be613afd065e%26vscodeBrowserReqId%3D1750692385078 HTTP/1.1" 200 4339
+"GET /api/employees/statistics/ HTTP/1.1" 200 982
+"GET /api/employees/statistics/ HTTP/1.1" 200 982
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/serializers.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/urls.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /api/auth/register/ HTTP/1.1" 201 205
+"GET /api/auth/profile/ HTTP/1.1" 200 155
+"GET /api/employees/statistics/ HTTP/1.1" 200 982
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/serializers.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/urls.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /api/auth/register/ HTTP/1.1" 201 193
+"POST /api/auth/login/ HTTP/1.1" 200 276
+"POST /api/auth/register/ HTTP/1.1" 201 205
+"POST /api/auth/login/ HTTP/1.1" 200 312
+"GET /api/auth/check/ HTTP/1.1" 200 282
+"GET /api/auth/profile/ HTTP/1.1" 200 155
+"PUT /api/auth/profile/update/ HTTP/1.1" 200 208
+"POST /api/auth/logout/ HTTP/1.1" 200 121
+Method Not Allowed: /api/auth/register/
+"GET /api/auth/register/ HTTP/1.1" 405 40
+"POST /api/auth/login/ HTTP/1.1" 200 265
+"POST /api/auth/register/ HTTP/1.1" 201 218
+"POST /api/auth/login/ HTTP/1.1" 200 349
+"GET /api/auth/check/ HTTP/1.1" 200 295
+"GET /api/auth/profile/ HTTP/1.1" 200 168
+"PUT /api/auth/profile/update/ HTTP/1.1" 200 221
+"POST /api/auth/change-password/ HTTP/1.1" 200 104
+Forbidden: /api/auth/logout/
+"POST /api/auth/logout/ HTTP/1.1" 403 39
+"POST /api/auth/login/ HTTP/1.1" 200 265
+"GET /api/employees/?page=1&page_size=5 HTTP/1.1" 200 9167
+"GET /api/employees/statistics/ HTTP/1.1" 200 982
+Bad Request: /api/employees/
+"POST /api/employees/ HTTP/1.1" 400 272
+"GET /api/employees/?department=IT&salary=high HTTP/1.1" 200 9181
+"GET /api/departments/ HTTP/1.1" 200 777
+"POST /api/departments/ HTTP/1.1" 201 106
+"GET /api/departments/11/ HTTP/1.1" 200 106
+Bad Request: /api/predictions/
+"POST /api/predictions/ HTTP/1.1" 400 185
+Method Not Allowed: /api/predictions/batch/
+"POST /api/predictions/batch/ HTTP/1.1" 405 41
+"GET /api/predictions/ HTTP/1.1" 200 512
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+Bad Request: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 400 42
+"POST /api/employees/ HTTP/1.1" 201 328
+"POST /api/auth/register/ HTTP/1.1" 201 218
+"POST /api/auth/login/ HTTP/1.1" 200 349
+"GET /api/auth/check/ HTTP/1.1" 200 295
+"GET /api/auth/profile/ HTTP/1.1" 200 168
+"PUT /api/auth/profile/update/ HTTP/1.1" 200 221
+"POST /api/auth/change-password/ HTTP/1.1" 200 104
+Forbidden: /api/auth/logout/
+"POST /api/auth/logout/ HTTP/1.1" 403 39
+"POST /api/auth/login/ HTTP/1.1" 200 265
+"GET /api/employees/?page=1&page_size=5 HTTP/1.1" 200 9178
+"GET /api/employees/statistics/ HTTP/1.1" 200 1044
+Bad Request: /api/employees/
+"POST /api/employees/ HTTP/1.1" 400 272
+"GET /api/employees/?department=IT&salary=high HTTP/1.1" 200 9192
+"GET /api/departments/ HTTP/1.1" 200 884
+"POST /api/departments/ HTTP/1.1" 201 106
+"GET /api/departments/12/ HTTP/1.1" 200 106
+Bad Request: /api/predictions/
+"POST /api/predictions/ HTTP/1.1" 400 185
+Method Not Allowed: /api/predictions/batch/
+"POST /api/predictions/batch/ HTTP/1.1" 405 41
+"GET /api/predictions/ HTTP/1.1" 200 512
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+Bad Request: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 400 42
+"POST /api/predictions/predict/ HTTP/1.1" 200 98
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /api/departments/ HTTP/1.1" 200 991
+"POST /api/predictions/predict/ HTTP/1.1" 200 98
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Not Found: /api/models/active/
+"GET /api/models/active/ HTTP/1.1" 404 36
+"GET /api/models/ HTTP/1.1" 200 2216
+Not Found: /api/models/active/
+"GET /api/models/active/ HTTP/1.1" 404 36
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+"GET /api/models/ HTTP/1.1" 200 2216
+Not Found: /api/models/active/
+"GET /api/models/active/ HTTP/1.1" 404 36
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+- Broken pipe from ('127.0.0.1', 63553)
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4181
+"GET /api/employees/statistics/ HTTP/1.1" 200 1106
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"POST /api/predictions/predict/ HTTP/1.1" 200 98
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4181
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2929
+"GET /static/admin/css/login.css HTTP/1.1" 200 958
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2694
+"GET /static/admin/js/theme.js HTTP/1.1" 200 1943
+"GET /static/admin/css/responsive.css HTTP/1.1" 200 18533
+"GET /static/admin/css/base.css HTTP/1.1" 200 21207
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3581
+Not Found: /
+"GET / HTTP/1.1" 404 3530
+"POST /api/auth/login/ HTTP/1.1" 200 265
+"GET /api/auth/check/ HTTP/1.1" 200 1286
+"GET /api/auth/profile/ HTTP/1.1" 200 148
+"GET /api/employees/statistics/ HTTP/1.1" 200 1106
+"GET /api/employees/?limit=5 HTTP/1.1" 200 9174
+Not Found: /api/employees/1/
+"GET /api/employees/1/ HTTP/1.1" 404 23
+"POST /api/predictions/predict/ HTTP/1.1" 200 98
+"POST /api/predictions/predict/ HTTP/1.1" 200 116
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"GET /api/departments/ HTTP/1.1" 200 991
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"POST /api/predictions/predict/ HTTP/1.1" 200 98
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/views.py changed, reloading.
+Watching for file changes with StatReloader
+Error making prediction: 'PredictionViewSet' object has no attribute '_get_recommendations_for_custom_data'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+Error making prediction: 'PredictionViewSet' object has no attribute '_get_recommendations_for_custom_data'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/views.py changed, reloading.
+Watching for file changes with StatReloader
+Error making prediction: 'PredictionViewSet' object has no attribute '_get_recommendations_for_custom_data'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+Error making prediction: 'PredictionViewSet' object has no attribute '_get_recommendations_for_custom_data'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+Error making prediction: 'PredictionViewSet' object has no attribute '_get_recommendations_for_custom_data'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+Error making prediction: 'PredictionViewSet' object has no attribute '_get_recommendations_for_custom_data'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+Error making prediction: 'PredictionViewSet' object has no attribute '_get_recommendations_for_custom_data'
+Internal Server Error: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 500 58
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4181
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/predictions/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+"POST /api/predictions/predict/ HTTP/1.1" 200 239
+"POST /api/predictions/predict/ HTTP/1.1" 200 376
+"POST /api/predictions/predict/ HTTP/1.1" 200 175
+"POST /api/auth/login/ HTTP/1.1" 200 265
+"GET /api/auth/check/ HTTP/1.1" 200 1286
+"GET /api/auth/profile/ HTTP/1.1" 200 148
+"GET /api/employees/statistics/ HTTP/1.1" 200 1106
+"GET /api/employees/?limit=5 HTTP/1.1" 200 9174
+Not Found: /api/employees/1/
+"GET /api/employees/1/ HTTP/1.1" 404 23
+"POST /api/predictions/predict/ HTTP/1.1" 200 239
+"POST /api/predictions/predict/ HTTP/1.1" 200 376
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"GET /api/departments/ HTTP/1.1" 200 991
+"POST /api/predictions/predict/ HTTP/1.1" 200 178
+"POST /api/predictions/predict/ HTTP/1.1" 200 239
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+"POST /api/predictions/predict/ HTTP/1.1" 200 191
+"POST /api/predictions/predict/ HTTP/1.1" 200 191
+"POST /api/predictions/predict/ HTTP/1.1" 200 376
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+- Broken pipe from ('127.0.0.1', 59030)
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Not Found: /api/models/active/
+"GET /api/models/active/ HTTP/1.1" 404 36
+"GET /api/models/ HTTP/1.1" 200 2216
+Not Found: /api/models/active/
+"GET /api/models/active/ HTTP/1.1" 404 36
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 37
+Error training model: Object of type StandardScaler is not JSON serializable
+Internal Server Error: /api/models/train/
+"POST /api/models/train/ HTTP/1.1" 500 110
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /
+"GET / HTTP/1.1" 404 3530
+Bad Request: /api/auth/register/
+"POST /api/auth/register/ HTTP/1.1" 400 48
+Unauthorized: /api/auth/login/
+"POST /api/auth/login/ HTTP/1.1" 401 40
+Forbidden: /api/auth/profile/
+"GET /api/auth/profile/ HTTP/1.1" 403 58
+Not Found: /api/auth/users/
+"GET /api/auth/users/ HTTP/1.1" 404 11871
+Not Found: /
+"GET / HTTP/1.1" 404 3530
+"POST /api/auth/register/ HTTP/1.1" 201 209
+"POST /api/auth/login/ HTTP/1.1" 200 324
+Forbidden: /api/auth/profile/
+"GET /api/auth/profile/ HTTP/1.1" 403 58
+Not Found: /api/auth/users/
+"GET /api/auth/users/ HTTP/1.1" 404 11871
+Forbidden: /api/employees/
+"GET /api/employees/ HTTP/1.1" 403 58
+Forbidden: /api/employees/statistics/
+"GET /api/employees/statistics/ HTTP/1.1" 403 58
+Forbidden: /api/employees/1/
+"GET /api/employees/1/ HTTP/1.1" 403 58
+Forbidden: /api/employees/5000/
+"GET /api/employees/5000/ HTTP/1.1" 403 58
+Forbidden: /api/employees/10000/
+"GET /api/employees/10000/ HTTP/1.1" 403 58
+Forbidden: /api/departments/
+"GET /api/departments/ HTTP/1.1" 403 58
+Forbidden: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 403 58
+Forbidden: /api/predictions/bulk-predict/
+"POST /api/predictions/bulk-predict/ HTTP/1.1" 403 58
+Forbidden: /api/predictions/high-risk-scenario/
+"POST /api/predictions/high-risk-scenario/ HTTP/1.1" 403 58
+Forbidden: /api/predictions/low-risk-scenario/
+"POST /api/predictions/low-risk-scenario/ HTTP/1.1" 403 58
+Forbidden: /api/models/
+"GET /api/models/ HTTP/1.1" 403 58
+Forbidden: /api/models/active/
+"GET /api/models/active/ HTTP/1.1" 403 58
+Forbidden: /api/predictions/history/
+"GET /api/predictions/history/ HTTP/1.1" 403 58
+Not Found: /
+"GET / HTTP/1.1" 404 3530
+"POST /api/auth/register/ HTTP/1.1" 201 209
+"POST /api/auth/login/ HTTP/1.1" 200 324
+"GET /api/auth/profile/ HTTP/1.1" 200 159
+Not Found: /api/auth/users/
+"GET /api/auth/users/ HTTP/1.1" 404 11871
+"GET /api/auth/check/ HTTP/1.1" 200 286
+"GET /api/employees/ HTTP/1.1" 200 9166
+"GET /api/employees/statistics/ HTTP/1.1" 200 1106
+Not Found: /api/employees/1/
+"GET /api/employees/1/ HTTP/1.1" 404 23
+Not Found: /api/employees/5000/
+"GET /api/employees/5000/ HTTP/1.1" 404 23
+Not Found: /api/employees/10000/
+"GET /api/employees/10000/ HTTP/1.1" 404 23
+"GET /api/departments/ HTTP/1.1" 200 991
+Bad Request: /api/predictions/predict/
+"POST /api/predictions/predict/ HTTP/1.1" 400 53
+Method Not Allowed: /api/predictions/bulk-predict/
+"POST /api/predictions/bulk-predict/ HTTP/1.1" 405 41
+Method Not Allowed: /api/predictions/high-risk-scenario/
+"POST /api/predictions/high-risk-scenario/ HTTP/1.1" 405 41
+Method Not Allowed: /api/predictions/low-risk-scenario/
+"POST /api/predictions/low-risk-scenario/ HTTP/1.1" 405 41
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+Not Found: /api/predictions/history/
+"GET /api/predictions/history/ HTTP/1.1" 404 23
+Not Found: /
+"GET / HTTP/1.1" 404 3530
+"POST /api/auth/register/ HTTP/1.1" 201 209
+"POST /api/auth/login/ HTTP/1.1" 200 324
+"GET /api/auth/profile/ HTTP/1.1" 200 159
+Not Found: /api/auth/users/
+"GET /api/auth/users/ HTTP/1.1" 404 11871
+"GET /api/auth/check/ HTTP/1.1" 200 286
+"GET /api/employees/ HTTP/1.1" 200 9166
+"GET /api/employees/statistics/ HTTP/1.1" 200 1106
+Not Found: /api/employees/1/
+"GET /api/employees/1/ HTTP/1.1" 404 23
+Not Found: /api/employees/5000/
+"GET /api/employees/5000/ HTTP/1.1" 404 23
+Not Found: /api/employees/10000/
+"GET /api/employees/10000/ HTTP/1.1" 404 23
+"GET /api/departments/ HTTP/1.1" 200 991
+"POST /api/predictions/predict/ HTTP/1.1" 200 175
+Method Not Allowed: /api/predictions/bulk-predict/
+"POST /api/predictions/bulk-predict/ HTTP/1.1" 405 41
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"GET /api/predictions/ HTTP/1.1" 200 512
+Not Found: /
+"GET / HTTP/1.1" 404 3530
+"POST /api/auth/register/ HTTP/1.1" 201 209
+"POST /api/auth/login/ HTTP/1.1" 200 324
+"GET /api/auth/profile/ HTTP/1.1" 200 159
+Not Found: /api/auth/users/
+"GET /api/auth/users/ HTTP/1.1" 404 11871
+"GET /api/auth/check/ HTTP/1.1" 200 286
+"GET /api/employees/ HTTP/1.1" 200 9166
+"GET /api/employees/statistics/ HTTP/1.1" 200 1106
+Not Found: /api/employees/1/
+"GET /api/employees/1/ HTTP/1.1" 404 23
+Not Found: /api/employees/5000/
+"GET /api/employees/5000/ HTTP/1.1" 404 23
+Not Found: /api/employees/10000/
+"GET /api/employees/10000/ HTTP/1.1" 404 23
+"GET /api/departments/ HTTP/1.1" 200 991
+"POST /api/predictions/predict/ HTTP/1.1" 200 175
+"POST /api/predictions/bulk_predict/ HTTP/1.1" 200 209
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"GET /api/predictions/ HTTP/1.1" 200 512
+Not Found: /
+"GET / HTTP/1.1" 404 3530
+"POST /api/auth/register/ HTTP/1.1" 201 209
+"POST /api/auth/login/ HTTP/1.1" 200 324
+"GET /api/auth/profile/ HTTP/1.1" 200 159
+Not Found: /api/auth/users/
+"GET /api/auth/users/ HTTP/1.1" 404 11871
+"GET /api/auth/check/ HTTP/1.1" 200 286
+"GET /api/employees/ HTTP/1.1" 200 9166
+"GET /api/employees/statistics/ HTTP/1.1" 200 1106
+"GET /api/employees/44999/ HTTP/1.1" 200 464
+"GET /api/employees/37500/ HTTP/1.1" 200 445
+"GET /api/employees/30000/ HTTP/1.1" 200 447
+"GET /api/departments/ HTTP/1.1" 200 991
+"POST /api/predictions/predict/ HTTP/1.1" 200 175
+"POST /api/predictions/bulk_predict/ HTTP/1.1" 200 209
+"GET /api/models/ HTTP/1.1" 200 2215
+"GET /api/models/active/ HTTP/1.1" 200 2163
+"GET /api/predictions/ HTTP/1.1" 200 512
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4181
+"POST /api/auth/login/ HTTP/1.1" 200 265
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/turnover_prediction/settings.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/turnover_prediction/urls.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/urls.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/serializers.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/admin.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/__init__.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/turnover_prediction/urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+/Users/dzikrirazzan/Documents/code/turnover_api/backend/performance/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /performance/api/dashboard/stats/
+"GET /performance/api/dashboard/stats/?employee=1 HTTP/1.1" 404 30
+Not Found: /performance/api/dashboard/stats/
+"GET /performance/api/dashboard/stats/?employee=3 HTTP/1.1" 404 30
+Watching for file changes with StatReloader
+"GET /performance/api/dashboard/stats/?employee=45002 HTTP/1.1" 200 134
+"GET /performance/api/dashboard/user_info/?employee=45002 HTTP/1.1" 200 117
+"GET /performance/api/analytics/dashboard/ HTTP/1.1" 200 3682
+"GET /performance/api/goals/sample_goals/ HTTP/1.1" 200 2620
+"GET /performance/api/feedback/sample_feedback/ HTTP/1.1" 200 634
+"GET /performance/api/performance-reviews/current_review/?employee=45002 HTTP/1.1" 200 408
+"GET /performance/api/dashboard/stats/?employee=45002 HTTP/1.1" 200 134
+"GET /performance/api/dashboard/activities/?employee=45002 HTTP/1.1" 200 889
+"GET /performance/api/dashboard/user_info/?employee=45002 HTTP/1.1" 200 117
+"GET /performance/api/analytics/dashboard/ HTTP/1.1" 200 3682
+"GET /performance/api/analytics/team_engagement/?days=30 HTTP/1.1" 200 1561
+"GET /performance/api/analytics/risk_trends/?months=12 HTTP/1.1" 200 433
+"GET /performance/api/analytics/performance_matrix/ HTTP/1.1" 200 1931
+"GET /performance/api/goals/statistics/?employee=45002 HTTP/1.1" 200 105
+"GET /performance/api/goals/sample_goals/ HTTP/1.1" 200 2620
+"GET /performance/api/goals/ HTTP/1.1" 200 3555
+"GET /performance/api/key-results/ HTTP/1.1" 200 1585
+"GET /performance/api/feedback/sample_feedback/ HTTP/1.1" 200 634
+"GET /performance/api/feedback/stats/?employee=45002 HTTP/1.1" 200 23
+"GET /performance/api/feedback/received/?employee=45002 HTTP/1.1" 200 2
+"GET /performance/api/feedback/sent/?employee=45002 HTTP/1.1" 200 2
+"GET /performance/api/performance-reviews/current_review/?employee=45002 HTTP/1.1" 200 408
+"GET /performance/api/performance-reviews/history/?employee=45002 HTTP/1.1" 200 2
+"GET /performance/api/performance-reviews/ HTTP/1.1" 200 3075
+"GET /performance/api/oneonone-meetings/statistics/?employee=45002 HTTP/1.1" 200 88
+"GET /performance/api/oneonone-meetings/?employee=45002 HTTP/1.1" 200 52
+"GET /performance/api/shoutouts/statistics/?employee=45002 HTTP/1.1" 200 94
+"GET /performance/api/shoutouts/ HTTP/1.1" 200 1412
+"GET /performance/api/learning-progress/statistics/?employee=45002 HTTP/1.1" 200 84
+"GET /performance/api/learning-modules/recommendations/?employee=45002 HTTP/1.1" 200 1286
+"GET /performance/api/learning-modules/categories/ HTTP/1.1" 200 155
+"GET /performance/api/learning-modules/ HTTP/1.1" 200 1336
+"GET /api/employees/ HTTP/1.1" 200 9173
+"GET /api/employees/statistics/ HTTP/1.1" 200 1256
+"GET /api/departments/ HTTP/1.1" 200 1233
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Forbidden: /performance/api/dashboard/stats/
+"GET /performance/api/dashboard/stats/ HTTP/1.1" 403 58
+"GET /performance/api/dashboard/stats/?employee=45002 HTTP/1.1" 200 133
+"GET /performance/api/dashboard/activities/?employee=45002 HTTP/1.1" 200 1681
+"GET /performance/api/dashboard/user_info/?employee=45002 HTTP/1.1" 200 117
+"GET /performance/api/analytics/dashboard/ HTTP/1.1" 200 3682
+"GET /performance/api/analytics/team_engagement/?days=30 HTTP/1.1" 200 1561
+"GET /performance/api/analytics/risk_trends/?months=12 HTTP/1.1" 200 433
+"GET /performance/api/analytics/performance_matrix/ HTTP/1.1" 200 1931
+"GET /performance/api/goals/statistics/?employee=45002 HTTP/1.1" 200 105
+"GET /performance/api/goals/sample_goals/ HTTP/1.1" 200 2620
+"GET /performance/api/goals/ HTTP/1.1" 200 8501
+"GET /performance/api/key-results/ HTTP/1.1" 200 2465
+"GET /performance/api/feedback/sample_feedback/ HTTP/1.1" 200 634
+"GET /performance/api/feedback/stats/?employee=45002 HTTP/1.1" 200 23
+"GET /performance/api/feedback/received/?employee=45002 HTTP/1.1" 200 386
+"GET /performance/api/feedback/sent/?employee=45002 HTTP/1.1" 200 397
+"GET /performance/api/performance-reviews/current_review/?employee=45002 HTTP/1.1" 200 408
+"GET /performance/api/performance-reviews/history/?employee=45002 HTTP/1.1" 200 530
+"GET /performance/api/performance-reviews/ HTTP/1.1" 200 5764
+"GET /performance/api/oneonone-meetings/statistics/?employee=45002 HTTP/1.1" 200 91
+"GET /performance/api/oneonone-meetings/?employee=45002 HTTP/1.1" 200 612
+"GET /performance/api/shoutouts/statistics/?employee=45002 HTTP/1.1" 200 94
+"GET /performance/api/shoutouts/ HTTP/1.1" 200 2799
+"GET /performance/api/learning-progress/statistics/?employee=45002 HTTP/1.1" 200 84
+"GET /performance/api/learning-modules/recommendations/?employee=45002 HTTP/1.1" 200 2394
+"GET /performance/api/learning-modules/categories/ HTTP/1.1" 200 155
+"GET /performance/api/learning-modules/ HTTP/1.1" 200 2444
+"GET /api/employees/ HTTP/1.1" 200 9173
+"GET /api/employees/statistics/ HTTP/1.1" 200 1256
+"GET /api/departments/ HTTP/1.1" 200 1233
