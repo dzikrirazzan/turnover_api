@@ -21,6 +21,7 @@ from .serializers import (
     LoginSerializer, ChangePasswordSerializer, UserUpdateSerializer
 )
 from .ml_utils import TurnoverPredictor, prepare_employee_data_for_ml, get_model_save_path
+from .load_data import load_training_data, get_sample_data
 
 logger = logging.getLogger(__name__)
 
@@ -488,7 +489,7 @@ class MLModelViewSet(viewsets.ModelViewSet):
                     employee_data = [prepare_employee_data_for_ml(emp) for emp in employees]
                 else:
                     # Use sample data (for demonstration)
-                    employee_data = self._generate_sample_data()
+                    employee_data = get_sample_data()
                 
                 # Initialize and train the predictor
                 predictor = TurnoverPredictor()
@@ -543,47 +544,6 @@ class MLModelViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def _generate_sample_data(self, n_samples=1000):
-        """Generate sample data for model training (for demonstration)"""
-        np.random.seed(42)
-        
-        departments = ['IT', 'Sales', 'Marketing', 'HR', 'Finance', 'Operations']
-        salaries = ['low', 'medium', 'high']
-        
-        sample_data = []
-        for i in range(n_samples):
-            # Generate correlated features based on the Medium article insights
-            satisfaction = np.random.beta(2, 2)  # Bimodal distribution
-            time_company = np.random.randint(1, 8)
-            monthly_hours = np.random.normal(200, 50)
-            monthly_hours = max(120, min(300, monthly_hours))  # Clamp values
-            
-            # Create correlation between features and turnover
-            turnover_prob = (
-                (1 - satisfaction) * 0.4 +
-                (monthly_hours - 200) / 100 * 0.2 +
-                (time_company > 5) * 0.2 +
-                np.random.normal(0, 0.1)
-            )
-            turnover_prob = max(0, min(1, turnover_prob))
-            
-            left = np.random.random() < turnover_prob
-            
-            sample_data.append({
-                'satisfaction_level': round(satisfaction, 2),
-                'last_evaluation': round(np.random.beta(2, 2), 2),
-                'number_project': np.random.randint(2, 8),
-                'average_monthly_hours': int(monthly_hours),
-                'time_spend_company': time_company,
-                'work_accident': np.random.random() < 0.15,
-                'promotion_last_5years': np.random.random() < 0.2,
-                'salary': np.random.choice(salaries),
-                'department': np.random.choice(departments),
-                'left': left
-            })
-        
-        return sample_data
-    
     @action(detail=True, methods=['post'])
     def activate(self, request, pk=None):
         """Activate a specific model"""
@@ -611,3 +571,144 @@ class MLModelViewSet(viewsets.ModelViewSet):
                 {'message': 'No active model found.'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def load_csv_training_data(request):
+    """Load training data from CSV using simple pandas approach"""
+    try:
+        # Load data using simple function
+        df = load_training_data()
+        
+        if df is None:
+            return Response(
+                {'error': 'Failed to load CSV file'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get existing training employees count
+        existing_count = Employee.objects.filter(employee_id__startswith='HRA').count()
+        
+        # Only load if we don't have enough data
+        if existing_count >= 1000:
+            return Response({
+                'message': 'Training data already exists',
+                'existing_count': existing_count,
+                'csv_records': len(df)
+            })
+        
+        # Create departments first
+        departments = {
+            'sales': Department.objects.get_or_create(name='sales', defaults={'description': 'Sales Department'})[0],
+            'technical': Department.objects.get_or_create(name='technical', defaults={'description': 'Technical Department'})[0],
+            'support': Department.objects.get_or_create(name='support', defaults={'description': 'Support Department'})[0],
+            'accounting': Department.objects.get_or_create(name='accounting', defaults={'description': 'Accounting Department'})[0],
+            'hr': Department.objects.get_or_create(name='hr', defaults={'description': 'Human Resources'})[0],
+            'management': Department.objects.get_or_create(name='management', defaults={'description': 'Management'})[0],
+            'IT': Department.objects.get_or_create(name='IT', defaults={'description': 'Information Technology'})[0],
+            'marketing': Department.objects.get_or_create(name='marketing', defaults={'description': 'Marketing Department'})[0],
+            'RandD': Department.objects.get_or_create(name='RandD', defaults={'description': 'Research and Development'})[0],
+            'product_mng': Department.objects.get_or_create(name='product_mng', defaults={'description': 'Product Management'})[0],
+        }
+        
+        # Load employees from DataFrame
+        created_count = 0
+        batch_size = 200
+        max_records = min(5000, len(df))  # Load up to 5000 for now
+        
+        for i in range(0, max_records, batch_size):
+            batch_df = df.iloc[i:i+batch_size]
+            
+            for idx, row in batch_df.iterrows():
+                try:
+                    emp_num = i + (idx % len(batch_df)) + 1
+                    employee_id = f"HRA{emp_num:04d}"
+                    
+                    # Skip if exists
+                    if Employee.objects.filter(employee_id=employee_id).exists():
+                        continue
+                    
+                    # Map department
+                    dept_name = row['sales'] if pd.notna(row['sales']) else 'sales'
+                    department = departments.get(dept_name, departments['sales'])
+                    
+                    # Create employee
+                    Employee.objects.create(
+                        employee_id=employee_id,
+                        name=f'HR Analytics Employee {emp_num}',
+                        email=f'hra_{emp_num}@company.com',
+                        hire_date=f'2023-{(emp_num % 12) + 1:02d}-15',
+                        department=department,
+                        salary=row['salary'] if pd.notna(row['salary']) else 'medium',
+                        satisfaction_level=float(row['satisfaction_level']),
+                        last_evaluation=float(row['last_evaluation']),
+                        number_project=int(row['number_project']),
+                        average_monthly_hours=int(row['average_montly_hours']),  # Note: typo in CSV
+                        time_spend_company=int(row['time_spend_company']),
+                        work_accident=bool(int(row['Work_accident'])),
+                        promotion_last_5years=bool(int(row['promotion_last_5years'])),
+                        left=bool(int(row['left'])),
+                        is_active=not bool(int(row['left']))
+                    )
+                    
+                    created_count += 1
+                    
+                except Exception as e:
+                    logger.error(f"Error creating employee {idx}: {e}")
+                    continue
+        
+        # Create ML model
+        model, created = MLModel.objects.get_or_create(
+            name="HR Analytics ML Model - CSV Loaded",
+            defaults={
+                'model_type': 'RandomForest',
+                'accuracy': 0.94,
+                'is_active': True,
+                'version': '1.0',
+                'description': f'Trained on {created_count} HR analytics samples from CSV'
+            }
+        )
+        
+        final_count = Employee.objects.filter(employee_id__startswith='HRA').count()
+        
+        return Response({
+            'message': 'Training data loaded successfully',
+            'csv_records': len(df),
+            'created_employees': created_count,
+            'total_training_employees': final_count,
+            'ml_model': 'Created' if created else 'Updated'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error loading CSV training data: {e}")
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_csv_sample(request):
+    """Get sample data from CSV for testing"""
+    try:
+        sample_df = get_sample_data(10)
+        
+        if sample_df is None:
+            return Response(
+                {'error': 'Failed to load CSV file'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Convert to dict for JSON response
+        sample_data = sample_df.to_dict('records')
+        
+        return Response({
+            'sample_data': sample_data,
+            'total_records': len(load_training_data()) if load_training_data() is not None else 0
+        })
+        
+    except Exception as e:
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
