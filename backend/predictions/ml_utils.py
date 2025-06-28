@@ -75,7 +75,7 @@ class TurnoverPredictor:
     
     def train_models(self, X, y):
         """
-        Train multiple models and select the best one based on f1-score
+        Train models optimized for production environments with limited resources
         """
         # Split data
         X_train, X_test, y_train, y_test = train_test_split(
@@ -87,48 +87,45 @@ class TurnoverPredictor:
         
         results = {}
         
-        # Train Random Forest with hyperparameter tuning
-        rf_params = {
-            'randomforestclassifier__max_features': ['sqrt', 'log2'],
-            'randomforestclassifier__min_samples_leaf': [1, 2, 4],
-            'randomforestclassifier__n_estimators': [100, 200]
-        }
+        # Use simpler, faster models for production
+        print("🚀 Training RandomForest with optimized parameters...")
+        rf_model = RandomForestClassifier(
+            n_estimators=100,
+            max_depth=10,
+            min_samples_split=5,
+            min_samples_leaf=2,
+            random_state=42,
+            n_jobs=1  # Use single core to avoid OOM
+        )
+        rf_pipeline = make_pipeline(StandardScaler(), rf_model)
+        rf_pipeline.fit(X_train_upsampled, y_train_upsampled)
         
-        rf_pipeline = make_pipeline(StandardScaler(), RandomForestClassifier(random_state=42))
-        rf_grid = GridSearchCV(rf_pipeline, rf_params, cv=5, scoring='f1', n_jobs=-1)
-        rf_grid.fit(X_train_upsampled, y_train_upsampled)
-        
-        # Train Gradient Boosting
-        gb_params = {
-            'gradientboostingclassifier__max_features': ['sqrt', 'log2'],
-            'gradientboostingclassifier__learning_rate': [0.01, 0.1, 0.2],
-            'gradientboostingclassifier__max_depth': [3, 5, 7],
-            'gradientboostingclassifier__n_estimators': [100, 200]
-        }
-        
-        gb_pipeline = make_pipeline(StandardScaler(), GradientBoostingClassifier(random_state=42))
-        gb_grid = GridSearchCV(gb_pipeline, gb_params, cv=5, scoring='f1', n_jobs=-1)
-        gb_grid.fit(X_train_upsampled, y_train_upsampled)
-        
-        # Train other models with basic hyperparameters
-        lr_pipeline = make_pipeline(StandardScaler(), LogisticRegression(random_state=42, max_iter=1000))
+        print("🚀 Training LogisticRegression...")
+        lr_pipeline = make_pipeline(StandardScaler(), LogisticRegression(
+            random_state=42, 
+            max_iter=1000,
+            solver='lbfgs'  # Faster solver
+        ))
         lr_pipeline.fit(X_train_upsampled, y_train_upsampled)
         
-        svm_pipeline = make_pipeline(StandardScaler(), SVC(random_state=42, probability=True))
-        svm_pipeline.fit(X_train_upsampled, y_train_upsampled)
+        print("🚀 Training simplified GradientBoosting...")
+        gb_model = GradientBoostingClassifier(
+            n_estimators=50,  # Reduced from 100-200
+            max_depth=5,
+            learning_rate=0.1,
+            random_state=42
+        )
+        gb_pipeline = make_pipeline(StandardScaler(), gb_model)
+        gb_pipeline.fit(X_train_upsampled, y_train_upsampled)
         
-        knn_pipeline = make_pipeline(StandardScaler(), KNeighborsClassifier())
-        knn_pipeline.fit(X_train_upsampled, y_train_upsampled)
-        
-        # Evaluate all models
+        # Evaluate models
         models_to_evaluate = {
-            'RandomForest': rf_grid.best_estimator_,
-            'GradientBoosting': gb_grid.best_estimator_,
+            'RandomForest': rf_pipeline,
             'LogisticRegression': lr_pipeline,
-            'SVM': svm_pipeline,
-            'KNN': knn_pipeline
+            'GradientBoosting': gb_pipeline
         }
         
+        print("📊 Evaluating models...")
         for name, model in models_to_evaluate.items():
             y_pred = model.predict(X_test)
             y_pred_proba = model.predict_proba(X_test)[:, 1]
@@ -140,11 +137,14 @@ class TurnoverPredictor:
                 'auc_score': roc_auc_score(y_test, y_pred_proba),
                 'hyperparameters': model.get_params()
             }
+            
+            print(f"✅ {name}: Accuracy={results[name]['accuracy']:.3f}, F1={results[name]['f1_score']:.3f}")
         
-        # Select best model based on f1-score (as recommended in the article)
+        # Select best model based on f1-score
         best_model_name = max(results.keys(), key=lambda k: results[k]['f1_score'])
         self.best_model = results[best_model_name]['model']
         
+        print(f"🏆 Best model: {best_model_name}")
         return results, best_model_name
     
     def _upsample_minority_class(self, X, y):
