@@ -106,9 +106,10 @@ DATABASES = {
 }
 
 # Override with DATABASE_URL if provided (DigitalOcean App Platform)
-if os.getenv('DATABASE_URL'):
+database_url = os.getenv('DATABASE_URL')
+if database_url and database_url.strip():
     DATABASES['default'] = dj_database_url.parse(
-        os.getenv('DATABASE_URL'),
+        database_url,
         conn_max_age=600,
         conn_health_checks=True,
     )

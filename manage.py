@@ -9,7 +9,11 @@ def main():
     # Change to backend directory where settings.py is located
     backend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backend')
     sys.path.insert(0, backend_path)
-    os.chdir(backend_path)
+    
+    # Only change directory if we're not already in backend
+    current_dir = os.path.basename(os.getcwd())
+    if current_dir != 'backend':
+        os.chdir(backend_path)
     
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'turnover_prediction.settings')
     try:
