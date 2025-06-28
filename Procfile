@@ -1,1 +1,1 @@
-web: PYTHONPATH=$PYTHONPATH:./backend gunicorn --worker-tmp-dir /dev/shm backend.turnover_prediction.wsgi:application
+web: DJANGO_SETTINGS_MODULE=backend.turnover_prediction.settings PYTHONPATH=$PYTHONPATH:./backend gunicorn --worker-tmp-dir /dev/shm backend.turnover_prediction.wsgi:application
