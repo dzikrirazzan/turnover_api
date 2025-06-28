@@ -474,23 +474,41 @@ class MLModelViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             try:
                 model_name = serializer.validated_data['model_name']
-                use_existing_data = serializer.validated_data['use_existing_data']
+                data_source = serializer.validated_data.get('data_source', 'db')
                 
-                if use_existing_data:
-                    # Use existing employee data
-                    employees = Employee.objects.all()
-                    if employees.count() < 100:
+                employee_data = []
+                
+                if data_source == 'csv':
+                    # Load data from the CSV file
+                    df = load_training_data()
+                    if df is None or len(df) < 100:
                         return Response(
-                            {'error': 'Insufficient data for training. Need at least 100 employee records.'},
+                            {'error': 'Insufficient data from CSV for training. Need at least 100 records.'},
                             status=status.HTTP_400_BAD_REQUEST
                         )
                     
-                    # Prepare data
+                    # Rename columns to match the expected format
+                    df = df.rename(columns={
+                        'sales': 'department',
+                        'average_montly_hours': 'average_monthly_hours',
+                        'Work_accident': 'work_accident'
+                    })
+                    
+                    # Convert DataFrame to list of dictionaries
+                    employee_data = df.to_dict('records')
+
+                else: # Default to 'db'
+                    # Use existing employee data from the database
+                    employees = Employee.objects.all()
+                    if employees.count() < 100:
+                        return Response(
+                            {'error': 'Insufficient data in database for training. Need at least 100 employee records.'},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    
+                    # Prepare data from Employee objects
                     employee_data = [prepare_employee_data_for_ml(emp) for emp in employees]
-                else:
-                    # Use sample data (for demonstration)
-                    employee_data = get_sample_data()
-                
+
                 # Initialize and train the predictor
                 predictor = TurnoverPredictor()
                 X, y = predictor.prepare_data(employee_data)
@@ -504,8 +522,7 @@ class MLModelViewSet(viewsets.ModelViewSet):
                 # Get feature importance
                 feature_importance = predictor.get_feature_importance()
                 
-                # Save model info to database
-                # Deactivate other models
+                # Deactivate other models before creating a new active one
                 MLModel.objects.filter(is_active=True).update(is_active=False)
                 
                 # Create new model record
@@ -523,7 +540,7 @@ class MLModelViewSet(viewsets.ModelViewSet):
                 )
                 
                 return Response({
-                    'message': f'Model trained successfully. Best model: {best_model_name}',
+                    'message': f'Model trained successfully using {data_source} data. Best model: {best_model_name}',
                     'model_id': ml_model.id,
                     'results': {
                         name: {
