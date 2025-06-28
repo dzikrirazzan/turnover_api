@@ -589,10 +589,10 @@ def load_csv_training_data(request):
         # Get existing training employees count
         existing_count = Employee.objects.filter(employee_id__startswith='HRA').count()
         
-        # Only load if we don't have enough data
-        if existing_count >= 1000:
+        # If data is already loaded, no need to proceed
+        if existing_count >= len(df):
             return Response({
-                'message': 'Training data already exists',
+                'message': 'Training data already fully loaded.',
                 'existing_count': existing_count,
                 'csv_records': len(df)
             })
@@ -613,49 +613,44 @@ def load_csv_training_data(request):
         
         # Load employees from DataFrame
         created_count = 0
-        batch_size = 200
-        max_records = min(5000, len(df))  # Load up to 5000 for now
         
-        for i in range(0, max_records, batch_size):
-            batch_df = df.iloc[i:i+batch_size]
-            
-            for idx, row in batch_df.iterrows():
-                try:
-                    emp_num = i + (idx % len(batch_df)) + 1
-                    employee_id = f"HRA{emp_num:04d}"
-                    
-                    # Skip if exists
-                    if Employee.objects.filter(employee_id=employee_id).exists():
-                        continue
-                    
-                    # Map department
-                    dept_name = row['sales'] if pd.notna(row['sales']) else 'sales'
-                    department = departments.get(dept_name, departments['sales'])
-                    
-                    # Create employee
-                    Employee.objects.create(
-                        employee_id=employee_id,
-                        name=f'HR Analytics Employee {emp_num}',
-                        email=f'hra_{emp_num}@company.com',
-                        hire_date=f'2023-{(emp_num % 12) + 1:02d}-15',
-                        department=department,
-                        salary=row['salary'] if pd.notna(row['salary']) else 'medium',
-                        satisfaction_level=float(row['satisfaction_level']),
-                        last_evaluation=float(row['last_evaluation']),
-                        number_project=int(row['number_project']),
-                        average_monthly_hours=int(row['average_montly_hours']),  # Note: typo in CSV
-                        time_spend_company=int(row['time_spend_company']),
-                        work_accident=bool(int(row['Work_accident'])),
-                        promotion_last_5years=bool(int(row['promotion_last_5years'])),
-                        left=bool(int(row['left'])),
-                        is_active=not bool(int(row['left']))
-                    )
-                    
-                    created_count += 1
-                    
-                except Exception as e:
-                    logger.error(f"Error creating employee {idx}: {e}")
+        for idx, row in df.iterrows():
+            try:
+                emp_num = idx + 1
+                employee_id = f"HRA{emp_num:05d}"
+                
+                # Skip if exists
+                if Employee.objects.filter(employee_id=employee_id).exists():
                     continue
+                
+                # Map department
+                dept_name = row['sales'] if pd.notna(row['sales']) else 'sales'
+                department = departments.get(dept_name, departments['sales'])
+                
+                # Create employee
+                Employee.objects.create(
+                    employee_id=employee_id,
+                    name=f'HR Analytics Employee {emp_num}',
+                    email=f'hra_{emp_num}@company.com',
+                    hire_date=f'2023-{(emp_num % 12) + 1:02d}-15',
+                    department=department,
+                    salary=row['salary'] if pd.notna(row['salary']) else 'medium',
+                    satisfaction_level=float(row['satisfaction_level']) if pd.notna(row['satisfaction_level']) else 0.5,
+                    last_evaluation=float(row['last_evaluation']) if pd.notna(row['last_evaluation']) else 0.5,
+                    number_project=int(row['number_project']) if pd.notna(row['number_project']) else 0,
+                    average_monthly_hours=int(row['average_montly_hours']) if pd.notna(row['average_montly_hours']) else 0,
+                    time_spend_company=int(row['time_spend_company']) if pd.notna(row['time_spend_company']) else 0,
+                    work_accident=bool(int(row['Work_accident'])) if pd.notna(row['Work_accident']) else False,
+                    promotion_last_5years=bool(int(row['promotion_last_5years'])) if pd.notna(row['promotion_last_5years']) else False,
+                    left=bool(int(row['left'])) if pd.notna(row['left']) else False,
+                    is_active=not bool(int(row['left'])) if pd.notna(row['left']) else True
+                )
+                
+                created_count += 1
+                
+            except Exception as e:
+                logger.error(f"Error creating employee {idx}: {e}")
+                continue
         
         # Create ML model
         model, created = MLModel.objects.get_or_create(
