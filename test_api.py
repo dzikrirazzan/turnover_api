@@ -42,16 +42,6 @@ def main():
 
         # --- CSV Data ---
         print("--- Testing CSV Data ---")
-        
-        # Get CSV sample
-        print("Testing: GET /api/csv-sample/")
-        response = requests.get(f"{BASE_URL}/api/csv-sample/", headers=headers)
-        print_response(response)
-        
-        # Load CSV data
-        print("Testing: POST /api/load-csv-data/")
-        response = requests.post(f"{BASE_URL}/api/load-csv-data/", headers=headers)
-        print_response(response)
 
         # --- Core API ---
         print("--- Testing Core API ---")

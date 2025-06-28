@@ -4,6 +4,10 @@ from predictions.models import Employee, MLModel
 from predictions.ml_utils import TurnoverPredictor, get_model_save_path
 from predictions.load_data import load_training_data
 import pandas as pd
+from pathlib import Path
+
+# Define the base directory of the Django project
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 class Command(BaseCommand):
     help = 'Trains the machine learning model from the CSV file.'
