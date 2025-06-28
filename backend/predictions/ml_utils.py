@@ -250,7 +250,7 @@ def get_model_save_path(model_name):
     """
     Get the path to save ML models
     """
-    models_dir = os.path.join(settings.BASE_DIR, 'ml_models')
+    models_dir = os.path.join(settings.BASE_DIR, 'backend', 'ml_models')
     if not os.path.exists(models_dir):
         os.makedirs(models_dir)
     return os.path.join(models_dir, f"{model_name}.joblib")
