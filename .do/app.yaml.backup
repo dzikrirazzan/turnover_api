@@ -1,11 +1,12 @@
 name: smart-en-system-backend
 services:
   - name: backend
-    source_dir: /backend
+    source_dir: backend
     github:
       repo: dzikrirazzan/turnover_api
       branch: main
       deploy_on_push: true
+    build_command: pip install -r requirements.txt
     run_command: gunicorn --worker-tmp-dir /dev/shm turnover_prediction.wsgi:application
     environment_slug: python
     instance_count: 1

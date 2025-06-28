@@ -14,16 +14,19 @@
 3. Select **GitHub** as source
 4. Choose repository: `dzikrirazzan/turnover_api`
 5. Branch: `main`
-6. Source Directory: `/backend`
+6. Source Directory: `backend` (without leading slash)
+7. **Auto-detect**: Let DigitalOcean detect Python/Django
 
 ### 2. Configure App Settings
 
 **Runtime Settings:**
-- Language: Python
-- Version: 3.11.x (auto-detected)
+- Language: Python (auto-detected)
+- Version: 3.11.x (from runtime.txt)
 - Build Command: `pip install -r requirements.txt`
 - Run Command: `gunicorn --worker-tmp-dir /dev/shm turnover_prediction.wsgi:application`
 - HTTP Port: 8080
+
+**Note**: If auto-detection fails, use manual configuration from `DIGITALOCEAN_MANUAL_CONFIG.md`
 
 ### 3. Set Environment Variables
 
@@ -97,5 +100,22 @@ If you encounter any issues:
 2. Verify environment variables
 3. Test database connection
 4. Check CORS settings for frontend
+
+## 🔧 Troubleshooting "No Components Detected"
+
+If DigitalOcean doesn't detect components:
+
+### Solution 1: Manual Configuration
+1. **Skip Source Directory**: Leave source directory empty
+2. **Manual Build**: Set build command: `cd backend && pip install -r requirements.txt`
+3. **Manual Run**: Set run command: `cd backend && gunicorn --worker-tmp-dir /dev/shm turnover_prediction.wsgi:application`
+
+### Solution 2: Remove app.yaml
+1. Delete `.do/app.yaml` from repository
+2. Let DigitalOcean auto-detect
+3. Manually configure in the UI
+
+### Solution 3: Use Alternative Structure
+See `DIGITALOCEAN_MANUAL_CONFIG.md` for detailed manual setup steps.
 
 **Your SMART-EN System Backend is production-ready! 🎉**
