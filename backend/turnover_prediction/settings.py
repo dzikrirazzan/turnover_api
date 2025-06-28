@@ -206,15 +206,12 @@ USE_TZ = True
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
 STATIC_ROOT = os.path.join(BASE_DIR, os.getenv('STATIC_ROOT', 'staticfiles'))
 
-# Additional static files settings for production
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
-# Ensure static directory exists
+# Only add STATICFILES_DIRS if the static directory exists (avoid error during collectstatic)
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-if not os.path.exists(STATIC_DIR):
-    os.makedirs(STATIC_DIR)
+if os.path.exists(STATIC_DIR):
+    STATICFILES_DIRS = [STATIC_DIR]
+else:
+    STATICFILES_DIRS = []
 
 # WhiteNoise static file serving for production
 if not DEBUG:
