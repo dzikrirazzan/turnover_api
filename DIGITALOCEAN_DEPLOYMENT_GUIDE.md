@@ -45,8 +45,8 @@ CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
 ### 4. Add Database Cluster
 
 1. In the same app, click **Add Database**
-2. Choose **PostgreSQL**
-3. Version: 14
+2. Choose **MySQL**
+3. Version: 8 (Latest)
 4. Plan: Basic ($15/month)
 5. Name: `smart-en-db`
 
@@ -76,7 +76,7 @@ curl -u admin:admin123 https://your-app-name.ondigitalocean.app/performance/api/
 ## 💰 Estimated Monthly Cost
 
 - **App Platform**: $5/month (Basic tier)
-- **PostgreSQL Database**: $15/month (Basic cluster)
+- **MySQL Database**: $15/month (Basic cluster)
 - **Total**: ~$20/month
 
 ## 🚀 PRODUCTION READY FEATURES
@@ -84,7 +84,7 @@ curl -u admin:admin123 https://your-app-name.ondigitalocean.app/performance/api/
 ✅ **30+ API Endpoints** - All tested and working  
 ✅ **ML Turnover Prediction** - 99% accuracy  
 ✅ **15,007 Sample Employees** - Realistic data  
-✅ **PostgreSQL Database** - Production-grade  
+✅ **MySQL Database** - Production-grade  
 ✅ **Auto-scaling** - Handles traffic spikes  
 ✅ **SSL/HTTPS** - Automatic certificates  
 ✅ **Monitoring** - Built-in metrics  

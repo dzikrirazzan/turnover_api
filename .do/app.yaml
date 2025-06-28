@@ -19,16 +19,16 @@ services:
         type: SECRET
       - key: ALLOWED_HOSTS
         value: "${APP_DOMAIN},localhost,127.0.0.1"
-      - key: POSTGRES_DB
+      - key: MYSQL_DATABASE
         value: "${DATABASE_NAME}"
-      - key: POSTGRES_USER
+      - key: MYSQL_USER
         value: "${DATABASE_USER}"
-      - key: POSTGRES_PASSWORD
+      - key: MYSQL_PASSWORD
         value: "${DATABASE_PASSWORD}"
         type: SECRET
-      - key: POSTGRES_HOST
+      - key: MYSQL_HOST
         value: "${DATABASE_HOST}"
-      - key: POSTGRES_PORT
+      - key: MYSQL_PORT
         value: "${DATABASE_PORT}"
       - key: DATABASE_URL
         value: "${DATABASE_URL}"
@@ -37,8 +37,8 @@ services:
 
 databases:
   - name: smart-en-db
-    engine: PG
-    version: "14"
+    engine: MYSQL
+    version: "8"
     production: false
     cluster_name: smart-en-cluster
 

@@ -14,7 +14,10 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
-import dj_database_url
+import pymysql
+
+# Configure PyMySQL as MySQL driver
+pymysql.install_as_MySQLdb()
 
 # Load environment variables
 load_dotenv()
@@ -89,22 +92,18 @@ WSGI_APPLICATION = 'turnover_prediction.wsgi.application'
 # Default database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'turnover_db'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('MYSQL_DATABASE', 'turnover_db'),
+        'USER': os.getenv('MYSQL_USER', 'root'),
+        'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
+        'HOST': os.getenv('MYSQL_HOST', 'localhost'),
+        'PORT': os.getenv('MYSQL_PORT', '3306'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+        },
     }
 }
-
-# Override with DATABASE_URL if provided (DigitalOcean App Platform)
-if os.getenv('DATABASE_URL'):
-    DATABASES['default'] = dj_database_url.parse(
-        os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
 
 # Override with DATABASE_URL if provided (DigitalOcean App Platform)
 if os.getenv('DATABASE_URL'):
