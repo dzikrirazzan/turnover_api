@@ -143,11 +143,6 @@ class BulkPredictionSerializer(serializers.Serializer):
 class ModelTrainingSerializer(serializers.Serializer):
     """Serializer for model training requests"""
     model_name = serializers.CharField(max_length=100)
-    data_source = serializers.ChoiceField(
-        choices=['db', 'csv'], 
-        default='db',
-        help_text="Sumber data untuk training: 'db' (database) atau 'csv' (file training)."
-    )
 
 class LoginSerializer(serializers.Serializer):
     """Serializer for user login"""

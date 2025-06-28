@@ -20,7 +20,5 @@ urlpatterns = [
     path('api/auth/change-password/', views.change_password, name='change_password'),
     path('api/auth/check/', views.check_auth, name='check_auth'),
     
-    # CSV Training Data endpoints
-    path('api/load-csv-data/', views.load_csv_training_data, name='load_csv_training_data'),
-    path('api/csv-sample/', views.get_csv_sample, name='get_csv_sample'),
+    
 ]
