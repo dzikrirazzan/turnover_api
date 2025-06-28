@@ -2,10 +2,16 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import pathlib
 
 
 def main():
     """Run administrative tasks."""
+    # Add the parent directory of the 'backend' directory to the Python path
+    # This ensures that 'backend.turnover_prediction' can be imported
+    backend_dir = pathlib.Path(__file__).resolve().parent
+    sys.path.append(str(backend_dir))
+
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.turnover_prediction.settings')
     try:
         from django.core.management import execute_from_command_line
