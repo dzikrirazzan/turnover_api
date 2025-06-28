@@ -7,9 +7,13 @@ echo "🚀 Starting SMART-EN System deployment..."
 echo "📦 Installing dependencies..."
 pip install -r requirements.txt
 
-# Collect static files
-echo "📁 Collecting static files..."
-python manage.py collectstatic --noinput
+# Collect static files (if not disabled)
+if [ "$DISABLE_COLLECTSTATIC" != "1" ]; then
+    echo "📁 Collecting static files..."
+    python manage.py collectstatic --noinput
+else
+    echo "⚠️ Skipping collectstatic (disabled)"
+fi
 
 # Run database migrations
 echo "🗄️ Running database migrations..."
