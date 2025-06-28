@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
@@ -21,6 +22,9 @@ pymysql.install_as_MySQLdb()
 
 # Load environment variables
 load_dotenv()
+
+# Detect if we're running collectstatic (build time)
+RUNNING_COLLECTSTATIC = 'collectstatic' in sys.argv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -107,12 +111,58 @@ DATABASES = {
 
 # Override with DATABASE_URL if provided (DigitalOcean App Platform)
 database_url = os.getenv('DATABASE_URL')
-if database_url and database_url.strip():
-    DATABASES['default'] = dj_database_url.parse(
-        database_url,
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+
+# Special handling for collectstatic - use minimal database config
+if RUNNING_COLLECTSTATIC or os.getenv('DJANGO_COLLECTSTATIC'):
+    print("🎨 Running collectstatic - using minimal database config")
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+elif database_url and database_url.strip() and not database_url.startswith('None'):
+    try:
+        DATABASES['default'] = dj_database_url.parse(
+            database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+        print(f"✅ Using DATABASE_URL configuration")
+    except Exception as e:
+        print(f"⚠️ Failed to parse DATABASE_URL: {e}")
+        print(f"⚠️ Falling back to individual MySQL environment variables")
+        # Fallback to individual environment variables
+        if all([os.getenv('MYSQL_HOST'), os.getenv('MYSQL_USER'), os.getenv('MYSQL_PASSWORD')]):
+            DATABASES['default'] = {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': os.getenv('MYSQL_DATABASE', 'defaultdb'),
+                'USER': os.getenv('MYSQL_USER'),
+                'PASSWORD': os.getenv('MYSQL_PASSWORD'),
+                'HOST': os.getenv('MYSQL_HOST'),
+                'PORT': os.getenv('MYSQL_PORT', '25060'),
+                'OPTIONS': {
+                    'charset': 'utf8mb4',
+                    'use_unicode': True,
+                    'ssl_mode': 'REQUIRED' if os.getenv('MYSQL_SSL_MODE') == 'REQUIRED' else None,
+                },
+            }
+elif all([os.getenv('MYSQL_HOST'), os.getenv('MYSQL_USER'), os.getenv('MYSQL_PASSWORD')]):
+    print(f"✅ Using individual MySQL environment variables")
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('MYSQL_DATABASE', 'defaultdb'),
+        'USER': os.getenv('MYSQL_USER'),
+        'PASSWORD': os.getenv('MYSQL_PASSWORD'),
+        'HOST': os.getenv('MYSQL_HOST'),
+        'PORT': os.getenv('MYSQL_PORT', '25060'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+            'ssl_mode': 'REQUIRED' if os.getenv('MYSQL_SSL_MODE') == 'REQUIRED' else None,
+        },
+    }
+else:
+    print(f"⚠️ No database configuration found, using SQLite fallback")
+    # Keep the default SQLite configuration for development/testing
 
 
 # Password validation
