@@ -38,7 +38,7 @@ def main():
     existing_count = Employee.objects.filter(employee_id__startswith='HRA').count()
     print(f"📈 Existing training employees: {existing_count}")
     
-    if existing_count >= 1000:
+    if existing_count >= 10000:  # Only skip if we have 10k+ records
         print("✅ Sufficient training data already exists")
         return
     
@@ -77,9 +77,11 @@ def main():
     
     # Load employees in batches
     print("👥 Loading employees from CSV...")
-    batch_size = 100
-    max_records = min(1500, len(df))
+    batch_size = 200  # Increase batch size for faster processing
+    max_records = len(df)  # Load ALL records for maximum ML accuracy
     total_created = 0
+    
+    print(f"🎯 Target: Loading ALL {max_records} records for maximum ML accuracy!")
     
     for i in range(0, max_records, batch_size):
         batch_df = df.iloc[i:i+batch_size]
@@ -120,10 +122,11 @@ def main():
                     total_created += 1
                     
                 except Exception as e:
-                    print(f"   ❌ Error row {idx}: {str(e)[:100]}")
+                    if total_created < 10:  # Only show first 10 errors
+                        print(f"   ❌ Error row {idx}: {str(e)[:100]}")
                     continue
         
-        print(f"   📊 Batch {i//batch_size + 1}: {len(batch_df)} processed")
+        print(f"   📊 Batch {i//batch_size + 1}: {total_created} total created so far")
     
     # Create ML model
     print("🤖 Creating ML model...")
