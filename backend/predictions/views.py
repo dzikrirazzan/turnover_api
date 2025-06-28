@@ -474,7 +474,7 @@ class MLModelViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             try:
                 model_name = serializer.validated_data['model_name']
-                data_source = serializer.validated_data.get('data_source', 'db')
+                data_source = serializer.validated_data.get('data_source', 'csv')
                 
                 employee_data = []
                 
@@ -681,9 +681,15 @@ def load_csv_training_data(request):
         )
         
         final_count = Employee.objects.filter(employee_id__startswith='HRA').count()
+
+        # Trigger model training
+        train_request = request._request
+        train_request.method = 'POST'
+        train_request.data = {'model_name': 'Auto-trained after CSV load'}
+        MLModelViewSet.as_view({'post': 'train'})(train_request)
         
         return Response({
-            'message': 'Training data loaded successfully',
+            'message': 'Training data loaded successfully and model training initiated.',
             'csv_records': len(df),
             'created_employees': created_count,
             'total_training_employees': final_count,
