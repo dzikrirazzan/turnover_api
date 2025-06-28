@@ -664,8 +664,7 @@ def load_csv_training_data(request):
                 'model_type': 'RandomForest',
                 'accuracy': 0.94,
                 'is_active': True,
-                'version': '1.0',
-                'description': f'Trained on {created_count} HR analytics samples from CSV'
+                'model_file_path': 'models/hr_analytics_rf.joblib'
             }
         )
         
