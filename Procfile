@@ -1,1 +1,1 @@
-web: cd backend && gunicorn --worker-tmp-dir /dev/shm turnover_prediction.wsgi:application
+web: cd backend && python manage.py migrate && python auto_load_training_data.py && gunicorn --worker-tmp-dir /dev/shm turnover_prediction.wsgi:application
