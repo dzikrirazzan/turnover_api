@@ -27,7 +27,7 @@ class Employee(models.Model):
         ('high_school', 'High School'),
         ('diploma', 'Diploma'),
         ('bachelor', "Bachelor's Degree"),
-        ('master', 'Master's Degree'),
+        ('master', "Master's Degree"),
         ('phd', 'PhD'),
     ]
 
