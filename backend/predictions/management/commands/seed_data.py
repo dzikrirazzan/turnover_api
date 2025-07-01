@@ -1,10 +1,13 @@
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from predictions.models import Department, Employee
 import numpy as np
 from datetime import date, timedelta
 import random
+
+# Use the custom user model
+User = get_user_model()
 
 class Command(BaseCommand):
     help = 'Seed the database with sample employee data'
@@ -45,11 +48,16 @@ class Command(BaseCommand):
                 self.stdout.write(f'Created department: {name}')
         
         # Create a superuser if it doesn't exist
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+        if not User.objects.filter(email='admin@example.com').exists():
+            User.objects.create_superuser(
+                email='admin@example.com', 
+                password='admin123',
+                name='Admin User',
+                employee_id='ADMIN001'
+            )
             self.stdout.write(self.style.SUCCESS('Created admin user'))
         
-        admin_user = User.objects.get(username='admin')
+        admin_user = User.objects.get(email='admin@example.com')
         
         # Generate sample employees
         names = [
