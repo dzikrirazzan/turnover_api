@@ -9,20 +9,20 @@ class DepartmentAdmin(admin.ModelAdmin):
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = [
-        'employee_id', 'name', 'department', 'satisfaction_level',
+        'employee_id', 'full_name', 'department', 'satisfaction_level',
         'time_spend_company', 'salary', 'left', 'created_at'
     ]
     list_filter = [
         'department', 'salary', 'left', 'work_accident', 
         'promotion_last_5years', 'created_at'
     ]
-    search_fields = ['employee_id', 'name', 'email']
+    search_fields = ['employee_id', 'first_name', 'last_name', 'email']
     list_editable = ['satisfaction_level', 'left']
     readonly_fields = ['created_at', 'updated_at']
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('employee_id', 'name', 'email', 'department', 'hire_date')
+            'fields': ('employee_id', 'first_name', 'last_name', 'email', 'department', 'hire_date')
         }),
         ('ML Features', {
             'fields': (
@@ -35,7 +35,7 @@ class EmployeeAdmin(admin.ModelAdmin):
             'fields': ('left',)
         }),
         ('Metadata', {
-            'fields': ('created_by', 'created_at', 'updated_at'),
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
@@ -47,7 +47,7 @@ class TurnoverPredictionAdmin(admin.ModelAdmin):
         'model_used', 'confidence_score', 'created_at'
     ]
     list_filter = ['prediction_result', 'model_used', 'created_at']
-    search_fields = ['employee__name', 'employee__employee_id']
+    search_fields = ['employee__first_name', 'employee__last_name', 'employee__employee_id']
     readonly_fields = ['created_at']
     
     def has_add_permission(self, request):

@@ -83,7 +83,6 @@ class Employee(AbstractUser):
 
     # Custom fields
     employee_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
-    name = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
@@ -150,13 +149,19 @@ class Employee(AbstractUser):
     objects = EmployeeManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     class Meta:
         ordering = ['-created_at']
     
+    @property
+    def full_name(self):
+        """Return the full name of the employee"""
+        return f"{self.first_name} {self.last_name}".strip()
+    
     def __str__(self):
-        return f"{self.employee_id} - {self.name}"
+        full_name = f"{self.first_name} {self.last_name}".strip()
+        return f"{self.employee_id} - {full_name}" if full_name else f"{self.employee_id or 'No ID'}"
 
 class TurnoverPrediction(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -180,7 +185,7 @@ class TurnoverPrediction(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"Prediction for {self.employee.name} - {self.prediction_probability:.2%}"
+        return f"Prediction for {self.employee.full_name} - {self.prediction_probability:.2%}"
 
 class MLModel(models.Model):
     MODEL_TYPES = [

@@ -163,7 +163,6 @@ elif all([os.getenv('MYSQL_HOST'), os.getenv('MYSQL_USER'), os.getenv('MYSQL_PAS
         'OPTIONS': {
             'charset': 'utf8mb4',
             'use_unicode': True,
-            'ssl_mode': 'REQUIRED' if os.getenv('MYSQL_SSL_MODE') == 'REQUIRED' else None,
         },
     }
 else:

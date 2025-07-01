@@ -14,8 +14,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'email', 'first_name', 'last_name', 'password', 'password_confirm',
-            'employee_id', 'name', 'phone_number', 'date_of_birth', 'gender', 
-            'department', 'position'
+            'employee_id', 'phone_number', 'date_of_birth', 'gender', 
+            'marital_status', 'education_level', 'address', 'department', 
+            'position', 'hire_date'
         ]
     
     def validate(self, attrs):
@@ -66,10 +67,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user info"""
     groups = serializers.StringRelatedField(many=True, read_only=True)
+    full_name = serializers.CharField(read_only=True)
     
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_staff', 'groups', 'employee_id', 'name']
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'is_staff', 'groups', 'employee_id']
         read_only_fields = ['id']
 
 class DepartmentSerializer(serializers.ModelSerializer):
