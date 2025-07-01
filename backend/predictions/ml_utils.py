@@ -73,6 +73,16 @@ class TurnoverPredictor:
         else:
             return features_df, None
     
+    def _clean_hyperparameters(self, params):
+        """Converts non-serializable objects in hyperparameters to strings."""
+        cleaned_params = {}
+        for key, value in params.items():
+            if isinstance(value, (int, float, str, bool)) or value is None:
+                cleaned_params[key] = value
+            else:
+                cleaned_params[key] = str(value)
+        return cleaned_params
+
     def train_models(self, X, y):
         """
         Train models optimized for production environments with limited resources
@@ -135,7 +145,7 @@ class TurnoverPredictor:
                 'accuracy': accuracy_score(y_test, y_pred),
                 'f1_score': f1_score(y_test, y_pred),
                 'auc_score': roc_auc_score(y_test, y_pred_proba),
-                'hyperparameters': model.get_params()
+                'hyperparameters': self._clean_hyperparameters(model.get_params())
             }
             
             print(f"✅ {name}: Accuracy={results[name]['accuracy']:.3f}, F1={results[name]['f1_score']:.3f}")
