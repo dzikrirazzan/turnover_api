@@ -69,7 +69,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return value
 
 class EmployeeRegistrationSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150, write_only=True)
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True)
     
@@ -79,7 +78,7 @@ class EmployeeRegistrationSerializer(serializers.ModelSerializer):
             'employee_id', 'name', 'email', 'phone_number', 'date_of_birth',
             'gender', 'marital_status', 'education_level', 'address', 'position',
             'department', 'hire_date',
-            'username', 'password', 'password_confirm'
+            'password', 'password_confirm'
         ]
         extra_kwargs = {
             'employee_id': {'required': True},
@@ -93,8 +92,9 @@ class EmployeeRegistrationSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError({'password': "Passwords don't match"})
         
-        if User.objects.filter(username=attrs['username']).exists():
-            raise serializers.ValidationError({'username': "Username already exists"})
+        # Use email as username for internal Django User model
+        if User.objects.filter(username=attrs['email']).exists():
+            raise serializers.ValidationError({'email': "Email already exists (used as username)"})
         
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({'email': "Email already exists"})
@@ -102,13 +102,12 @@ class EmployeeRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        username = validated_data.pop('username')
         password = validated_data.pop('password')
         validated_data.pop('password_confirm')
 
-        # Create User instance
+        # Create User instance using email as username
         user = User.objects.create_user(
-            username=username,
+            username=validated_data['email'], # Use email as username
             email=validated_data['email'],
             password=password
         )
