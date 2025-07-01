@@ -237,6 +237,7 @@ class TurnoverPredictor:
                 self.best_model = model_data['model']
                 self.feature_names = model_data['feature_names']
                 self.scaler = model_data['scaler']
+                print(f"[INFO] Successfully loaded model from {filepath}")
                 return True
             except Exception as e:
                 print(f"[ERROR] Failed to load model from {filepath}: {e}")

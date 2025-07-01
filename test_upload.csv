@@ -1,0 +1,3 @@
+employee_id,name,satisfaction_level,last_evaluation,number_project,average_monthly_hours,time_spend_company,work_accident,promotion_last_5years,salary,department
+CSVEMP001,CSV Employee 1,0.6,0.7,3,180,2,0,0,medium,sales
+CSVEMP002,CSV Employee 2,0.2,0.9,5,280,4,0,0,low,technical

@@ -219,6 +219,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             model_path = get_model_save_path(active_model.name)
             
             if not predictor.load_model(model_path):
+                logger.error(f"Failed to load ML model from {model_path}")
                 return Response(
                     {'error': 'Could not load the ML model.'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR

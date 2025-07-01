@@ -9,7 +9,6 @@ router.register(r'predictions', views.PredictionViewSet)
 router.register(r'models', views.MLModelViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
     
     # Authentication endpoints
     path('api/auth/register/', views.register_user, name='register_user'),
@@ -23,4 +22,6 @@ urlpatterns = [
     # CSV Upload and Batch Prediction endpoints
     path('api/predictions/upload-csv/', views.upload_csv_and_predict, name='upload_csv_predict'),
     path('api/predictions/csv-template/', views.get_csv_template, name='csv_template'),
+
+    path('api/', include(router.urls)),
 ]
