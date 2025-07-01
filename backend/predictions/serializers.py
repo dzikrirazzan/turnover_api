@@ -13,7 +13,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'first_name', 'last_name', 'password', 'password_confirm',
+            'email', 'first_name', 'last_name', 'password', 'password_confirm',
             'employee_id', 'name', 'phone_number', 'date_of_birth', 'gender', 
             'department', 'position'
         ]
@@ -37,15 +37,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
         
-        # Set default values for ML-related fields
+        # Remove any unwanted fields that might have been added
+        validated_data.pop('years_at_company', None)
+        
+        # Set default values for ML-related fields (admin can update these later)
         validated_data.update({
             'salary': 'medium',  # default salary level
-            'years_at_company': 0,  # will be calculated from hire_date
             'satisfaction_level': 0.5,  # neutral default
             'last_evaluation': 0.5,  # neutral default  
             'number_project': 1,  # default starting projects
             'average_monthly_hours': 160,  # standard work hours
-            'time_spend_company': 0,  # will be calculated
+            'time_spend_company': 0,  # will be calculated from hire_date
             'work_accident': False,  # default no accident
             'promotion_last_5years': False,  # default no recent promotion
             'left': False  # active employee
@@ -67,7 +69,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'groups', 'employee_id']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_staff', 'groups', 'employee_id', 'name']
         read_only_fields = ['id']
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -202,7 +204,7 @@ class EmployeeMLDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'salary', 'years_at_company', 'satisfaction_level', 'last_evaluation',
+            'salary', 'satisfaction_level', 'last_evaluation',
             'number_project', 'average_monthly_hours', 'time_spend_company',
             'work_accident', 'promotion_last_5years'
         ]
