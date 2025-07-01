@@ -12,13 +12,12 @@
 
 import pandas as pd
 from pathlib import Path
-from django.conf import settings
 
 # Define the base directory of the Django project
-# BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Define the path to the CSV file
-CSV_PATH = settings.BASE_DIR / "backend" / "ml_data" / "training_data.csv"
+CSV_PATH = BASE_DIR / "ml_data" / "training_data.csv"
 
 # Load the CSV into a pandas DataFrame
 def load_training_data():

@@ -46,6 +46,18 @@ class Command(BaseCommand):
         # Get feature importance
         feature_importance = predictor.get_feature_importance()
         
+        # Filter hyperparameters to only include JSON-serializable values
+        hyperparams = results[best_model_name]['hyperparameters']
+        filtered_hyperparams = {}
+        for key, value in hyperparams.items():
+            try:
+                import json
+                json.dumps(value)  # Test if value is JSON serializable
+                filtered_hyperparams[key] = value
+            except (TypeError, ValueError):
+                # Skip non-serializable objects like StandardScaler
+                filtered_hyperparams[key] = str(type(value).__name__)
+        
         # Deactivate other models before creating a new active one
         MLModel.objects.filter(is_active=True).update(is_active=False)
         
@@ -58,7 +70,7 @@ class Command(BaseCommand):
                 'accuracy': results[best_model_name]['accuracy'],
                 'f1_score': results[best_model_name]['f1_score'],
                 'auc_score': results[best_model_name]['auc_score'],
-                'hyperparameters': results[best_model_name]['hyperparameters'],
+                'hyperparameters': filtered_hyperparams,
                 'feature_importance': feature_importance,
                 'is_active': True,
             }

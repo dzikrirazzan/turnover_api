@@ -1,0 +1,722 @@
+{
+  "info": {
+    "_postman_id": "turnover-api-collection-v3",
+    "name": "Turnover API Collection - Clean",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Clean and properly formatted API endpoints for Turnover Prediction Application\n\n**Authentication:**\nUse the login endpoint to get auth_header, which will be automatically captured and used in other requests.\n\n**Base URL Variables:**\n- {{BASE_URL}} - Set to your API base URL\n- {{auth_header}} - Auto-populated after login"
+  },
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"newuser\",\n    \"email\": \"newuser@example.com\",\n    \"first_name\": \"New\",\n    \"last_name\": \"User\",\n    \"password\": \"strongpassword123\",\n    \"password_confirm\": \"strongpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/register/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "register", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.auth_header) {",
+                  "        pm.environment.set(\"auth_header\", jsonData.auth_header);",
+                  "        console.log(\"✅ auth_header set: \" + jsonData.auth_header);",
+                  "    } else if (jsonData.auth_token) {",
+                  "        pm.environment.set(\"auth_header\", \"Basic \" + jsonData.auth_token);",
+                  "        console.log(\"✅ auth_token converted to auth_header\");",
+                  "    } else {",
+                  "        console.log(\"❌ auth_header not found in response.\");",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/logout/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "logout", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/profile/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "profile", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\",\n    \"email\": \"updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/profile/update/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "profile", "update", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"old_password\": \"admin123\",\n    \"new_password\": \"newstrongpassword123\",\n    \"new_password_confirm\": \"newstrongpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/change-password/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "change-password", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Authentication",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/check/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "check", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏢 Departments",
+      "item": [
+        {
+          "name": "List Departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/departments/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "departments", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Engineering\",\n    \"description\": \"Software Development Team\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/departments/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "departments", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Department Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/departments/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "departments", "1", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"Updated description for Engineering Team\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/departments/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "departments", "1", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/departments/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "departments", "1", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👥 Employees",
+      "item": [
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/employees/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "employees", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employee_id\": \"EMP002\",\n    \"name\": \"Jane Smith\",\n    \"email\": \"jane@example.com\",\n    \"department\": 1,\n    \"hire_date\": \"2022-06-10\",\n    \"satisfaction_level\": 0.6,\n    \"last_evaluation\": 0.7,\n    \"number_project\": 4,\n    \"average_monthly_hours\": 200,\n    \"time_spend_company\": 3,\n    \"work_accident\": false,\n    \"promotion_last_5years\": false,\n    \"salary\": \"medium\",\n    \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/employees/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "employees", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employee Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/employees/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "employees", "1", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"salary\": \"high\",\n    \"promotion_last_5years\": true,\n    \"satisfaction_level\": 0.8\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/employees/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "employees", "1", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/employees/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "employees", "1", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Employee Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/employees/statistics/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "employees", "statistics", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Predict Turnover for Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/employees/1/predict_turnover/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "employees", "1", "predict_turnover", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔮 Predictions",
+      "item": [
+        {
+          "name": "List Predictions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/predictions/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "predictions", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Prediction Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/predictions/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "predictions", "1", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Predict for Custom Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"satisfaction_level\": 0.4,\n    \"last_evaluation\": 0.5,\n    \"number_project\": 2,\n    \"average_monthly_hours\": 150,\n    \"time_spend_company\": 3,\n    \"work_accident\": false,\n    \"promotion_last_5years\": false,\n    \"salary\": \"low\",\n    \"department\": \"sales\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/predictions/predict/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "predictions", "predict", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Predict",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employees\": [\n        {\n            \"employee_id\": \"NEWEMP001\",\n            \"satisfaction_level\": 0.7,\n            \"last_evaluation\": 0.8,\n            \"number_project\": 4,\n            \"average_monthly_hours\": 180,\n            \"time_spend_company\": 2,\n            \"work_accident\": false,\n            \"promotion_last_5years\": false,\n            \"salary\": \"medium\",\n            \"department\": \"IT\"\n        },\n        {\n            \"employee_id\": \"NEWEMP002\",\n            \"satisfaction_level\": 0.2,\n            \"last_evaluation\": 0.9,\n            \"number_project\": 6,\n            \"average_monthly_hours\": 250,\n            \"time_spend_company\": 4,\n            \"work_accident\": false,\n            \"promotion_last_5years\": false,\n            \"salary\": \"low\",\n            \"department\": \"sales\"\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/predictions/bulk_predict/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "predictions", "bulk_predict", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🤖 ML Models",
+      "item": [
+        {
+          "name": "List Models",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/models/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "models", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Model Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/models/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "models", "1", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Train Model from CSV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"model_name\": \"turnover_model_v2\",\n    \"data_source\": \"csv\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/models/train/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "models", "train", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Train Model from Database",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"model_name\": \"turnover_model_db\",\n    \"data_source\": \"db\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/models/train/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "models", "train", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/models/1/activate/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "models", "1", "activate", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Model",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_header}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/models/active/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "models", "active", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app",
+      "type": "string"
+    },
+    {
+      "key": "auth_header",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

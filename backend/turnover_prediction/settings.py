@@ -61,8 +61,6 @@ INSTALLED_APPS = [
     'performance',
 ]
 
-AUTH_USER_MODEL = 'predictions.Employee'
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',

@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMART-EN HR Analytics - Turnover Prediction (Enhanced)</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link hre                <button id="process-file" class="btn btn-primary">
+                  <i class="fas fa-cogs me-2"></i>
+                  Process File & Get Predictions
+                </button>
+              </div>
+
+              <!-- Data Preview Section -->
+              <div id="data-preview-section" class="data-preview" style="display: none">
+                <h6><i class="fas fa-table me-2"></i>Data Preview</h6>
+                <div class="table-container">
+                  <table id="data-preview-table" class="data-table">
+                    <thead class="table-header">
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="mt-3 text-muted">
+                  <small><i class="fas fa-info-circle me-1"></i>Showing preview of your uploaded data. Click "Process File" to get turnover predictions.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --secondary-color: #64748b;
+        --success-color: #059669;
+        --warning-color: #d97706;
+        --danger-color: #dc2626;
+        --light-bg: #f8fafc;
+      }
+
+      body {
+        background-color: var(--light-bg);
+        font-family: "Inter", sans-serif;
+      }
+
+      .navbar {
+        background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+
+      .btn-primary:hover {
+        background: #1d4ed8;
+      }
+
+      .upload-area {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 3rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #ffffff;
+      }
+
+      .upload-area:hover,
+      .upload-area.dragover {
+        border-color: var(--primary-color);
+        background: #f0f7ff;
+      }
+
+      /* Excel-like table styling */
+      .data-table {
+        border-collapse: collapse;
+        width: 100%;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin: 1rem 0;
+      }
+
+      .data-table th {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        color: #374151;
+        font-weight: 600;
+        padding: 12px 16px;
+        text-align: left;
+        border: 1px solid #e5e7eb;
+        border-bottom: 2px solid #d1d5db;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .data-table td {
+        padding: 12px 16px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        color: #374151;
+        font-size: 0.875rem;
+        vertical-align: top;
+      }
+
+      .data-table tbody tr:nth-child(even) {
+        background: #f9fafb;
+      }
+
+      .data-table tbody tr:hover {
+        background: #f0f7ff;
+        transform: scale(1.01);
+        transition: all 0.2s ease;
+      }
+
+      .data-table td.number {
+        text-align: right;
+        font-family: 'Monaco', 'Menlo', monospace;
+        color: #059669;
+      }
+
+      .data-table td.employee-id {
+        font-weight: 600;
+        color: var(--primary-color);
+        background: #f0f7ff;
+      }
+
+      .data-table td.prediction {
+        font-weight: 600;
+        text-align: center;
+        border-radius: 4px;
+        padding: 8px 12px;
+      }
+
+      .prediction.high-risk {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+      }
+
+      .prediction.medium-risk {
+        background: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fed7aa;
+      }
+
+      .prediction.low-risk {
+        background: #f0fdf4;
+        color: #059669;
+        border: 1px solid #bbf7d0;
+      }
+
+      .table-container {
+        max-height: 600px;
+        overflow-y: auto;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+      }
+
+      .table-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .data-preview {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border: 1px solid #e5e7eb;
+      }
+
+      .data-preview h6 {
+        color: #374151;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .employee-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border-left: 4px solid;
+      }
+
+      .employee-card.high-risk {
+        border-left-color: var(--danger-color);
+      }
+
+      .employee-card.medium-risk {
+        border-left-color: var(--warning-color);
+      }
+
+      .employee-card.low-risk {
+        border-left-color: var(--success-color);
+      }
+
+      .metric-card {
+        text-align: center;
+        padding: 1.5rem;
+      }
+
+      .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .connection-status {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        z-index: 1000;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .connection-online {
+        background: var(--success-color);
+        color: white;
+      }
+
+      .connection-offline {
+        background: var(--danger-color);
+        color: white;
+      }
+
+      .connection-demo {
+        background: var(--warning-color);
+        color: white;
+      }
+
+      .mode-selector {
+        margin-bottom: 1rem;
+      }
+
+      .retry-button {
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Connection Status Indicator -->
+    <div id="connection-status" class="connection-status connection-offline">
+      <i class="fas fa-circle me-2"></i>
+      <span id="status-text">Checking connection...</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand text-white fw-bold">
+          <i class="fas fa-chart-line me-2"></i>
+          SMART-EN HR Analytics
+        </a>
+        <div class="text-white">
+          <i class="fas fa-user me-2"></i>
+          <span id="username">Not logged in</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Login Section -->
+    <div id="login-section" class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="mb-0">
+                <i class="fas fa-lock me-2"></i>
+                Login to HR Dashboard
+              </h4>
+            </div>
+            <div class="card-body">
+              <!-- Mode Selector -->
+              <div class="mode-selector">
+                <label class="form-label">Connection Mode:</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="connectionMode" id="mode-production" value="production" checked />
+                  <label class="form-check-label" for="mode-production"> Production API (Recommended) </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="connectionMode" id="mode-demo" value="demo" />
+                  <label class="form-check-label" for="mode-demo"> Demo Mode (Offline testing) </label>
+                </div>
+              </div>
+
+              <form id="login-form">
+                <div class="mb-3">
+                  <label for="login-username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="login-username" value="admin" required />
+                </div>
+                <div class="mb-3">
+                  <label for="login-password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="login-password" value="newstrongpassword123" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fas fa-sign-in-alt me-2"></i>
+                  Login
+                </button>
+                <button type="button" id="retry-connection" class="btn btn-outline-secondary w-100 mt-2" style="display: none">
+                  <i class="fas fa-refresh me-2"></i>
+                  Retry Connection
+                </button>
+              </form>
+
+              <div class="mt-3">
+                <small class="text-muted">
+                  <strong>Connection Help:</strong><br />
+                  • If you see connection errors, try Demo Mode<br />
+                  • For best experience, use the local server: <code>python serve_dashboard.py</code><br />
+                  • Production credentials are pre-filled
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="container mt-4" style="display: none">
+      <!-- Upload Section -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="fas fa-upload me-2"></i>
+                Upload Employee Data
+              </h5>
+              <div>
+                <a href="#" id="download-template" class="btn btn-outline-primary btn-sm me-2">
+                  <i class="fas fa-download me-1"></i>
+                  Download Template
+                </a>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="upload-area" class="upload-area">
+                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                <h5>Drag & Drop CSV File Here</h5>
+                <p class="text-muted">or click to browse</p>
+                <input type="file" id="csv-file" accept=".csv" style="display: none" />
+              </div>
+              <div id="file-info" class="mt-3" style="display: none">
+                <div class="alert alert-info">
+                  <i class="fas fa-file-csv me-2"></i>
+                  <strong id="file-name"></strong> (<span id="file-size"></span>)
+                </div>
+                <button id="process-file" class="btn btn-primary">
+                  <i class="fas fa-cogs me-2"></i>
+                  Process File
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading-section" style="display: none">
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3">Processing employee data...</p>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results-section" style="display: none">
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+          <div class="col-md-3">
+            <div class="card metric-card">
+              <div class="metric-value" id="total-employees">0</div>
+              <div class="text-muted">Total Employees</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card metric-card">
+              <div class="metric-value text-danger" id="high-risk-count">0</div>
+              <div class="text-muted">High Risk</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card metric-card">
+              <div class="metric-value text-warning" id="medium-risk-count">0</div>
+              <div class="text-muted">Medium Risk</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card metric-card">
+              <div class="metric-value text-success" id="low-risk-count">0</div>
+              <div class="text-muted">Low Risk</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Results -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="fas fa-users me-2"></i>
+              Employee Predictions
+            </h5>
+            <button id="export-results" class="btn btn-success btn-sm">
+              <i class="fas fa-file-excel me-1"></i>
+              Export Results
+            </button>
+          </div>
+          <div class="card-body">
+            <div id="employee-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Configuration
+      const API_BASE_URL = "https://turnover-api-hd7ze.ondigitalocean.app";
+      let authToken = null;
+      let connectionMode = "production";
+      let isOnline = false;
+
+      // Connection status management
+      function updateConnectionStatus(status, text) {
+        const statusEl = document.getElementById("connection-status");
+        const textEl = document.getElementById("status-text");
+
+        statusEl.className = `connection-status connection-${status}`;
+        textEl.textContent = text;
+
+        if (status === "online") {
+          isOnline = true;
+        } else {
+          isOnline = false;
+        }
+      }
+
+      // Test API connection
+      async function testConnection() {
+        try {
+          updateConnectionStatus("offline", "Testing connection...");
+
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+          const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
+            method: "OPTIONS",
+            mode: "cors",
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+          updateConnectionStatus("online", "Connected to API");
+          return true;
+        } catch (error) {
+          console.error("Connection test failed:", error);
+          updateConnectionStatus("offline", "API offline - Use Demo Mode");
+          return false;
+        }
+      }
+
+      // Mode selector handling
+      document.querySelectorAll('input[name="connectionMode"]').forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          connectionMode = e.target.value;
+          if (connectionMode === "demo") {
+            updateConnectionStatus("demo", "Demo Mode Active");
+            document.getElementById("retry-connection").style.display = "none";
+          } else {
+            testConnection();
+          }
+        });
+      });
+
+      // Retry connection
+      document.getElementById("retry-connection").addEventListener("click", () => {
+        testConnection();
+      });
+
+      // Initial connection test
+      window.addEventListener("load", () => {
+        testConnection().then((connected) => {
+          if (!connected) {
+            document.getElementById("retry-connection").style.display = "block";
+          }
+        });
+      });
+
+      // Enhanced authentication with fallback
+      document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = document.getElementById("login-username").value;
+        const password = document.getElementById("login-password").value;
+
+        if (connectionMode === "demo") {
+          // Demo mode login
+          authToken = "demo-token";
+          document.getElementById("username").textContent = username + " (Demo)";
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("main-content").style.display = "block";
+          updateConnectionStatus("demo", "Demo Mode Active");
+          return;
+        }
+
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+          const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
+            method: "POST",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+          const data = await response.json();
+
+          if (response.ok) {
+            authToken = data.auth_header || data.auth_token || `Basic ${data.token}`;
+            document.getElementById("username").textContent = username;
+            document.getElementById("login-section").style.display = "none";
+            document.getElementById("main-content").style.display = "block";
+            updateConnectionStatus("online", "Connected & Authenticated");
+          } else {
+            throw new Error(data.error || "Invalid credentials");
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+
+          let errorMessage = "Connection failed. ";
+          if (error.name === "AbortError") {
+            errorMessage += "Request timed out. ";
+          } else if (error.name === "TypeError") {
+            errorMessage += "Network error. ";
+          } else {
+            errorMessage += error.message + ". ";
+          }
+
+          errorMessage += "Try Demo Mode or check your connection.";
+
+          alert(errorMessage);
+          document.getElementById("retry-connection").style.display = "block";
+
+          // Auto-suggest demo mode after connection failure
+          setTimeout(() => {
+            if (confirm("Would you like to switch to Demo Mode to test the interface?")) {
+              document.getElementById("mode-demo").checked = true;
+              connectionMode = "demo";
+              updateConnectionStatus("demo", "Demo Mode Available");
+            }
+          }, 1000);
+        }
+      });
+
+      // File upload handling (unchanged)
+      const uploadArea = document.getElementById("upload-area");
+      const fileInput = document.getElementById("csv-file");
+      const fileInfo = document.getElementById("file-info");
+      const fileName = document.getElementById("file-name");
+      const fileSize = document.getElementById("file-size");
+      let selectedFile = null;
+
+      // Drag and drop
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFileSelect(files[0]);
+        }
+      });
+
+      uploadArea.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          handleFileSelect(e.target.files[0]);
+        }
+      });
+
+      function handleFileSelect(file) {
+        if (!file.name.endsWith(".csv")) {
+          alert("Please select a CSV file");
+          return;
+        }
+
+        selectedFile = file;
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileInfo.style.display = "block";
+        
+        // Show preview of CSV data
+        previewCSVData(file);
+      }
+
+      // New function to preview CSV data in table format
+      async function previewCSVData(file) {
+        try {
+          const csvText = await file.text();
+          const employees = parseCSV(csvText);
+          
+          if (employees.length === 0) {
+            return;
+          }
+
+          // Show preview section
+          document.getElementById("data-preview-section").style.display = "block";
+          
+          const table = document.getElementById("data-preview-table");
+          const thead = table.querySelector("thead");
+          const tbody = table.querySelector("tbody");
+          
+          // Clear existing content
+          thead.innerHTML = "";
+          tbody.innerHTML = "";
+          
+          // Create header row
+          const headerRow = document.createElement("tr");
+          const headers = Object.keys(employees[0]);
+          
+          headers.forEach(header => {
+            const th = document.createElement("th");
+            th.textContent = formatHeaderText(header);
+            headerRow.appendChild(th);
+          });
+          thead.appendChild(headerRow);
+          
+          // Create data rows (show max 10 rows for preview)
+          const previewRows = employees.slice(0, 10);
+          
+          previewRows.forEach((employee, index) => {
+            const row = document.createElement("tr");
+            
+            headers.forEach(header => {
+              const td = document.createElement("td");
+              let value = employee[header] || "";
+              
+              // Apply special styling based on data type
+              if (header.toLowerCase().includes("id")) {
+                td.className = "employee-id";
+              } else if (isNumeric(value)) {
+                td.className = "number";
+                value = parseFloat(value).toFixed(2);
+              }
+              
+              td.textContent = value;
+              row.appendChild(td);
+            });
+            
+            tbody.appendChild(row);
+          });
+          
+          // Add summary info if there are more rows
+          if (employees.length > 10) {
+            const summaryRow = document.createElement("tr");
+            const summaryCell = document.createElement("td");
+            summaryCell.colSpan = headers.length;
+            summaryCell.style.textAlign = "center";
+            summaryCell.style.fontStyle = "italic";
+            summaryCell.style.backgroundColor = "#f8fafc";
+            summaryCell.style.color = "#6b7280";
+            summaryCell.textContent = `... and ${employees.length - 10} more rows (Total: ${employees.length} employees)`;
+            summaryRow.appendChild(summaryCell);
+            tbody.appendChild(summaryRow);
+          }
+          
+        } catch (error) {
+          console.error("Error previewing CSV:", error);
+        }
+      }
+
+      // Helper function to format header text
+      function formatHeaderText(header) {
+        return header
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, l => l.toUpperCase());
+      }
+
+      // Helper function to check if value is numeric
+      function isNumeric(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      // Process file
+      document.getElementById("process-file").addEventListener("click", async () => {
+        if (!selectedFile) {
+          alert("Please select a file first");
+          return;
+        }
+
+        document.getElementById("loading-section").style.display = "block";
+        document.getElementById("results-section").style.display = "none";
+
+        try {
+          const csvText = await selectedFile.text();
+          const employees = parseCSV(csvText);
+
+          let predictions;
+          if (connectionMode === "demo") {
+            predictions = generateDemoPredictions(employees);
+          } else {
+            predictions = await getBulkPredictions(employees);
+          }
+
+          displayResults(predictions);
+        } catch (error) {
+          console.error("Processing error:", error);
+          alert("Error processing file: " + error.message);
+        } finally {
+          document.getElementById("loading-section").style.display = "none";
+        }
+      });
+
+      // CSV parsing (unchanged)
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split("\n");
+        const headers = lines[0].split(",").map((h) => h.trim().replace(/"/g, ""));
+        const employees = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(",").map((v) => v.trim().replace(/"/g, ""));
+          if (values.length === headers.length) {
+            const employee = {};
+            headers.forEach((header, index) => {
+              employee[header] = values[index];
+            });
+            employees.push(employee);
+          }
+        }
+
+        return employees;
+      }
+
+      // Enhanced prediction handling with demo fallback
+      async function getBulkPredictions(employees) {
+        if (connectionMode === "demo") {
+          return generateDemoPredictions(employees);
+        }
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/predictions/bulk_predict/`, {
+            method: "POST",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: authToken,
+            },
+            body: JSON.stringify({ employees }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          return data.predictions || data;
+        } catch (error) {
+          console.error("API prediction failed:", error);
+          // Fallback to demo predictions
+          alert("API connection failed. Showing demo predictions instead.");
+          return generateDemoPredictions(employees);
+        }
+      }
+
+      // Demo prediction generator
+      function generateDemoPredictions(employees) {
+        return employees.map((emp) => {
+          const satisfaction = parseFloat(emp.satisfaction_level || Math.random());
+          const evaluation = parseFloat(emp.last_evaluation || Math.random());
+          const hours = parseInt(emp.average_monthly_hours || 180);
+
+          // Simple demo algorithm
+          let turnoverProb = 0.3;
+          if (satisfaction < 0.4) turnoverProb += 0.4;
+          if (hours > 250) turnoverProb += 0.2;
+          if (evaluation < 0.5) turnoverProb += 0.3;
+
+          turnoverProb = Math.min(turnoverProb, 0.95);
+
+          let riskLevel = "LOW";
+          if (turnoverProb > 0.7) riskLevel = "HIGH";
+          else if (turnoverProb > 0.4) riskLevel = "MEDIUM";
+
+          return {
+            employee_id: emp.employee_id || `EMP${Math.random().toString(36).substr(2, 3).toUpperCase()}`,
+            employee_name: emp.name || "Unknown Employee",
+            department: emp.department || "Unknown",
+            satisfaction_level: satisfaction,
+            turnover_probability: turnoverProb,
+            risk_level: riskLevel,
+            recommendations: ["Regular check-ins with manager", "Work-life balance assessment", "Career development discussion"],
+          };
+        });
+      }
+
+      // Results display (unchanged)
+      function displayResults(predictions) {
+        const totalEmployees = predictions.length;
+        const highRisk = predictions.filter((p) => p.risk_level === "HIGH").length;
+        const mediumRisk = predictions.filter((p) => p.risk_level === "MEDIUM").length;
+        const lowRisk = predictions.filter((p) => p.risk_level === "LOW").length;
+
+        // Update summary cards
+        document.getElementById("total-employees").textContent = totalEmployees;
+        document.getElementById("high-risk-count").textContent = highRisk;
+        document.getElementById("medium-risk-count").textContent = mediumRisk;
+        document.getElementById("low-risk-count").textContent = lowRisk;
+
+        // Display employee list
+        const employeeList = document.getElementById("employee-list");
+        employeeList.innerHTML = predictions
+          .map(
+            (prediction) => `
+          <div class="employee-card ${prediction.risk_level.toLowerCase()}-risk">
+            <div class="row align-items-center">
+              <div class="col-md-2">
+                <div class="employee-avatar">
+                  <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    ${getInitials(prediction.employee_name)}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <strong>${prediction.employee_name}</strong><br>
+                <small class="text-muted">${prediction.employee_id}</small>
+              </div>
+              <div class="col-md-2">
+                <small class="text-muted">Department</small><br>
+                ${prediction.department}
+              </div>
+              <div class="col-md-2">
+                <small class="text-muted">Satisfaction</small><br>
+                <div class="progress mt-1" style="height: 8px;">
+                  <div class="progress-bar ${getSatisfactionColor(prediction.satisfaction_level)}" style="width: ${prediction.satisfaction_level * 100}%"></div>
+                </div>
+                ${(prediction.satisfaction_level * 100).toFixed(0)}%
+              </div>
+              <div class="col-md-2">
+                <span class="badge ${getRiskBadgeClass(prediction.risk_level)}">${prediction.risk_level} RISK</span><br>
+                <small class="text-muted">${(prediction.turnover_probability * 100).toFixed(1)}% probability</small>
+              </div>
+              <div class="col-md-1">
+                <button class="btn btn-outline-primary btn-sm" onclick="showRecommendations('${prediction.employee_id}', ${JSON.stringify(prediction.recommendations || []).replace(/"/g, "&quot;")})">
+                  <i class="fas fa-lightbulb"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join("");
+
+        // Store results for export
+        window.currentResults = { predictions };
+        document.getElementById("results-section").style.display = "block";
+      }
+
+      // Helper functions (unchanged)
+      function getInitials(name) {
+        return name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .substr(0, 2)
+          .toUpperCase();
+      }
+
+      function getSatisfactionColor(level) {
+        if (level >= 0.7) return "bg-success";
+        if (level >= 0.4) return "bg-warning";
+        return "bg-danger";
+      }
+
+      function getRiskBadgeClass(level) {
+        switch (level) {
+          case "HIGH":
+            return "bg-danger";
+          case "MEDIUM":
+            return "bg-warning";
+          case "LOW":
+            return "bg-success";
+          default:
+            return "bg-secondary";
+        }
+      }
+
+      function showRecommendations(employeeId, recommendations) {
+        const modal = new bootstrap.Modal(document.createElement("div"));
+        modal._element.innerHTML = `
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Recommendations for ${employeeId}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="recommendations-list">
+                  ${recommendations
+                    .map(
+                      (rec) => `
+                    <div class="recommendation-item mb-2">
+                      <i class="fas fa-arrow-right me-2 text-primary"></i>
+                      ${rec}
+                    </div>
+                  `
+                    )
+                    .join("")}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal._element);
+        modal.show();
+
+        modal._element.addEventListener("hidden.bs.modal", () => {
+          document.body.removeChild(modal._element);
+        });
+      }
+
+      // Download template (unchanged)
+      document.getElementById("download-template").addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const templateData = [
+          ["employee_id", "name", "satisfaction_level", "last_evaluation", "number_project", "average_monthly_hours", "time_spend_company", "work_accident", "promotion_last_5years", "salary", "department"],
+          ["EMP001", "John Doe", "0.75", "0.85", "4", "180", "3", "false", "false", "medium", "IT"],
+          ["EMP002", "Jane Smith", "0.45", "0.60", "2", "250", "6", "true", "false", "low", "sales"],
+          ["EMP003", "Bob Johnson", "0.80", "0.90", "5", "160", "2", "false", "true", "high", "engineering"],
+          ["EMP004", "Alice Wilson", "0.35", "0.45", "3", "280", "4", "false", "false", "low", "marketing"],
+          ["EMP005", "Charlie Brown", "0.85", "0.95", "6", "170", "1", "false", "false", "high", "IT"],
+        ];
+
+        const csv = templateData.map((row) => row.join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "turnover_prediction_template.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      });
+
+      // Export results (unchanged)
+      document.getElementById("export-results").addEventListener("click", () => {
+        if (!window.currentResults) {
+          alert("No results to export");
+          return;
+        }
+
+        const csv = convertToCSV(window.currentResults.predictions);
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `turnover_predictions_${new Date().toISOString().split("T")[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      });
+
+      function convertToCSV(data) {
+        const headers = ["Employee ID", "Name", "Department", "Satisfaction Level", "Risk Level", "Turnover Probability"];
+        const rows = data.map((pred) => [pred.employee_id, pred.employee_name, pred.department, pred.satisfaction_level, pred.risk_level, pred.turnover_probability]);
+
+        return [headers, ...rows].map((row) => row.join(",")).join("\n");
+      }
+    </script>
+  </body>
+</html>
