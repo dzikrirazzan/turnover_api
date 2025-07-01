@@ -1,0 +1,18 @@
+
+{
+	"id": "YOUR_POSTMAN_ENVIRONMENT_ID",
+	"name": "Turnover API Environment",
+	"values": [
+		{
+			"key": "BASE_URL",
+			"value": "https://turnover-api-hd7ze.ondigitalocean.app",
+			"enabled": true
+		},
+		{
+			"key": "auth_header",
+			"value": "",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}

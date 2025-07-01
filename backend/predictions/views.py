@@ -6,11 +6,17 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Avg, Count, Q
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 import pandas as pd
 import numpy as np
 from datetime import datetime
 import logging
 import base64
+import io
+import json
 
 from .models import Department, Employee, TurnoverPrediction, MLModel
 from .serializers import (
@@ -394,15 +400,6 @@ class PredictionViewSet(viewsets.ModelViewSet):
         
         return recommendations
     
-    def _get_risk_level(self, probability):
-        """Determine risk level based on probability"""
-        if probability < 0.3:
-            return 'Low'
-        elif probability < 0.7:
-            return 'Medium'
-        else:
-            return 'High'
-    
     @action(detail=False, methods=['post'])
     def bulk_predict(self, request):
         """Make predictions for multiple employees"""
@@ -452,21 +449,181 @@ class PredictionViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def _get_risk_level(self, probability):
-        """Determine risk level based on probability"""
-        if probability < 0.3:
-            return 'Low'
-        elif probability < 0.7:
-            return 'Medium'
-        else:
-            return 'High'
+    @action(detail=False, methods=['post'])
+    @csrf_exempt
+    def upload_csv(self, request):
+        """Upload CSV file and make batch predictions"""
+        if request.method == 'POST':
+            try:
+                # Check if a file is provided
+                if 'file' not in request.FILES:
+                    return JsonResponse({'error': 'No file provided'}, status=400)
+                
+                csv_file = request.FILES['file']
+                
+                # Ensure the file is a CSV
+                if not csv_file.name.endswith('.csv'):
+                    return JsonResponse({'error': 'File is not a CSV'}, status=400)
+                
+                # Read the CSV file
+                df = pd.read_csv(csv_file)
+                
+                # Check required columns
+                required_columns = {'satisfaction_level', 'average_montly_hours', 'Work_accident', 'promotion_last_5years', 'salary', 'last_evaluation'}
+                if not required_columns.issubset(df.columns):
+                    return JsonResponse({'error': 'CSV is missing one or more required columns'}, status=400)
+                
+                # Fill missing values with defaults
+                df = df.fillna({
+                    'satisfaction_level': 0.5,
+                    'average_monthly_hours': 200,
+                    'time_spend_company': 3,
+                    'promotion_last_5years': 0,
+                    'salary': 'medium',
+                    'last_evaluation': 0.7
+                })
+                
+                # Convert categorical columns to numeric
+                df['salary'] = df['salary'].map({'low': 1, 'medium': 2, 'high': 3})
+                
+                # Make predictions
+                predictions = []
+                for _, row in df.iterrows():
+                    employee_data = row.to_dict()
+                    result = predictor.predict_single(employee_data)
+                    risk_level = self._get_risk_level(result['probability'])
+                    
+                    predictions.append({
+                        'employee_id': employee_data.get('employee_id', 'N/A'),
+                        'prediction': result['prediction'],
+                        'probability': result['probability'],
+                        'confidence': result['confidence'],
+                        'risk_level': risk_level
+                    })
+                
+                return JsonResponse({'predictions': predictions}, status=200)
+            
+            except Exception as e:
+                logger.error(f"Error uploading CSV file: {str(e)}")
+                return JsonResponse({'error': 'An error occurred while processing the file.'}, status=500)
+        
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 class MLModelViewSet(viewsets.ModelViewSet):
     queryset = MLModel.objects.all()
     serializer_class = MLModelSerializer
     permission_classes = [IsAuthenticated]
     
-    
+    @action(detail=False, methods=['post'])
+    def train(self, request):
+        """Train a new ML model"""
+        serializer = ModelTrainingSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            try:
+                model_name = serializer.validated_data.get('model_name', 'api_trained_model')
+                data_source = serializer.validated_data.get('data_source', 'csv')
+                
+                logger.info(f"Starting model training: {model_name}, source: {data_source}")
+                
+                if data_source == 'csv':
+                    # Train from CSV file
+                    from .load_data import load_training_data
+                    df = load_training_data()
+                    
+                    if df is None or len(df) < 100:
+                        return Response(
+                            {'error': 'Insufficient data from CSV for training. Need at least 100 records.'},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    
+                    # Rename columns to match expected format
+                    df = df.rename(columns={
+                        'sales': 'department',
+                        'average_montly_hours': 'average_monthly_hours',
+                        'Work_accident': 'work_accident'
+                    })
+                    
+                    employee_data = df.to_dict('records')
+                    
+                elif data_source == 'db':
+                    # Train from database
+                    employees = Employee.objects.all()
+                    if employees.count() < 50:
+                        return Response(
+                            {'error': f'Insufficient data in database for training. Need at least 50 records. Current: {employees.count()}'},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    
+                    employee_data = [prepare_employee_data_for_ml(emp) for emp in employees]
+                
+                else:
+                    return Response(
+                        {'error': 'Invalid data_source. Use "csv" or "db".'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                # Initialize and train the predictor
+                predictor = TurnoverPredictor()
+                X, y = predictor.prepare_data(employee_data)
+                results, best_model_name = predictor.train_models(X, y)
+                
+                # Save the model
+                model_path = get_model_save_path(model_name)
+                predictor.save_model(model_path)
+                
+                # Get feature importance
+                feature_importance = predictor.get_feature_importance()
+                
+                # Filter hyperparameters for JSON serialization
+                hyperparams = results[best_model_name]['hyperparameters']
+                filtered_hyperparams = {}
+                for key, value in hyperparams.items():
+                    try:
+                        import json
+                        json.dumps(value)
+                        filtered_hyperparams[key] = value
+                    except (TypeError, ValueError):
+                        filtered_hyperparams[key] = str(type(value).__name__)
+                
+                # Deactivate other models
+                MLModel.objects.filter(is_active=True).update(is_active=False)
+                
+                # Create new model record
+                ml_model = MLModel.objects.create(
+                    name=model_name,
+                    model_type=best_model_name,
+                    model_file_path=model_path,
+                    accuracy=results[best_model_name]['accuracy'],
+                    f1_score=results[best_model_name]['f1_score'],
+                    auc_score=results[best_model_name]['auc_score'],
+                    hyperparameters=filtered_hyperparams,
+                    feature_importance=feature_importance,
+                    is_active=True,
+                    trained_by=request.user
+                )
+                
+                logger.info(f"Model training completed: {model_name}")
+                
+                return Response({
+                    'message': f'Model {model_name} trained successfully',
+                    'model_id': ml_model.id,
+                    'model_type': best_model_name,
+                    'accuracy': results[best_model_name]['accuracy'],
+                    'f1_score': results[best_model_name]['f1_score'],
+                    'auc_score': results[best_model_name]['auc_score'],
+                    'data_source': data_source,
+                    'training_records': len(employee_data)
+                }, status=status.HTTP_201_CREATED)
+                
+            except Exception as e:
+                logger.error(f"Error training model: {str(e)}")
+                return Response(
+                    {'error': f'Model training failed: {str(e)}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=['post'])
     def activate(self, request, pk=None):
@@ -495,5 +652,163 @@ class MLModelViewSet(viewsets.ModelViewSet):
                 {'message': 'No active model found.'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_csv_and_predict(request):
+    """Upload CSV file and get batch predictions"""
+    try:
+        if 'file' not in request.FILES:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        csv_file = request.FILES['file']
+        
+        # Validate file type
+        if not csv_file.name.endswith('.csv'):
+            return Response({'error': 'File must be a CSV file'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Read CSV file
+        try:
+            df = pd.read_csv(csv_file)
+        except Exception as e:
+            return Response({'error': f'Error reading CSV file: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate required columns
+        required_columns = [
+            'satisfaction_level', 'last_evaluation', 'number_project',
+            'average_monthly_hours', 'time_spend_company', 'work_accident',
+            'promotion_last_5years', 'salary', 'department'
+        ]
+        
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            return Response({
+                'error': f'Missing required columns: {", ".join(missing_columns)}',
+                'required_columns': required_columns,
+                'found_columns': list(df.columns)
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get active ML model
+        active_model = MLModel.objects.filter(is_active=True).first()
+        if not active_model:
+            return Response({'error': 'No active ML model found'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Initialize predictor
+        predictor = TurnoverPredictor()
+        try:
+            predictor.load_model(active_model.model_file_path)
+        except Exception as e:
+            return Response({'error': f'Error loading model: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Process predictions
+        predictions = []
+        errors = []
+        
+        for index, row in df.iterrows():
+            try:
+                employee_data = {
+                    'satisfaction_level': float(row['satisfaction_level']),
+                    'last_evaluation': float(row['last_evaluation']),
+                    'number_project': int(row['number_project']),
+                    'average_monthly_hours': int(row['average_monthly_hours']),
+                    'time_spend_company': int(row['time_spend_company']),
+                    'work_accident': bool(row['work_accident']),
+                    'promotion_last_5years': bool(row['promotion_last_5years']),
+                    'salary': str(row['salary']).lower(),
+                    'department': str(row['department']).lower()
+                }
+                
+                # Make prediction
+                result = predictor.predict_single(employee_data)
+                
+                # Determine risk level
+                risk_level = 'LOW'
+                if result['probability'] > 0.7:
+                    risk_level = 'HIGH'
+                elif result['probability'] > 0.4:
+                    risk_level = 'MEDIUM'
+                
+                prediction_data = {
+                    'row_index': index + 1,
+                    'employee_name': row.get('name', f'Employee {index + 1}'),
+                    'employee_id': row.get('employee_id', f'EMP{index + 1:03d}'),
+                    'department': employee_data['department'],
+                    'satisfaction_level': employee_data['satisfaction_level'],
+                    'turnover_probability': round(result['probability'], 3),
+                    'risk_level': risk_level,
+                    'prediction': result['prediction'],
+                    'recommendations': result.get('recommendations', [])
+                }
+                
+                predictions.append(prediction_data)
+                
+            except Exception as e:
+                errors.append({
+                    'row_index': index + 1,
+                    'error': str(e)
+                })
+        
+        # Calculate summary statistics
+        total_employees = len(predictions)
+        high_risk_count = len([p for p in predictions if p['risk_level'] == 'HIGH'])
+        medium_risk_count = len([p for p in predictions if p['risk_level'] == 'MEDIUM'])
+        low_risk_count = len([p for p in predictions if p['risk_level'] == 'LOW'])
+        
+        avg_probability = sum([p['turnover_probability'] for p in predictions]) / total_employees if total_employees > 0 else 0
+        
+        response_data = {
+            'success': True,
+            'total_employees': total_employees,
+            'errors_count': len(errors),
+            'summary': {
+                'high_risk_count': high_risk_count,
+                'medium_risk_count': medium_risk_count,
+                'low_risk_count': low_risk_count,
+                'average_probability': round(avg_probability, 3),
+                'high_risk_percentage': round((high_risk_count / total_employees * 100), 1) if total_employees > 0 else 0
+            },
+            'predictions': predictions,
+            'errors': errors,
+            'model_info': {
+                'model_name': active_model.name,
+                'model_type': active_model.model_type,
+                'accuracy': active_model.accuracy
+            }
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        logger.error(f"Error in CSV upload and prediction: {str(e)}")
+        return Response({
+            'error': f'Server error: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_csv_template(request):
+    """Download CSV template for batch predictions"""
+    template_data = {
+        'employee_id': ['EMP001', 'EMP002', 'EMP003'],
+        'name': ['John Doe', 'Jane Smith', 'Bob Johnson'],
+        'satisfaction_level': [0.75, 0.45, 0.80],
+        'last_evaluation': [0.85, 0.60, 0.90],
+        'number_project': [4, 2, 5],
+        'average_monthly_hours': [180, 250, 160],
+        'time_spend_company': [3, 6, 2],
+        'work_accident': [False, True, False],
+        'promotion_last_5years': [False, False, True],
+        'salary': ['medium', 'low', 'high'],
+        'department': ['IT', 'sales', 'engineering']
+    }
+    
+    df = pd.DataFrame(template_data)
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="turnover_prediction_template.csv"'
+    df.to_csv(response, index=False)
+    
+    return response
 
 

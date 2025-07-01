@@ -20,5 +20,7 @@ urlpatterns = [
     path('api/auth/change-password/', views.change_password, name='change_password'),
     path('api/auth/check/', views.check_auth, name='check_auth'),
     
-    
+    # CSV Upload and Batch Prediction endpoints
+    path('api/predictions/upload-csv/', views.upload_csv_and_predict, name='upload_csv_predict'),
+    path('api/predictions/csv-template/', views.get_csv_template, name='csv_template'),
 ]
