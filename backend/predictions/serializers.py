@@ -1,6 +1,9 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from .models import Department, Employee, TurnoverPrediction, MLModel
+
+User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Serializer for user registration"""
@@ -9,7 +12,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'password_confirm']
+        fields = [
+            'username', 'email', 'first_name', 'last_name', 'password', 'password_confirm',
+            'employee_id', 'department', 'position', 'salary', 'age', 'years_at_company',
+            'satisfaction_level', 'last_evaluation', 'number_project', 
+            'average_monthly_hours', 'time_spend_company', 'work_accident', 'promotion_last_5years'
+        ]
     
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -41,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'groups']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'groups', 'employee_id']
         read_only_fields = ['id']
 
 class DepartmentSerializer(serializers.ModelSerializer):

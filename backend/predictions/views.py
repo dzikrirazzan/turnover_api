@@ -4,8 +4,8 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Avg, Count, Q
-from django.contrib.auth.models import User, Group
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
@@ -17,6 +17,8 @@ import logging
 import base64
 import io
 import json
+
+User = get_user_model()
 
 from .models import Department, Employee, TurnoverPrediction, MLModel
 from .serializers import (

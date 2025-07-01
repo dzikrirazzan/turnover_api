@@ -1,0 +1,308 @@
+{
+  "info": {
+    "_postman_id": "12345678-1234-1234-1234-123456789012",
+    "name": "Employee Turnover Prediction API - Complete Collection",
+    "description": "Complete API collection for Employee Turnover Prediction system with ML capabilities",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login", ""]
+            }
+          }
+        },
+        {
+          "name": "Employee Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"employee001\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login", ""]
+            }
+          }
+        },
+        {
+          "name": "Register Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"newemployee\",\n    \"email\": \"new@company.com\",\n    \"password\": \"password123\",\n    \"first_name\": \"New\",\n    \"last_name\": \"Employee\",\n    \"employee_id\": \"EMP999\",\n    \"department\": \"IT\",\n    \"position\": \"Developer\",\n    \"salary\": 75000,\n    \"age\": 28,\n    \"years_at_company\": 1,\n    \"satisfaction_level\": 0.8,\n    \"last_evaluation\": 0.85,\n    \"number_project\": 3,\n    \"average_monthly_hours\": 160,\n    \"time_spend_company\": 1,\n    \"work_accident\": false,\n    \"promotion_last_5years\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employee Management",
+      "item": [
+        {
+          "name": "Get All Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Employee by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "1", ""]
+            }
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"satisfaction_level\": 0.9,\n    \"last_evaluation\": 0.88,\n    \"number_project\": 4,\n    \"average_monthly_hours\": 170\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/employees/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "1", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ML Predictions",
+      "item": [
+        {
+          "name": "Predict Single Employee Turnover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employee_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict-turnover/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict-turnover", ""]
+            }
+          }
+        },
+        {
+          "name": "Predict All Employees Turnover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/predict-all-turnover/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict-all-turnover", ""]
+            }
+          }
+        },
+        {
+          "name": "Train ML Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/train-model/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "train-model", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "HR Analytics",
+      "item": [
+        {
+          "name": "Get Analytics Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/analytics/summary/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analytics", "summary", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Department Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/analytics/department/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analytics", "department", ""]
+            }
+          }
+        },
+        {
+          "name": "Get High Risk Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/analytics/high-risk/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analytics", "high-risk", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Data Upload",
+      "item": [
+        {
+          "name": "Upload CSV Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/upload-csv/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "upload-csv", ""]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app"
+    },
+    {
+      "key": "auth_token",
+      "value": ""
+    }
+  ]
+}
