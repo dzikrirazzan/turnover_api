@@ -1,8 +1,11 @@
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import Group, Permission
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from predictions.models import Department, Employee, TurnoverPrediction, MLModel
 import random
+
+User = get_user_model()  # This will get the Employee model
 
 class Command(BaseCommand):
     help = 'Seed the database with admin users and basic groups'
@@ -75,21 +78,21 @@ class Command(BaseCommand):
         
         admin_users_data = [
             {
-                'username': 'admin',
                 'email': 'admin@company.com',
                 'first_name': 'System',
                 'last_name': 'Administrator',
                 'password': 'admin123',
+                'employee_id': 'ADMIN001',
                 'is_superuser': True,
                 'is_staff': True,
                 'group': 'Super Admins'
             },
             {
-                'username': 'hr_admin',
                 'email': 'hr.admin@company.com',
                 'first_name': 'HR',
                 'last_name': 'Administrator',
                 'password': 'hradmin123',
+                'employee_id': 'ADMIN002',
                 'is_superuser': True,
                 'is_staff': True,
                 'group': 'Super Admins'
@@ -98,11 +101,11 @@ class Command(BaseCommand):
         
         for user_data in admin_users_data:
             user, created = User.objects.get_or_create(
-                username=user_data['username'],
+                email=user_data['email'],
                 defaults={
-                    'email': user_data['email'],
                     'first_name': user_data['first_name'],
                     'last_name': user_data['last_name'],
+                    'employee_id': user_data['employee_id'],
                     'is_superuser': user_data['is_superuser'],
                     'is_staff': user_data['is_staff'],
                     'is_active': True
@@ -117,9 +120,9 @@ class Command(BaseCommand):
                 group = Group.objects.get(name=user_data['group'])
                 user.groups.add(group)
                 
-                self.stdout.write(f'  ✅ Created admin user: {user.username} ({user.email})')
+                self.stdout.write(f'  ✅ Created admin user: {user.email} ({user.first_name} {user.last_name})')
             else:
-                self.stdout.write(f'  ⚠️  Admin user {user.username} already exists')
+                self.stdout.write(f'  ⚠️  Admin user {user.email} already exists')
 
     def display_summary(self):
         """Display summary of created users"""
@@ -145,14 +148,14 @@ class Command(BaseCommand):
         
         self.stdout.write('\n🔐 ADMIN CREDENTIALS:')
         self.stdout.write('  Main Admin:')
-        self.stdout.write('    Username: admin')
-        self.stdout.write('    Password: admin123')
         self.stdout.write('    Email: admin@company.com')
+        self.stdout.write('    Password: admin123')
+        self.stdout.write('    Employee ID: ADMIN001')
         self.stdout.write('')
         self.stdout.write('  HR Admin:')
-        self.stdout.write('    Username: hr_admin')
-        self.stdout.write('    Password: hradmin123')
         self.stdout.write('    Email: hr.admin@company.com')
+        self.stdout.write('    Password: hradmin123')
+        self.stdout.write('    Employee ID: ADMIN002')
         
         self.stdout.write('\n📝 USER MANAGEMENT:')
         self.stdout.write('  • Other users can register via API or be created from admin panel')
