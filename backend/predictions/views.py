@@ -23,7 +23,7 @@ from .serializers import (
     DepartmentSerializer, EmployeeSerializer, EmployeeCreateSerializer,
     TurnoverPredictionSerializer, MLModelSerializer, PredictionRequestSerializer,
     EmployeeStatsSerializer, PredictionResultSerializer, BulkPredictionSerializer,
-    ModelTrainingSerializer, UserRegistrationSerializer, UserSerializer,
+    ModelTrainingSerializer, EmployeeRegistrationSerializer, UserSerializer,
     LoginSerializer, ChangePasswordSerializer, UserUpdateSerializer
 )
 from .ml_utils import TurnoverPredictor, prepare_employee_data_for_ml, get_model_save_path
@@ -35,13 +35,14 @@ logger = logging.getLogger(__name__)
 @permission_classes([AllowAny])
 def register_user(request):
     """User registration endpoint"""
-    serializer = UserRegistrationSerializer(data=request.data)
+    serializer = EmployeeRegistrationSerializer(data=request.data)
     if serializer.is_valid():
-        user = serializer.save()
-        user_data = UserSerializer(user).data
+        employee = serializer.save()
+        user_data = UserSerializer(employee.user).data
         return Response({
-            'message': 'User registered successfully',
-            'user': user_data
+            'message': 'Employee registered successfully',
+            'user': user_data,
+            'employee_id': employee.employee_id
         }, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
