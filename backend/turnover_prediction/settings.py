@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     'performance',
 ]
 
+# Custom user model
+AUTH_USER_MODEL = 'predictions.Employee'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -146,7 +149,6 @@ elif database_url and database_url.strip() and not database_url.startswith('None
                 'OPTIONS': {
                     'charset': 'utf8mb4',
                     'use_unicode': True,
-                    'ssl_mode': 'REQUIRED' if os.getenv('MYSQL_SSL_MODE') == 'REQUIRED' else None,
                 },
             }
 elif all([os.getenv('MYSQL_HOST'), os.getenv('MYSQL_USER'), os.getenv('MYSQL_PASSWORD')]):
@@ -165,8 +167,19 @@ elif all([os.getenv('MYSQL_HOST'), os.getenv('MYSQL_USER'), os.getenv('MYSQL_PAS
         },
     }
 else:
-    print(f"⚠️ No database configuration found, using SQLite fallback")
-    # Keep the default SQLite configuration for development/testing
+    print(f"⚠️ No database configuration found, using MySQL default")
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'turnover_db',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+        },
+    }
 
 
 # Password validation

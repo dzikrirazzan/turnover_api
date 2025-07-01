@@ -63,6 +63,24 @@ class Employee(AbstractUser):
     username = None # We don't need a username, we'll use email
     email = models.EmailField(unique=True)
 
+    # Fix for reverse accessor conflicts
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        related_name='employee_set',
+        related_query_name='employee',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name='employee_set',
+        related_query_name='employee',
+    )
+
     # Custom fields
     employee_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
     name = models.CharField(max_length=200)
