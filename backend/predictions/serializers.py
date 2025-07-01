@@ -78,3 +78,43 @@ class MLModelSerializer(serializers.ModelSerializer):
             'hyperparameters', 'feature_importance', 'is_active', 'created_at'
         )
         read_only_fields = ['created_at']
+
+class PredictionRequestSerializer(serializers.Serializer):
+    """Serializer for prediction requests"""
+    employee_id = serializers.CharField(required=False)
+    satisfaction_level = serializers.FloatField(min_value=0, max_value=1)
+    last_evaluation = serializers.FloatField(min_value=0, max_value=1)
+    number_project = serializers.IntegerField(min_value=1)
+    average_monthly_hours = serializers.IntegerField(min_value=1)
+    time_spend_company = serializers.IntegerField(min_value=0)
+    work_accident = serializers.BooleanField()
+    promotion_last_5years = serializers.BooleanField()
+    salary = serializers.ChoiceField(choices=['low', 'medium', 'high'])
+    department = serializers.CharField()
+
+class EmployeeStatsSerializer(serializers.Serializer):
+    """Serializer for employee statistics"""
+    total_employees = serializers.IntegerField()
+    total_left = serializers.IntegerField()
+    turnover_rate = serializers.FloatField()
+    avg_satisfaction = serializers.FloatField()
+    avg_monthly_hours = serializers.FloatField()
+    department_stats = serializers.DictField()
+    salary_distribution = serializers.DictField()
+
+class PredictionResultSerializer(serializers.Serializer):
+    """Serializer for prediction results"""
+    prediction = serializers.BooleanField()
+    probability = serializers.FloatField()
+    confidence = serializers.FloatField()
+    risk_level = serializers.CharField()
+    recommendations = serializers.ListField(child=serializers.CharField())
+
+class BulkPredictionSerializer(serializers.Serializer):
+    """Serializer for bulk predictions"""
+    employees = PredictionRequestSerializer(many=True)
+
+class ModelTrainingSerializer(serializers.Serializer):
+    """Serializer for model training requests"""
+    model_name = serializers.CharField(max_length=100)
+    data_source = serializers.CharField(max_length=10, required=False, default='csv')
