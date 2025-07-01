@@ -26,7 +26,8 @@ from .serializers import (
     TurnoverPredictionSerializer, MLModelSerializer, PredictionRequestSerializer,
     EmployeeStatsSerializer, PredictionResultSerializer, BulkPredictionSerializer,
     ModelTrainingSerializer, UserRegistrationSerializer, UserSerializer,
-    LoginSerializer, ChangePasswordSerializer, UserUpdateSerializer
+    LoginSerializer, ChangePasswordSerializer, UserUpdateSerializer,
+    EmployeeMLDataSerializer
 )
 from .ml_utils import TurnoverPredictor, prepare_employee_data_for_ml, get_model_save_path
 from .load_data import load_training_data, get_sample_data
@@ -488,12 +489,31 @@ class PredictionViewSet(viewsets.ModelViewSet):
                 # Convert categorical columns to numeric
                 df['salary'] = df['salary'].map({'low': 1, 'medium': 2, 'high': 3})
                 
+                # Load the active model
+                active_model = MLModel.objects.filter(is_active=True).first()
+                if not active_model:
+                    return JsonResponse({'error': 'No active ML model found'}, status=400)
+                
+                # Initialize predictor and load model
+                predictor = TurnoverPredictor()
+                model_path = get_model_save_path(active_model.name)
+                
+                if not predictor.load_model(model_path):
+                    return JsonResponse({'error': 'Could not load the ML model'}, status=500)
+                
                 # Make predictions
                 predictions = []
                 for _, row in df.iterrows():
                     employee_data = row.to_dict()
                     result = predictor.predict_single(employee_data)
-                    risk_level = self._get_risk_level(result['probability'])
+                    
+                    # Determine risk level
+                    if result['probability'] < 0.3:
+                        risk_level = 'Low'
+                    elif result['probability'] < 0.7:
+                        risk_level = 'Medium'
+                    else:
+                        risk_level = 'High'
                     
                     predictions.append({
                         'employee_id': employee_data.get('employee_id', 'N/A'),
@@ -812,5 +832,46 @@ def get_csv_template(request):
     df.to_csv(response, index=False)
     
     return response
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_employee_ml_data(request, employee_id):
+    """Admin endpoint to update employee ML prediction data"""
+    # Check if user is admin/staff
+    if not request.user.is_staff:
+        return Response({
+            'error': 'Only admin users can update employee ML data'
+        }, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        # Get employee by employee_id or pk
+        try:
+            employee = User.objects.get(employee_id=employee_id)
+        except User.DoesNotExist:
+            try:
+                employee = User.objects.get(pk=employee_id)
+            except User.DoesNotExist:
+                return Response({
+                    'error': 'Employee not found'
+                }, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = EmployeeMLDataSerializer(employee, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            
+            # Return updated employee data
+            employee_data = UserSerializer(employee).data
+            return Response({
+                'message': 'Employee ML data updated successfully',
+                'employee': employee_data
+            }, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    except Exception as e:
+        logger.error(f"Error updating employee ML data: {str(e)}")
+        return Response({
+            'error': 'An error occurred while updating employee data'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

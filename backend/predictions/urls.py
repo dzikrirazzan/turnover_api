@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     DepartmentViewSet, EmployeeViewSet, PredictionViewSet, MLModelViewSet,
     register_user, login_user, logout_user, user_profile, update_profile,
-    change_password, check_auth, upload_csv_and_predict, get_csv_template
+    change_password, check_auth, upload_csv_and_predict, get_csv_template,
+    update_employee_ml_data
 )
 
 router = DefaultRouter()
@@ -27,4 +28,7 @@ urlpatterns = [
     # CSV Upload and Batch Prediction endpoints
     path('api/predictions/upload-csv/', upload_csv_and_predict, name='upload_csv_predict'),
     path('api/predictions/csv-template/', get_csv_template, name='csv_template'),
+    
+    # Admin ML Data Management
+    path('api/admin/employees/<str:employee_id>/ml-data/', update_employee_ml_data, name='update_employee_ml_data'),
 ]

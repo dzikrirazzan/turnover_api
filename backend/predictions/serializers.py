@@ -6,7 +6,7 @@ from .models import Department, Employee, TurnoverPrediction, MLModel
 User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer for user registration"""
+    """Serializer for user registration - only basic personal data"""
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True)
     
@@ -14,9 +14,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username', 'email', 'first_name', 'last_name', 'password', 'password_confirm',
-            'employee_id', 'department', 'position', 'salary', 'age', 'years_at_company',
-            'satisfaction_level', 'last_evaluation', 'number_project', 
-            'average_monthly_hours', 'time_spend_company', 'work_accident', 'promotion_last_5years'
+            'employee_id', 'department', 'position', 'age'
         ]
     
     def validate(self, attrs):
@@ -29,9 +27,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already exists")
         return value
     
+    def validate_employee_id(self, value):
+        if User.objects.filter(employee_id=value).exists():
+            raise serializers.ValidationError("Employee ID already exists")
+        return value
+    
     def create(self, validated_data):
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
+        
+        # Set default values for ML-related fields
+        validated_data.update({
+            'salary': 'medium',  # default salary level
+            'years_at_company': 0,  # will be calculated from hire_date
+            'satisfaction_level': 0.5,  # neutral default
+            'last_evaluation': 0.5,  # neutral default  
+            'number_project': 1,  # default starting projects
+            'average_monthly_hours': 160,  # standard work hours
+            'time_spend_company': 0,  # will be calculated
+            'work_accident': False,  # default no accident
+            'promotion_last_5years': False,  # default no recent promotion
+            'left': False  # active employee
+        })
         
         user = User.objects.create_user(**validated_data)
         user.set_password(password)
@@ -177,4 +194,34 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         if User.objects.filter(email=value).exclude(id=self.instance.id).exists():
             raise serializers.ValidationError("Email already exists")
+        return value
+
+class EmployeeMLDataSerializer(serializers.ModelSerializer):
+    """Serializer for admin to update ML-related employee data"""
+    class Meta:
+        model = User
+        fields = [
+            'salary', 'years_at_company', 'satisfaction_level', 'last_evaluation',
+            'number_project', 'average_monthly_hours', 'time_spend_company',
+            'work_accident', 'promotion_last_5years'
+        ]
+    
+    def validate_satisfaction_level(self, value):
+        if not 0 <= value <= 1:
+            raise serializers.ValidationError("Satisfaction level must be between 0 and 1.")
+        return value
+    
+    def validate_last_evaluation(self, value):
+        if not 0 <= value <= 1:
+            raise serializers.ValidationError("Last evaluation must be between 0 and 1.")
+        return value
+    
+    def validate_number_project(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Number of projects must be non-negative.")
+        return value
+    
+    def validate_average_monthly_hours(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Average monthly hours must be non-negative.")
         return value
