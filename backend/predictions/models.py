@@ -55,36 +55,44 @@ class Employee(models.Model):
     # Features for ML Model (based on the Medium article)
     satisfaction_level = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
-        help_text="Level of satisfaction (0-1)"
+        help_text="Level of satisfaction (0-1)",
+        null=True, blank=True
     )
     last_evaluation = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
-        help_text="Time since last performance evaluation"
+        help_text="Time since last performance evaluation",
+        null=True, blank=True
     )
     number_project = models.IntegerField(
         validators=[MinValueValidator(1)],
-        help_text="Number of projects completed"
+        help_text="Number of projects completed",
+        null=True, blank=True
     )
     average_monthly_hours = models.IntegerField(
         validators=[MinValueValidator(1)],
-        help_text="Average monthly hours at workplace"
+        help_text="Average monthly hours at workplace",
+        null=True, blank=True
     )
     time_spend_company = models.IntegerField(
         validators=[MinValueValidator(0)],
-        help_text="Number of years spent in the company"
+        help_text="Number of years spent in the company",
+        null=True, blank=True
     )
     work_accident = models.BooleanField(
         default=False,
-        help_text="Whether the employee had a workplace accident"
+        help_text="Whether the employee had a workplace accident",
+        null=True, blank=True
     )
     promotion_last_5years = models.BooleanField(
         default=False,
-        help_text="Whether the employee was promoted in the last five years"
+        help_text="Whether the employee was promoted in the last five years",
+        null=True, blank=True
     )
     salary = models.CharField(
         max_length=10,
         choices=SALARY_CHOICES,
-        default='medium'
+        default='medium',
+        null=True, blank=True
     )
     
     # Target variable

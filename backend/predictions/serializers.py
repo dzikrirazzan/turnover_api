@@ -57,13 +57,14 @@ class EmployeeSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['created_at', 'updated_at']
     
+    # Validasi untuk bidang ML (tetap ada karena ini serializer umum)
     def validate_satisfaction_level(self, value):
-        if not 0 <= value <= 1:
+        if value is not None and not 0 <= value <= 1:
             raise serializers.ValidationError("Satisfaction level must be between 0 and 1.")
         return value
     
     def validate_last_evaluation(self, value):
-        if not 0 <= value <= 1:
+        if value is not None and not 0 <= value <= 1:
             raise serializers.ValidationError("Last evaluation must be between 0 and 1.")
         return value
 
@@ -77,9 +78,7 @@ class EmployeeRegistrationSerializer(serializers.ModelSerializer):
         fields = [
             'employee_id', 'name', 'email', 'phone_number', 'date_of_birth',
             'gender', 'marital_status', 'education_level', 'address', 'position',
-            'department', 'hire_date', 'satisfaction_level', 'last_evaluation',
-            'number_project', 'average_monthly_hours', 'time_spend_company',
-            'work_accident', 'promotion_last_5years', 'salary',
+            'department', 'hire_date',
             'username', 'password', 'password_confirm'
         ]
         extra_kwargs = {
@@ -88,14 +87,6 @@ class EmployeeRegistrationSerializer(serializers.ModelSerializer):
             'email': {'required': True},
             'department': {'required': True},
             'hire_date': {'required': True},
-            'satisfaction_level': {'required': True},
-            'last_evaluation': {'required': True},
-            'number_project': {'required': True},
-            'average_monthly_hours': {'required': True},
-            'time_spend_company': {'required': True},
-            'work_accident': {'required': True},
-            'promotion_last_5years': {'required': True},
-            'salary': {'required': True},
         }
 
     def validate(self, attrs):
@@ -129,23 +120,29 @@ class EmployeeRegistrationSerializer(serializers.ModelSerializer):
         employee = Employee.objects.create(user=user, **validated_data)
         return employee
 
+class EmployeeCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating new employees (admin/HR only, no user account creation)"""
+    class Meta:
+        model = Employee
+        fields = [
+            'employee_id', 'name', 'email', 'phone_number', 'date_of_birth',
+            'gender', 'marital_status', 'education_level', 'address', 'position',
+            'department', 'hire_date'
+        ]
+        extra_kwargs = {
+            'employee_id': {'required': True},
+            'name': {'required': True},
+            'email': {'required': True},
+            'department': {'required': True},
+            'hire_date': {'required': True},
+        }
+
 # --- Other Serializers (unchanged) ---
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = '__all__'
-
-class EmployeeCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating new employees"""
-    class Meta:
-        model = Employee
-        fields = [
-            'employee_id', 'name', 'email', 'department', 'hire_date',
-            'satisfaction_level', 'last_evaluation', 'number_project',
-            'average_monthly_hours', 'time_spend_company', 'work_accident',
-            'promotion_last_5years', 'salary'
-        ]
 
 class PredictionRequestSerializer(serializers.Serializer):
     """Serializer for prediction requests"""
