@@ -519,6 +519,11 @@ class MLModelViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'message': 'Resource deleted successfully'}, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({'message': 'Resource deleted successfully'}, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['post'])
     def train(self, request):
@@ -587,9 +592,10 @@ class MLModelViewSet(viewsets.ModelViewSet):
                 for key, value in hyperparams.items():
                     try:
                         import json
-                        json.dumps(value)
+                        json.dumps(value) # Test if it's JSON serializable
                         filtered_hyperparams[key] = value
                     except (TypeError, ValueError):
+                        # If not serializable, store its type name or skip
                         filtered_hyperparams[key] = str(type(value).__name__)
                 
                 # Deactivate other models

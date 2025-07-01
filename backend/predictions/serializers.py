@@ -2,38 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from .models import Department, Employee, TurnoverPrediction, MLModel
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer for user registration"""
-    password = serializers.CharField(write_only=True, min_length=8)
-    password_confirm = serializers.CharField(write_only=True)
-    
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'password_confirm']
-    
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError("Passwords don't match")
-        return attrs
-    
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email already exists")
-        return value
-    
-    def create(self, validated_data):
-        validated_data.pop('password_confirm')
-        password = validated_data.pop('password')
-        
-        user = User.objects.create_user(**validated_data)
-        user.set_password(password)
-        user.save()
-        
-        # Add user to Employees group by default
-        employees_group, created = Group.objects.get_or_create(name='Employees')
-        user.groups.add(employees_group)
-        
-        return user
+# --- User and Authentication Serializers ---
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user info"""
@@ -44,10 +13,34 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'groups']
         read_only_fields = ['id']
 
-class DepartmentSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
+    """Serializer for user login"""
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """Serializer for changing password"""
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+    new_password_confirm = serializers.CharField(write_only=True)
+    
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError("New passwords don't match")
+        return attrs
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating user profile"""
     class Meta:
-        model = Department
-        fields = '__all__'
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+    
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exclude(id=self.instance.id).exists():
+            raise serializers.ValidationError("Email already exists")
+        return value
+
+# --- Employee and Employee Registration Serializers ---
 
 class EmployeeSerializer(serializers.ModelSerializer):
     department_name = serializers.CharField(source='department.name', read_only=True)
@@ -55,10 +48,12 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = [
-            'id', 'employee_id', 'name', 'email', 'department', 'department_name',
-            'hire_date', 'satisfaction_level', 'last_evaluation', 'number_project',
-            'average_monthly_hours', 'time_spend_company', 'work_accident',
-            'promotion_last_5years', 'salary', 'left', 'created_at', 'updated_at'
+            'id', 'employee_id', 'name', 'email', 'phone_number', 'date_of_birth',
+            'gender', 'marital_status', 'education_level', 'address', 'position',
+            'department', 'department_name', 'hire_date', 'satisfaction_level',
+            'last_evaluation', 'number_project', 'average_monthly_hours',
+            'time_spend_company', 'work_accident', 'promotion_last_5years',
+            'salary', 'left', 'created_at', 'updated_at'
         ]
         read_only_fields = ['created_at', 'updated_at']
     
@@ -71,6 +66,75 @@ class EmployeeSerializer(serializers.ModelSerializer):
         if not 0 <= value <= 1:
             raise serializers.ValidationError("Last evaluation must be between 0 and 1.")
         return value
+
+class EmployeeRegistrationSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=150, write_only=True)
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True)
+    
+    class Meta:
+        model = Employee
+        fields = [
+            'employee_id', 'name', 'email', 'phone_number', 'date_of_birth',
+            'gender', 'marital_status', 'education_level', 'address', 'position',
+            'department', 'hire_date', 'satisfaction_level', 'last_evaluation',
+            'number_project', 'average_monthly_hours', 'time_spend_company',
+            'work_accident', 'promotion_last_5years', 'salary',
+            'username', 'password', 'password_confirm'
+        ]
+        extra_kwargs = {
+            'employee_id': {'required': True},
+            'name': {'required': True},
+            'email': {'required': True},
+            'department': {'required': True},
+            'hire_date': {'required': True},
+            'satisfaction_level': {'required': True},
+            'last_evaluation': {'required': True},
+            'number_project': {'required': True},
+            'average_monthly_hours': {'required': True},
+            'time_spend_company': {'required': True},
+            'work_accident': {'required': True},
+            'promotion_last_5years': {'required': True},
+            'salary': {'required': True},
+        }
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError({'password': "Passwords don't match"})
+        
+        if User.objects.filter(username=attrs['username']).exists():
+            raise serializers.ValidationError({'username': "Username already exists"})
+        
+        if User.objects.filter(email=attrs['email']).exists():
+            raise serializers.ValidationError({'email': "Email already exists"})
+        
+        return attrs
+
+    def create(self, validated_data):
+        username = validated_data.pop('username')
+        password = validated_data.pop('password')
+        validated_data.pop('password_confirm')
+
+        # Create User instance
+        user = User.objects.create_user(
+            username=username,
+            email=validated_data['email'],
+            password=password
+        )
+        # Assign to Employees group
+        employees_group, created = Group.objects.get_or_create(name='Employees')
+        user.groups.add(employees_group)
+
+        # Create Employee instance linked to the User
+        employee = Employee.objects.create(user=user, **validated_data)
+        return employee
+
+# --- Other Serializers (unchanged) ---
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = '__all__'
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating new employees"""
@@ -143,30 +207,3 @@ class BulkPredictionSerializer(serializers.Serializer):
 class ModelTrainingSerializer(serializers.Serializer):
     """Serializer for model training requests"""
     model_name = serializers.CharField(max_length=100)
-
-class LoginSerializer(serializers.Serializer):
-    """Serializer for user login"""
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
-
-class ChangePasswordSerializer(serializers.Serializer):
-    """Serializer for changing password"""
-    old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True, min_length=8)
-    new_password_confirm = serializers.CharField(write_only=True)
-    
-    def validate(self, attrs):
-        if attrs['new_password'] != attrs['new_password_confirm']:
-            raise serializers.ValidationError("New passwords don't match")
-        return attrs
-
-class UserUpdateSerializer(serializers.ModelSerializer):
-    """Serializer for updating user profile"""
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email']
-    
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exclude(id=self.instance.id).exists():
-            raise serializers.ValidationError("Email already exists")
-        return value

@@ -10,16 +10,45 @@ class Department(models.Model):
         return self.name
 
 class Employee(models.Model):
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    ]
+
+    MARITAL_STATUS_CHOICES = [
+        ('single', 'Single'),
+        ('married', 'Married'),
+        ('divorced', 'Divorced'),
+        ('widowed', 'Widowed'),
+    ]
+
+    EDUCATION_LEVEL_CHOICES = [
+        ('high_school', 'High School'),
+        ('diploma', 'Diploma'),
+        ('bachelor', 'Bachelor's Degree'),
+        ('master', 'Master's Degree'),
+        ('phd', 'PhD'),
+    ]
+
     SALARY_CHOICES = [
         ('low', 'Low'),
         ('medium', 'Medium'),
         ('high', 'High'),
     ]
     
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee_profile', null=True, blank=True)
     # Basic Information
     employee_id = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+    marital_status = models.CharField(max_length=10, choices=MARITAL_STATUS_CHOICES, blank=True, null=True)
+    education_level = models.CharField(max_length=20, choices=EDUCATION_LEVEL_CHOICES, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    position = models.CharField(max_length=100, blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     hire_date = models.DateField()
     
