@@ -11,11 +11,10 @@ router.register(r'models', views.MLModelViewSet)
 urlpatterns = [
     
     # Authentication endpoints
-    path('api/auth/register/', views.register_user, name='register_user'),
+    path('api/auth/register/', views.register_employee, name='register_employee'),
     path('api/auth/login/', views.login_user, name='login_user'),
     path('api/auth/logout/', views.logout_user, name='logout_user'),
     path('api/auth/profile/', views.user_profile, name='user_profile'),
-    path('api/auth/profile/update/', views.update_profile, name='update_profile'),
     path('api/auth/change-password/', views.change_password, name='change_password'),
     path('api/auth/check/', views.check_auth, name='check_auth'),
     

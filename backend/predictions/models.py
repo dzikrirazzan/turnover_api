@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Department(models.Model):
@@ -9,7 +9,28 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
-class Employee(models.Model):
+class EmployeeManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, password, **extra_fields)
+
+class Employee(AbstractUser):
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
@@ -37,11 +58,14 @@ class Employee(models.Model):
         ('high', 'High'),
     ]
     
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee_profile', null=True, blank=True)
-    # Basic Information
-    employee_id = models.CharField(max_length=20, unique=True)
-    name = models.CharField(max_length=200)
+    # Fields from AbstractUser we want to use: username, first_name, last_name, email, is_staff, is_active, date_joined
+    # We will use email as the unique identifier for login
+    username = None # We don't need a username, we'll use email
     email = models.EmailField(unique=True)
+
+    # Custom fields
+    employee_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    name = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
@@ -49,10 +73,10 @@ class Employee(models.Model):
     education_level = models.CharField(max_length=20, choices=EDUCATION_LEVEL_CHOICES, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     position = models.CharField(max_length=100, blank=True, null=True)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    hire_date = models.DateField()
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
+    hire_date = models.DateField(null=True, blank=True)
     
-    # Features for ML Model (based on the Medium article)
+    # Features for ML Model
     satisfaction_level = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
         help_text="Level of satisfaction (0-1)",
@@ -104,8 +128,12 @@ class Employee(models.Model):
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     
+    objects = EmployeeManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
+
     class Meta:
         ordering = ['-created_at']
     
@@ -129,7 +157,6 @@ class TurnoverPrediction(models.Model):
     )
     
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     
     class Meta:
         ordering = ['-created_at']
@@ -159,7 +186,6 @@ class MLModel(models.Model):
     
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    trained_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     
     class Meta:
         ordering = ['-created_at']

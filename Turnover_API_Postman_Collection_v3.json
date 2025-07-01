@@ -1,0 +1,416 @@
+{
+	"info": {
+		"_postman_id": "f5a8c3f3-11b7-4b7a-9c3e-8d8e8e8e8e8f",
+		"name": "Turnover API v3 (DigitalOcean)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "A comprehensive collection for the Turnover API, including Authentication, Predictions, and Performance modules. Configured for DigitalOcean deployment."
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "Endpoints for user registration, login, and profile management.",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newuser\",\n    \"email\": \"newuser@example.com\",\n    \"password\": \"strongpassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newuser\",\n    \"password\": \"strongpassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token YOUR_AUTH_TOKEN",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token YOUR_AUTH_TOKEN",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token YOUR_AUTH_TOKEN",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"updated@example.com\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/update/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile",
+								"update",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token YOUR_AUTH_TOKEN",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"strongpassword123\",\n    \"new_password\": \"newstrongpassword456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/change-password/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"change-password",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Predictions API",
+			"item": [
+				{
+					"name": "Departments",
+					"item": [
+						{
+							"name": "List Departments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/departments/"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Employees",
+					"item": [
+						{
+							"name": "List Employees",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/employees/"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ML Models",
+					"item": [
+						{
+							"name": "List ML Models",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/models/"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CSV Operations",
+					"item": [
+						{
+							"name": "Get CSV Template",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/predictions/csv-template/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"predictions",
+										"csv-template",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload CSV and Predict",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token YOUR_AUTH_TOKEN",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/predictions/upload-csv/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"predictions",
+										"upload-csv",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Performance API",
+			"item": [
+				{
+					"name": "Goals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/goals/"
+					},
+					"response": []
+				},
+				{
+					"name": "Key Results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/key-results/"
+					},
+					"response": []
+				},
+				{
+					"name": "Feedback",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/feedback/"
+					},
+					"response": []
+				},
+				{
+					"name": "Performance Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/performance-reviews/"
+					},
+					"response": []
+				},
+				{
+					"name": "One on One Meetings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/oneonone-meetings/"
+					},
+					"response": []
+				},
+				{
+					"name": "Shoutouts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/shoutouts/"
+					},
+					"response": []
+				},
+				{
+					"name": "Learning Modules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/learning-modules/"
+					},
+					"response": []
+				},
+				{
+					"name": "Learning Progress",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/learning-progress/"
+					},
+					"response": []
+				},
+				{
+					"name": "Learning Goals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/learning-goals/"
+					},
+					"response": []
+				},
+				{
+					"name": "Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/analytics/"
+					},
+					"response": []
+				},
+				{
+					"name": "Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/performance/api/dashboard/"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://turnover-api-hd7ze.ondigitalocean.app",
+			"type": "string"
+		}
+	]
+}
