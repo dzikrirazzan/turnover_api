@@ -26,7 +26,7 @@ class Employee(models.Model):
     EDUCATION_LEVEL_CHOICES = [
         ('high_school', 'High School'),
         ('diploma', 'Diploma'),
-        ('bachelor', 'Bachelor's Degree'),
+        ('bachelor', "Bachelor's Degree"),
         ('master', 'Master's Degree'),
         ('phd', 'PhD'),
     ]
