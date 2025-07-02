@@ -45,7 +45,7 @@ DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 # Database config (DATABASE_URL is primary, MySQL DigitalOcean)
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': dj_database_url.config(conn_max_age=600)
 }
 
 # Special handling for collectstatic - use minimal database config
