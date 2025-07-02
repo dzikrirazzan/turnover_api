@@ -31,6 +31,16 @@ class TurnoverPredictor:
         Prepare data for ML model based on the Medium article features
         """
         df = pd.DataFrame(employees_data)
+
+        # Auto-rename columns from CSV if needed
+        rename_map = {
+            'sales': 'department',
+            'average_montly_hours': 'average_monthly_hours',
+            'Work_accident': 'work_accident',
+        }
+        for old, new in rename_map.items():
+            if old in df.columns:
+                df[new] = df[old]
         
         # Features from the article
         feature_columns = [
