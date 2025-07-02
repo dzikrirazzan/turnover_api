@@ -37,13 +37,24 @@ sys.path.insert(0, str(BASE_DIR / 'backend'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-w0w(y^9=ub-lqqzefnke63&j@x-i_13miteon0z)in)m*+bof2')
+# ALLOWED_HOSTS, SECRET_KEY, DEBUG, DJANGO_SETTINGS_MODULE dari env
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'turnover-api-hd7ze.ondigitalocean.app,*.ondigitalocean.app,127.0.0.1,localhost').split(',')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-production-smarten-2025-change-this-32chars')
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Database config (DATABASE_URL is primary, MySQL DigitalOcean)
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
+
+# Special handling for collectstatic - use minimal database config
+if RUNNING_COLLECTSTATIC or os.getenv('DJANGO_COLLECTSTATIC'):
+    print("🎨 Running collectstatic - using minimal database config")
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
 
 
 # Application definition
@@ -97,121 +108,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'turnover_prediction.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# Default database configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('MYSQL_DATABASE', 'turnover_db'),
-        'USER': os.getenv('MYSQL_USER', 'root'),
-        'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
-        'HOST': os.getenv('MYSQL_HOST', 'localhost'),
-        'PORT': os.getenv('MYSQL_PORT', '3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'use_unicode': True,
-        },
-    }
-}
-
-# Override with DATABASE_URL if provided (DigitalOcean App Platform)
-database_url = os.getenv('DATABASE_URL')
-
-# Special handling for collectstatic - use minimal database config
-if RUNNING_COLLECTSTATIC or os.getenv('DJANGO_COLLECTSTATIC'):
-    print("🎨 Running collectstatic - using minimal database config")
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
-    }
-elif database_url and database_url.strip() and not database_url.startswith('None'):
-    try:
-        DATABASES['default'] = dj_database_url.parse(
-            database_url,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-        print(f"✅ Using DATABASE_URL configuration")
-    except Exception as e:
-        print(f"⚠️ Failed to parse DATABASE_URL: {e}")
-        print(f"⚠️ Falling back to individual MySQL environment variables")
-        # Fallback to individual environment variables
-        if all([os.getenv('MYSQL_HOST'), os.getenv('MYSQL_USER'), os.getenv('MYSQL_PASSWORD')]):
-            DATABASES['default'] = {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': os.getenv('MYSQL_DATABASE', 'defaultdb'),
-                'USER': os.getenv('MYSQL_USER'),
-                'PASSWORD': os.getenv('MYSQL_PASSWORD'),
-                'HOST': os.getenv('MYSQL_HOST'),
-                'PORT': os.getenv('MYSQL_PORT', '25060'),
-                'OPTIONS': {
-                    'charset': 'utf8mb4',
-                    'use_unicode': True,
-                },
-            }
-elif all([os.getenv('MYSQL_HOST'), os.getenv('MYSQL_USER'), os.getenv('MYSQL_PASSWORD')]):
-    print(f"✅ Using individual MySQL environment variables")
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('MYSQL_DATABASE', 'defaultdb'),
-        'USER': os.getenv('MYSQL_USER'),
-        'PASSWORD': os.getenv('MYSQL_PASSWORD'),
-        'HOST': os.getenv('MYSQL_HOST'),
-        'PORT': os.getenv('MYSQL_PORT', '25060'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'use_unicode': True,
-        },
-    }
-else:
-    print(f"⚠️ No database configuration found, using MySQL default")
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'turnover_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'use_unicode': True,
-        },
-    }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -238,17 +134,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS settings
-CORS_ALLOWED_ORIGINS = [
+# CORS and CSRF from env
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if os.getenv('CORS_ALLOWED_ORIGINS') else [
+    "https://smart-en-system.vercel.app",
+    "https://turnover-api-hd7ze.ondigitalocean.app",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
+]
+CORS_ALLOW_CREDENTIALS = os.getenv('CORS_ALLOW_CREDENTIALS', 'True').lower() == 'true'
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if os.getenv('CSRF_TRUSTED_ORIGINS') else [
+    "https://smart-en-system.vercel.app",
+    "https://turnover-api-hd7ze.ondigitalocean.app",
 ]
 
-# Update CORS from environment variable for production
-if os.getenv('CORS_ALLOWED_ORIGINS'):
-    CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
+# SSL/secure settings
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
+SECURE_PROXY_SSL_HEADER = tuple(os.getenv('SECURE_PROXY_SSL_HEADER', 'HTTP_X_FORWARDED_PROTO,https').split(','))
 
-CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework settings
 REST_FRAMEWORK = {
@@ -264,29 +165,32 @@ REST_FRAMEWORK = {
 }
 
 # Logging
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': LOG_LEVEL,
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
         },
         'console': {
-            'level': 'INFO',
+            'level': LOG_LEVEL,
             'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['file', 'console'],
-            'level': 'INFO',
+            'level': DJANGO_LOG_LEVEL,
             'propagate': True,
         },
         'predictions': {
             'handlers': ['file', 'console'],
-            'level': 'INFO',
+            'level': DJANGO_LOG_LEVEL,
             'propagate': True,
         },
     },

@@ -1,232 +1,129 @@
 from rest_framework import serializers
-from django.contrib.auth.models import Group
-from django.contrib.auth import get_user_model
-from .models import Department, Employee, TurnoverPrediction, MLModel
+from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
+from .models import Department, Employee, EmployeePerformanceData
 
-User = get_user_model()
+class DepartmentSerializer(serializers.ModelSerializer):
+    """Serializer untuk Department - digunakan di registrasi dan ML"""
+    employee_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Department
+        fields = ['id', 'name', 'description', 'employee_count', 'created_at']
+        read_only_fields = ['created_at']
+    
+    def get_employee_count(self, obj):
+        return obj.employees.count()
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer for user registration - only basic personal data"""
-    password = serializers.CharField(write_only=True, min_length=8)
+class EmployeeRegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer untuk registrasi karyawan - HANYA data basic untuk admin
+    TIDAK termasuk variabel ML (satisfaction_level, last_evaluation, dll)
+    """
+    password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
     
     class Meta:
-        model = User
+        model = Employee
         fields = [
+            # Informasi dasar untuk authentication
             'email', 'first_name', 'last_name', 'password', 'password_confirm',
-            'employee_id', 'phone_number', 'date_of_birth', 'gender', 
-            'marital_status', 'education_level', 'address', 'department', 
-            'position', 'hire_date'
+            
+            # Informasi personal (untuk admin info)
+            'phone_number', 'date_of_birth', 'gender', 'marital_status', 
+            'education_level', 'address',
+            
+            # Informasi kerja (untuk admin info + department digunakan di ML)
+            'position', 'department', 'hire_date',
+            
+            # Informasi gaji (untuk admin info, bukan ML)
+            'salary', 'salary_amount'
         ]
+        extra_kwargs = {
+            'email': {'required': True},
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'department': {'required': True},  # Department diperlukan karena dipakai ML
+        }
     
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError("Passwords don't match")
+            raise serializers.ValidationError("Password tidak cocok")
         return attrs
-    
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email already exists")
-        return value
-    
-    def validate_employee_id(self, value):
-        if User.objects.filter(employee_id=value).exists():
-            raise serializers.ValidationError("Employee ID already exists")
-        return value
     
     def create(self, validated_data):
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
         
-        # Remove any unwanted fields that might have been added
-        validated_data.pop('years_at_company', None)
-        
-        # Set default values for ML-related fields (admin can update these later)
-        validated_data.update({
-            'salary': 'medium',  # default salary level
-            'satisfaction_level': 0.5,  # neutral default
-            'last_evaluation': 0.5,  # neutral default  
-            'number_project': 1,  # default starting projects
-            'average_monthly_hours': 160,  # standard work hours
-            'time_spend_company': 0,  # will be calculated from hire_date
-            'work_accident': False,  # default no accident
-            'promotion_last_5years': False,  # default no recent promotion
-            'left': False  # active employee
-        })
-        
-        user = User.objects.create_user(**validated_data)
-        user.set_password(password)
-        user.save()
-        
-        # Add user to Employees group by default
-        employees_group, created = Group.objects.get_or_create(name='Employees')
-        user.groups.add(employees_group)
-        
-        return user
+        # Create employee with basic data only
+        employee = Employee.objects.create_user(
+            password=password,
+            **validated_data
+        )
+        return employee
 
-class UserSerializer(serializers.ModelSerializer):
-    """Serializer for user info"""
-    groups = serializers.StringRelatedField(many=True, read_only=True)
-    full_name = serializers.CharField(read_only=True)
+class LoginSerializer(serializers.Serializer):
+    """Serializer untuk login dengan email dan password"""
+    email = serializers.EmailField()
+    password = serializers.CharField()
     
-    class Meta:
-        model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'is_staff', 'groups', 'employee_id']
-        read_only_fields = ['id']
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        
+        if email and password:
+            user = authenticate(email=email, password=password)
+            if not user:
+                raise serializers.ValidationError('Email atau password salah')
+            if not user.is_active:
+                raise serializers.ValidationError('Akun tidak aktif')
+            attrs['user'] = user
+        else:
+            raise serializers.ValidationError('Email dan password diperlukan')
+        
+        return attrs
 
-class DepartmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Department
-        fields = '__all__'
-
-class EmployeeSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
+    """Serializer untuk profile user - basic info only"""
     department_name = serializers.CharField(source='department.name', read_only=True)
     
     class Meta:
         model = Employee
         fields = [
-            'id', 'employee_id', 'name', 'email', 'department', 'department_name',
-            'hire_date', 'satisfaction_level', 'last_evaluation', 'number_project',
-            'average_monthly_hours', 'time_spend_company', 'work_accident',
-            'promotion_last_5years', 'salary', 'left', 'created_at', 'updated_at'
+            'id', 'employee_id', 'email', 'first_name', 'last_name', 'full_name',
+            'role', 'department_name', 'position', 'hire_date',
+            'phone_number', 'is_admin', 'is_manager', 'is_hr'
         ]
-        read_only_fields = ['created_at', 'updated_at']
-    
-    def validate_satisfaction_level(self, value):
-        if not 0 <= value <= 1:
-            raise serializers.ValidationError("Satisfaction level must be between 0 and 1.")
-        return value
-    
-    def validate_last_evaluation(self, value):
-        if not 0 <= value <= 1:
-            raise serializers.ValidationError("Last evaluation must be between 0 and 1.")
-        return value
+        read_only_fields = ['employee_id', 'email', 'role', 'full_name', 'department_name', 'is_admin', 'is_manager', 'is_hr']
 
-class EmployeeCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating new employees"""
+class EmployeePerformanceDataSerializer(serializers.ModelSerializer):
+    """
+    Serializer untuk data ML - TERPISAH dari registrasi
+    Hanya admin yang bisa akses data ini
+    """
+    employee_name = serializers.CharField(source='employee.full_name', read_only=True)
+    employee_email = serializers.CharField(source='employee.email', read_only=True)
+    department_name = serializers.CharField(source='employee.department.name', read_only=True)
+    
     class Meta:
-        model = Employee
+        model = EmployeePerformanceData
         fields = [
-            'employee_id', 'name', 'email', 'department', 'hire_date',
+            'employee', 'employee_name', 'employee_email', 'department_name',
+            
+            # ML Variables - HANYA di model terpisah
             'satisfaction_level', 'last_evaluation', 'number_project',
             'average_monthly_hours', 'time_spend_company', 'work_accident',
-            'promotion_last_5years', 'salary'
+            'promotion_last_5years',
+            
+            # Target variable
+            'left',
+            
+            'created_at', 'updated_at'
         ]
-
-class PredictionRequestSerializer(serializers.Serializer):
-    """Serializer for prediction requests"""
-    employee_id = serializers.CharField(required=False)
-    satisfaction_level = serializers.FloatField(min_value=0, max_value=1)
-    last_evaluation = serializers.FloatField(min_value=0, max_value=1)
-    number_project = serializers.IntegerField(min_value=1)
-    average_monthly_hours = serializers.IntegerField(min_value=1)
-    time_spend_company = serializers.IntegerField(min_value=0)
-    work_accident = serializers.BooleanField()
-    promotion_last_5years = serializers.BooleanField()
-    salary = serializers.ChoiceField(choices=['low', 'medium', 'high'])
-    department = serializers.CharField()
-
-class TurnoverPredictionSerializer(serializers.ModelSerializer):
-    employee_name = serializers.CharField(source='employee.name', read_only=True)
-    employee_id = serializers.CharField(source='employee.employee_id', read_only=True)
+        read_only_fields = ['created_at', 'updated_at', 'employee_name', 'employee_email', 'department_name']
     
-    class Meta:
-        model = TurnoverPrediction
-        fields = [
-            'id', 'employee', 'employee_name', 'employee_id',
-            'prediction_probability', 'prediction_result', 'model_used',
-            'confidence_score', 'features_used', 'created_at'
-        ]
-        read_only_fields = ['created_at']
-
-class MLModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MLModel
-        fields = [
-            'id', 'name', 'model_type', 'accuracy', 'f1_score', 'auc_score',
-            'hyperparameters', 'feature_importance', 'is_active', 'created_at'
-        ]
-        read_only_fields = ['created_at']
-
-class EmployeeStatsSerializer(serializers.Serializer):
-    """Serializer for employee statistics"""
-    total_employees = serializers.IntegerField()
-    total_left = serializers.IntegerField()
-    turnover_rate = serializers.FloatField()
-    avg_satisfaction = serializers.FloatField()
-    avg_monthly_hours = serializers.FloatField()
-    department_stats = serializers.DictField()
-    salary_distribution = serializers.DictField()
-
-class PredictionResultSerializer(serializers.Serializer):
-    """Serializer for prediction results"""
-    prediction = serializers.BooleanField()
-    probability = serializers.FloatField()
-    confidence = serializers.FloatField()
-    risk_level = serializers.CharField()
-    recommendations = serializers.ListField(child=serializers.CharField())
-
-class BulkPredictionSerializer(serializers.Serializer):
-    """Serializer for bulk predictions"""
-    employees = PredictionRequestSerializer(many=True)
-
-class ModelTrainingSerializer(serializers.Serializer):
-    """Serializer for model training requests"""
-    model_name = serializers.CharField(max_length=100)
-
-class LoginSerializer(serializers.Serializer):
-    """Serializer for user login"""
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
-
-class ChangePasswordSerializer(serializers.Serializer):
-    """Serializer for changing password"""
-    old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True, min_length=8)
-    new_password_confirm = serializers.CharField(write_only=True)
-    
-    def validate(self, attrs):
-        if attrs['new_password'] != attrs['new_password_confirm']:
-            raise serializers.ValidationError("New passwords don't match")
-        return attrs
-
-class UserUpdateSerializer(serializers.ModelSerializer):
-    """Serializer for updating user profile"""
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email']
-    
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exclude(id=self.instance.id).exists():
-            raise serializers.ValidationError("Email already exists")
-        return value
-
-class EmployeeMLDataSerializer(serializers.ModelSerializer):
-    """Serializer for admin to update ML-related employee data"""
-    class Meta:
-        model = User
-        fields = [
-            'salary', 'satisfaction_level', 'last_evaluation',
-            'number_project', 'average_monthly_hours', 'time_spend_company',
-            'work_accident', 'promotion_last_5years'
-        ]
-    
-    def validate_satisfaction_level(self, value):
-        if not 0 <= value <= 1:
-            raise serializers.ValidationError("Satisfaction level must be between 0 and 1.")
-        return value
-    
-    def validate_last_evaluation(self, value):
-        if not 0 <= value <= 1:
-            raise serializers.ValidationError("Last evaluation must be between 0 and 1.")
-        return value
-    
-    def validate_number_project(self, value):
-        if value < 0:
-            raise serializers.ValidationError("Number of projects must be non-negative.")
-        return value
-    
-    def validate_average_monthly_hours(self, value):
-        if value < 0:
-            raise serializers.ValidationError("Average monthly hours must be non-negative.")
+    def validate_employee(self, value):
+        # Ensure only one performance data per employee
+        if self.instance is None and EmployeePerformanceData.objects.filter(employee=value).exists():
+            raise serializers.ValidationError("Employee sudah memiliki data performance")
         return value
