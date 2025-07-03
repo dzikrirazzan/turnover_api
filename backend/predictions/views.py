@@ -275,6 +275,10 @@ def register_employee(request):
     Register new employee with COMPLETE DATA response
     Includes authentication token
     """
+    import logging
+    logging.warning('REGISTER_EMPLOYEE CALLED - CSRF EXEMPT ACTIVE')
+    print('REGISTER_EMPLOYEE CALLED - CSRF EXEMPT ACTIVE')
+    
     serializer = EmployeeRegistrationSerializer(data=request.data)
     if serializer.is_valid():
         employee = serializer.save()
