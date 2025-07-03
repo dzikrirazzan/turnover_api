@@ -18,7 +18,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 class EmployeeRegistrationResponseSerializer(serializers.ModelSerializer):
     """
-    Serializer untuk response registrasi - data lengkap yang dikembalikan setelah registrasi
+    Serializer untuk response registrasi - data lengkap yang dikembalikan setelah registrasi (KONSISTEN dengan login)
     """
     department_name = serializers.CharField(source='department.name', read_only=True)
     token = serializers.SerializerMethodField()
@@ -29,9 +29,9 @@ class EmployeeRegistrationResponseSerializer(serializers.ModelSerializer):
             'id', 'employee_id', 'email', 'first_name', 'last_name', 'full_name',
             'phone_number', 'date_of_birth', 'gender', 'marital_status', 
             'education_level', 'address', 'position', 'department', 'department_name',
-            'hire_date', 'role', 'is_active', 'created_at', 'token'
+            'hire_date', 'role', 'is_admin', 'is_manager', 'is_hr', 'is_active', 'created_at', 'token'
         ]
-        read_only_fields = ['id', 'employee_id', 'full_name', 'role', 'is_active', 'created_at']
+        read_only_fields = ['id', 'employee_id', 'full_name', 'role', 'is_admin', 'is_manager', 'is_hr', 'is_active', 'created_at']
     
     def get_token(self, obj):
         """Generate authentication token for the new user"""
@@ -108,7 +108,7 @@ class LoginSerializer(serializers.Serializer):
 
 class LoginResponseSerializer(serializers.ModelSerializer):
     """
-    Serializer untuk response login - data lengkap user dengan token
+    Serializer untuk response login - data lengkap user dengan token (KONSISTEN dengan registration)
     """
     department_name = serializers.CharField(source='department.name', read_only=True)
     token = serializers.SerializerMethodField()
@@ -117,8 +117,9 @@ class LoginResponseSerializer(serializers.ModelSerializer):
         model = Employee
         fields = [
             'id', 'employee_id', 'email', 'first_name', 'last_name', 'full_name',
-            'phone_number', 'role', 'department', 'department_name', 'position', 
-            'hire_date', 'is_admin', 'is_manager', 'is_hr', 'is_active', 'token'
+            'phone_number', 'date_of_birth', 'gender', 'marital_status', 
+            'education_level', 'address', 'position', 'department', 'department_name',
+            'hire_date', 'role', 'is_admin', 'is_manager', 'is_hr', 'is_active', 'created_at', 'token'
         ]
         read_only_fields = ['employee_id', 'full_name', 'role', 'is_admin', 'is_manager', 'is_hr']
     
