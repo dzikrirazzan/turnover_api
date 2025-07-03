@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from .models import Department, Employee, EmployeePerformanceData
@@ -14,6 +15,28 @@ class DepartmentSerializer(serializers.ModelSerializer):
     
     def get_employee_count(self, obj):
         return obj.employees.count()
+
+class EmployeeRegistrationResponseSerializer(serializers.ModelSerializer):
+    """
+    Serializer untuk response registrasi - data lengkap yang dikembalikan setelah registrasi
+    """
+    department_name = serializers.CharField(source='department.name', read_only=True)
+    token = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Employee
+        fields = [
+            'id', 'employee_id', 'email', 'first_name', 'last_name', 'full_name',
+            'phone_number', 'date_of_birth', 'gender', 'marital_status', 
+            'education_level', 'address', 'position', 'department', 'department_name',
+            'hire_date', 'role', 'is_active', 'created_at', 'token'
+        ]
+        read_only_fields = ['id', 'employee_id', 'full_name', 'role', 'is_active', 'created_at']
+    
+    def get_token(self, obj):
+        """Generate authentication token for the new user"""
+        token, created = Token.objects.get_or_create(user=obj)
+        return token.key
 
 class EmployeeRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -83,6 +106,27 @@ class LoginSerializer(serializers.Serializer):
         
         return attrs
 
+class LoginResponseSerializer(serializers.ModelSerializer):
+    """
+    Serializer untuk response login - data lengkap user dengan token
+    """
+    department_name = serializers.CharField(source='department.name', read_only=True)
+    token = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Employee
+        fields = [
+            'id', 'employee_id', 'email', 'first_name', 'last_name', 'full_name',
+            'phone_number', 'role', 'department', 'department_name', 'position', 
+            'hire_date', 'is_admin', 'is_manager', 'is_hr', 'is_active', 'token'
+        ]
+        read_only_fields = ['employee_id', 'full_name', 'role', 'is_admin', 'is_manager', 'is_hr']
+    
+    def get_token(self, obj):
+        """Get or create authentication token"""
+        token, created = Token.objects.get_or_create(user=obj)
+        return token.key
+
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer untuk profile user - basic info only"""
     department_name = serializers.CharField(source='department.name', read_only=True)
@@ -92,9 +136,46 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'employee_id', 'email', 'first_name', 'last_name', 'full_name',
             'role', 'department_name', 'position', 'hire_date',
-            'phone_number', 'is_admin', 'is_manager', 'is_hr'
+            'phone_number', 'is_admin', 'is_manager', 'is_hr', 'is_active'
         ]
         read_only_fields = ['employee_id', 'email', 'role', 'full_name', 'department_name', 'is_admin', 'is_manager', 'is_hr']
+
+class EmployeeUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer untuk update data karyawan - admin only
+    Allows updating most fields except critical ones
+    """
+    class Meta:
+        model = Employee
+        fields = [
+            'first_name', 'last_name', 'phone_number', 'date_of_birth', 
+            'gender', 'marital_status', 'education_level', 'address',
+            'position', 'department', 'hire_date', 'salary', 'salary_amount',
+            'role', 'is_active'
+        ]
+        extra_kwargs = {
+            'department': {'required': False},
+        }
+
+class EmployeeListSerializer(serializers.ModelSerializer):
+    """
+    Serializer untuk list karyawan - admin only
+    Shows essential info for employee listing
+    """
+    department_name = serializers.CharField(source='department.name', read_only=True)
+    has_performance_data = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Employee
+        fields = [
+            'id', 'employee_id', 'email', 'first_name', 'last_name', 'full_name',
+            'role', 'department', 'department_name', 'position', 'hire_date',
+            'is_active', 'has_performance_data', 'created_at'
+        ]
+        read_only_fields = ['employee_id', 'full_name', 'created_at']
+    
+    def get_has_performance_data(self, obj):
+        return hasattr(obj, 'performance_data')
 
 class EmployeePerformanceDataSerializer(serializers.ModelSerializer):
     """

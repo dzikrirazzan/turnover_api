@@ -1,0 +1,1950 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-5678-9abc-def0-123456789012",
+		"name": "SMART-EN Turnover Prediction API - COMPLETE COLLECTION",
+		"description": "🚀 COMPREHENSIVE API Collection for SMART-EN turnover prediction system with 81 endpoints covering authentication, employee management, performance tracking, analytics, feedback, learning modules, and dashboard features. ✅ Version 4.0.0 - Production Ready with complete CRUD operations for Employees & Departments, custom actions, and enterprise-grade functionality. 🎯 Features: Full Employee/Department CRUD, Goals & OKRs, 360° Feedback, Performance Reviews, One-on-One Meetings, Peer Recognition, Learning & Development, Real-time Analytics, and Dashboard Statistics.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Authentication & Core",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/health/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "API Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/info/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "info", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"employeejon@example.com\",\n    \"password\": \"securepassword123\",\n    \"password_confirm\": \"securepassword123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"phone_number\": \"+6281234567890\",\n    \"date_of_birth\": \"1990-05-10\",\n    \"gender\": \"M\",\n    \"marital_status\": \"single\",\n    \"education_level\": \"bachelor\",\n    \"address\": \"Jl. Contoh No. 123, Jakarta\",\n    \"position\": \"Junior Staff\",\n    \"department\": 1,\n    \"hire_date\": \"2023-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "register", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success - Complete Employee Data with Token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"employeejon@example.com\",\n    \"password\": \"securepassword123\",\n    \"password_confirm\": \"securepassword123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"phone_number\": \"+6281234567890\",\n    \"date_of_birth\": \"1990-05-10\",\n    \"gender\": \"M\",\n    \"marital_status\": \"single\",\n    \"education_level\": \"bachelor\",\n    \"address\": \"Jl. Contoh No. 123, Jakarta\",\n    \"position\": \"Junior Staff\",\n    \"department\": 1,\n    \"hire_date\": \"2023-01-01\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/register/",
+									"host": ["{{base_url}}"],
+									"path": ["api", "register", ""]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Registrasi berhasil\",\n    \"employee\": {\n        \"id\": 1,\n        \"employee_id\": \"EMP20250003\",\n        \"email\": \"employeejon@example.com\",\n        \"first_name\": \"John\",\n        \"last_name\": \"Doe\",\n        \"full_name\": \"John Doe\",\n        \"phone_number\": \"+6281234567890\",\n        \"date_of_birth\": \"1990-05-10\",\n        \"gender\": \"M\",\n        \"marital_status\": \"single\",\n        \"education_level\": \"bachelor\",\n        \"address\": \"Jl. Contoh No. 123, Jakarta\",\n        \"position\": \"Junior Staff\",\n        \"department\": 1,\n        \"department_name\": \"IT Department\",\n        \"hire_date\": \"2023-01-01\",\n        \"role\": \"employee\",\n        \"is_active\": true,\n        \"created_at\": \"2025-07-03T15:30:00Z\",\n        \"token\": \"9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b\"\n    }\n}"
+						}
+					]
+				},
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "register", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe@company.com\",\n    \"password\": \"SecurePassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "login", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/logout/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "logout", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Departments - CRUD Operations",
+			"item": [
+				{
+					"name": "List Departments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/departments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "departments", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Department",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Research & Development\",\n    \"description\": \"Research and development of new technologies and products\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/departments/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "departments", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/departments/{{department_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "departments", "{{department_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Department",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Research & Development\",\n    \"description\": \"Updated description for R&D department focused on innovation and technology advancement\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/departments/{{department_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "departments", "{{department_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Department",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/departments/{{department_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "departments", "{{department_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/departments/{{department_id}}/employees/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "departments", "{{department_id}}", "employees", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employees - CRUD Operations",
+			"item": [
+				{
+					"name": "List Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", ""],
+							"query": [
+								{
+									"key": "department",
+									"value": "1",
+									"description": "Filter by department ID",
+									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "employee",
+									"description": "Filter by role",
+									"disabled": true
+								},
+								{
+									"key": "is_active",
+									"value": "true",
+									"description": "Filter by active status",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"new.employee@company.com\",\n    \"first_name\": \"New\",\n    \"last_name\": \"Employee\",\n    \"password\": \"SecurePassword123!\",\n    \"password_confirm\": \"SecurePassword123!\",\n    \"phone_number\": \"+1234567890\",\n    \"date_of_birth\": \"1995-03-15\",\n    \"gender\": \"M\",\n    \"marital_status\": \"single\",\n    \"education_level\": \"bachelor\",\n    \"address\": \"123 New Street, City, State\",\n    \"position\": \"Junior Developer\",\n    \"department\": 1,\n    \"hire_date\": \"2024-01-15\",\n    \"salary\": \"low\",\n    \"salary_amount\": 55000.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Employee\",\n    \"phone_number\": \"+1234567891\",\n    \"position\": \"Senior Developer\",\n    \"department\": 1,\n    \"salary\": \"high\",\n    \"salary_amount\": 85000.00,\n    \"role\": \"manager\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update Employee",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"position\": \"Team Lead\",\n    \"salary\": \"high\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Employee",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/activate/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", "activate", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee Performance Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/performance_data/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", "performance_data", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Employee Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/statistics/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "statistics", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin - Employee Management",
+			"item": [
+				{
+					"name": "List All Employees (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Performance Data (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/performance/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "performance", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Performance Data (Admin Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee\": 1,\n    \"satisfaction_level\": 0.85,\n    \"last_evaluation\": 0.92,\n    \"number_project\": 5,\n    \"average_monthly_hours\": 160,\n    \"time_spend_company\": 3,\n    \"work_accident\": false,\n    \"promotion_last_5years\": true,\n    \"left\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/performance/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "performance", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Data Separation Stats (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/stats/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "stats", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Goals & OKRs",
+			"item": [
+				{
+					"name": "List Goals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/goals/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "goals", ""],
+							"query": [
+								{
+									"key": "owner",
+									"value": "1",
+									"description": "Filter by owner ID",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "in_progress",
+									"description": "Filter by status",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Improve team collaboration\",\n    \"description\": \"Enhance cross-functional team collaboration through better communication tools and processes\",\n    \"owner\": 1,\n    \"priority\": \"high\",\n    \"status\": \"in_progress\",\n    \"progress_percentage\": 25,\n    \"due_date\": \"2024-06-30\",\n    \"key_results\": [\n        {\n            \"title\": \"Implement daily standup meetings\",\n            \"description\": \"Establish consistent daily communication\",\n            \"is_completed\": true,\n            \"order\": 1\n        },\n        {\n            \"title\": \"Deploy team collaboration platform\",\n            \"description\": \"Setup and train team on new collaboration tools\",\n            \"is_completed\": false,\n            \"order\": 2\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/goals/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "goals", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goal Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/goals/{{goal_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "goals", "{{goal_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Improve team collaboration\",\n    \"description\": \"Enhanced cross-functional team collaboration through better communication tools and processes\",\n    \"owner\": 1,\n    \"priority\": \"high\",\n    \"status\": \"in_progress\",\n    \"progress_percentage\": 75,\n    \"due_date\": \"2024-06-30\"\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/goals/{{goal_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "goals", "{{goal_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/goals/{{goal_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "goals", "{{goal_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Goal Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/goals/statistics/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "goals", "statistics", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Filter by employee ID",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Goal Sample Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/goals/sample_data/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "goals", "sample_data", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Key Results",
+			"item": [
+				{
+					"name": "List Key Results",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/key-results/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "key-results", ""],
+							"query": [
+								{
+									"key": "goal",
+									"value": "1",
+									"description": "Filter by goal ID",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Key Result",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"goal\": 1,\n    \"title\": \"Achieve 95% team satisfaction score\",\n    \"description\": \"Measure team satisfaction through monthly surveys\",\n    \"is_completed\": false,\n    \"order\": 3\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/key-results/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "key-results", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Key Result",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Achieve 95% team satisfaction score\",\n    \"description\": \"Measure team satisfaction through monthly surveys\",\n    \"is_completed\": true,\n    \"order\": 3\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/key-results/{{key_result_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "key-results", "{{key_result_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Key Result",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/key-results/{{key_result_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "key-results", "{{key_result_id}}", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Feedback",
+			"item": [
+				{
+					"name": "List Feedback",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", ""],
+							"query": [
+								{
+									"key": "to_employee",
+									"value": "1",
+									"description": "Filter by recipient employee ID",
+									"disabled": true
+								},
+								{
+									"key": "feedback_type",
+									"value": "peer",
+									"description": "Filter by feedback type",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Feedback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from_employee\": 2,\n    \"to_employee\": 1,\n    \"feedback_type\": \"peer\",\n    \"project\": \"Q1 Marketing Campaign\",\n    \"content\": \"Great collaboration on the marketing campaign. John demonstrated excellent communication skills and helped the team meet all deadlines. His attention to detail in the final deliverables was outstanding.\",\n    \"rating\": 5,\n    \"is_helpful\": true\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Feedback Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/{{feedback_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", "{{feedback_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Feedback",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from_employee\": 2,\n    \"to_employee\": 1,\n    \"feedback_type\": \"peer\",\n    \"project\": \"Q1 Marketing Campaign\",\n    \"content\": \"Excellent collaboration on the marketing campaign. John demonstrated outstanding communication skills and helped the team exceed all deadlines.\",\n    \"rating\": 5,\n    \"is_helpful\": true\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/{{feedback_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", "{{feedback_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Feedback",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/{{feedback_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", "{{feedback_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Feedback Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/statistics/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", "statistics", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Filter by employee ID",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Feedback Received",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/received/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", "received", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Employee ID (required)",
+									"disabled": false
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Feedback Sent",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/sent/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", "sent", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Employee ID (required)",
+									"disabled": false
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sample Feedback Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/feedback/sample_feedback/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "feedback", "sample_feedback", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Performance Reviews",
+			"item": [
+				{
+					"name": "List Performance Reviews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/performance-reviews/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "performance-reviews", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Filter by employee ID",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"description": "Filter by review status",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Performance Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee\": 1,\n    \"reviewer\": 2,\n    \"review_period_start\": \"2024-01-01\",\n    \"review_period_end\": \"2024-03-31\",\n    \"status\": \"not_started\",\n    \"overall_rating\": null,\n    \"self_assessment_progress\": 0,\n    \"peer_reviews_received\": 0,\n    \"peer_reviews_target\": 5,\n    \"manager_review_completed\": false,\n    \"calibration_completed\": false,\n    \"comments\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/performance-reviews/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "performance-reviews", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Performance Review Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/performance-reviews/{{review_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "performance-reviews", "{{review_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Performance Review",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee\": 1,\n    \"reviewer\": 2,\n    \"review_period_start\": \"2024-01-01\",\n    \"review_period_end\": \"2024-03-31\",\n    \"status\": \"completed\",\n    \"overall_rating\": 4.2,\n    \"self_assessment_progress\": 100,\n    \"peer_reviews_received\": 5,\n    \"peer_reviews_target\": 5,\n    \"manager_review_completed\": true,\n    \"calibration_completed\": true,\n    \"comments\": \"Strong performance this quarter. Excellent technical skills and team collaboration.\"\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/performance-reviews/{{review_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "performance-reviews", "{{review_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Performance Review",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/performance-reviews/{{review_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "performance-reviews", "{{review_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Performance Review Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/performance-reviews/statistics/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "performance-reviews", "statistics", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Filter by employee ID",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - One-on-One Meetings",
+			"item": [
+				{
+					"name": "List One-on-One Meetings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/oneonone-meetings/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "oneonone-meetings", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Filter by employee ID",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "upcoming",
+									"description": "Filter by meeting status",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create One-on-One Meeting",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee\": 1,\n    \"manager\": 2,\n    \"meeting_date\": \"2024-04-15T10:00:00Z\",\n    \"duration_minutes\": 45,\n    \"topic\": \"Q1 Review and Career Development\",\n    \"agenda\": \"1. Review Q1 performance\\n2. Discuss career goals\\n3. Address any concerns\\n4. Plan Q2 objectives\",\n    \"notes\": \"\",\n    \"status\": \"scheduled\"\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/oneonone-meetings/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "oneonone-meetings", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One-on-One Meeting Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/oneonone-meetings/{{meeting_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "oneonone-meetings", "{{meeting_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update One-on-One Meeting",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee\": 1,\n    \"manager\": 2,\n    \"meeting_date\": \"2024-04-15T10:00:00Z\",\n    \"duration_minutes\": 45,\n    \"topic\": \"Q1 Review and Career Development\",\n    \"agenda\": \"1. Review Q1 performance\\n2. Discuss career goals\\n3. Address any concerns\\n4. Plan Q2 objectives\",\n    \"notes\": \"Great discussion about career growth. Employee expressed interest in leadership training. Action items: enroll in management course, shadow senior developers.\",\n    \"status\": \"completed\",\n    \"satisfaction_rating\": 5\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/oneonone-meetings/{{meeting_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "oneonone-meetings", "{{meeting_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete One-on-One Meeting",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/oneonone-meetings/{{meeting_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "oneonone-meetings", "{{meeting_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "One-on-One Meeting Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/oneonone-meetings/statistics/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "oneonone-meetings", "statistics", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Filter by employee ID",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Shoutouts",
+			"item": [
+				{
+					"name": "List Shoutouts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/shoutouts/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "shoutouts", ""],
+							"query": [
+								{
+									"key": "to_employee",
+									"value": "1",
+									"description": "Filter by recipient employee ID",
+									"disabled": true
+								},
+								{
+									"key": "is_public",
+									"value": "true",
+									"description": "Filter by public shoutouts",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Shoutout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from_employee\": 2,\n    \"to_employee\": 1,\n    \"to_team\": null,\n    \"title\": \"Outstanding Problem Solving\",\n    \"message\": \"John solved a critical production issue that saved us hours of downtime. His quick thinking and technical expertise were exactly what we needed!\",\n    \"values\": [\"excellence\", \"innovation\"],\n    \"is_public\": true,\n    \"shared_to_slack\": true,\n    \"shared_to_teams\": false\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/shoutouts/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "shoutouts", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Shoutout Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/shoutouts/{{shoutout_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "shoutouts", "{{shoutout_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Shoutout",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from_employee\": 2,\n    \"to_employee\": 1,\n    \"to_team\": null,\n    \"title\": \"Outstanding Problem Solving & Leadership\",\n    \"message\": \"John not only solved a critical production issue but also guided the team through the resolution process. His technical expertise and leadership were exceptional!\",\n    \"values\": [\"excellence\", \"innovation\", \"leadership\"],\n    \"is_public\": true,\n    \"shared_to_slack\": true,\n    \"shared_to_teams\": true\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/shoutouts/{{shoutout_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "shoutouts", "{{shoutout_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Shoutout",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/shoutouts/{{shoutout_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "shoutouts", "{{shoutout_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Shoutout Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/shoutouts/statistics/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "shoutouts", "statistics", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Filter by employee ID",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Learning",
+			"item": [
+				{
+					"name": "List Learning Modules",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/learning-modules/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "learning-modules", ""],
+							"query": [
+								{
+									"key": "category",
+									"value": "leadership",
+									"description": "Filter by category",
+									"disabled": true
+								},
+								{
+									"key": "content_type",
+									"value": "micro-learning",
+									"description": "Filter by content type",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Learning Module",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Effective Communication in Remote Teams\",\n    \"description\": \"Learn best practices for communicating effectively in distributed teams, including async communication, video calls, and written communication.\",\n    \"content_type\": \"course\",\n    \"category\": \"communication\",\n    \"duration_minutes\": 120,\n    \"url\": \"https://learning.company.com/courses/remote-communication\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/learning-modules/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "learning-modules", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Learning Module Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/learning-modules/{{module_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "learning-modules", "{{module_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Learning Module",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Advanced Communication in Remote Teams\",\n    \"description\": \"Master advanced techniques for communicating effectively in distributed teams, including conflict resolution, cross-cultural communication, and leadership communication.\",\n    \"content_type\": \"course\",\n    \"category\": \"communication\",\n    \"duration_minutes\": 180,\n    \"url\": \"https://learning.company.com/courses/advanced-remote-communication\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{performance_base_url}}/api/learning-modules/{{module_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "learning-modules", "{{module_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Learning Module",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/learning-modules/{{module_id}}/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "learning-modules", "{{module_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Learning Module Recommendations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/learning-modules/recommendations/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "learning-modules", "recommendations", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Employee ID to get recommendations for",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Learning Module Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/learning-modules/categories/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "learning-modules", "categories", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Analytics",
+			"item": [
+				{
+					"name": "Analytics Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/analytics/dashboard/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "analytics", "dashboard", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Team Engagement Trends",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/analytics/team_engagement/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "analytics", "team_engagement", ""],
+							"query": [
+								{
+									"key": "days",
+									"value": "30",
+									"description": "Number of days to retrieve data for",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Risk Trends",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/analytics/risk_trends/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "analytics", "risk_trends", ""],
+							"query": [
+								{
+									"key": "months",
+									"value": "12",
+									"description": "Number of months to retrieve data for",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Performance Matrix",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/analytics/performance_matrix/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "analytics", "performance_matrix", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance App - Dashboard",
+			"item": [
+				{
+					"name": "Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/dashboard/stats/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "dashboard", "stats", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Employee ID (required)",
+									"disabled": false
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dashboard Activities",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/dashboard/activities/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "dashboard", "activities", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Employee ID (required)",
+									"disabled": false
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dashboard User Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{performance_base_url}}/api/dashboard/user_info/",
+							"host": ["{{performance_base_url}}"],
+							"path": ["api", "dashboard", "user_info", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "1",
+									"description": "Employee ID (required)",
+									"disabled": false
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"description": "Base URL for the main API (predictions app)"
+		},
+		{
+			"key": "performance_base_url",
+			"value": "http://localhost:8000/performance",
+			"description": "Base URL for the performance app (currently commented out in main urls.py)"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"description": "Authentication token for regular authenticated endpoints"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"description": "Authentication token for admin-only endpoints"
+		},
+		{
+			"key": "goal_id",
+			"value": "1",
+			"description": "Sample goal ID for testing"
+		},
+		{
+			"key": "key_result_id",
+			"value": "1",
+			"description": "Sample key result ID for testing"
+		},
+		{
+			"key": "feedback_id",
+			"value": "1",
+			"description": "Sample feedback ID for testing"
+		},
+		{
+			"key": "review_id",
+			"value": "1",
+			"description": "Sample performance review ID for testing"
+		},
+		{
+			"key": "meeting_id",
+			"value": "1",
+			"description": "Sample one-on-one meeting ID for testing"
+		},
+		{
+			"key": "shoutout_id",
+			"value": "1",
+			"description": "Sample shoutout ID for testing"
+		},
+		{
+			"key": "module_id",
+			"value": "1",
+			"description": "Sample learning module ID for testing"
+		},
+		{
+			"key": "progress_id",
+			"value": "1",
+			"description": "Sample learning progress ID for testing"
+		},
+		{
+			"key": "department_id",
+			"value": "1",
+			"description": "Sample department ID for testing"
+		},
+		{
+			"key": "employee_id",
+			"value": "1",
+			"description": "Sample employee ID for testing"
+		}
+	]
+}
