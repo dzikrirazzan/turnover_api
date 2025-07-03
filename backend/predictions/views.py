@@ -18,6 +18,7 @@ from .serializers import (
     EmployeeListSerializer
 )
 from .permissions import IsAdminUser
+from .response_utils import StandardResponse, ResponseMessages
 
 # ========================================
 # CRUD ViewSets for Employee & Department
@@ -59,11 +60,14 @@ class DepartmentViewSet(viewsets.ModelViewSet):
                 'hire_date': emp.hire_date,
                 'is_active': emp.is_active
             })
-        return Response({
-            'department': department.name,
-            'employees': employee_data,
-            'total_employees': len(employee_data)
-        })
+        return StandardResponse.success(
+            message=f"Karyawan di departemen {department.name} berhasil diambil",
+            data={
+                'department': department.name,
+                'employees': employee_data,
+                'total_employees': len(employee_data)
+            }
+        )
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     """
@@ -105,13 +109,18 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             employee = serializer.save()
-            return Response({
-                'message': 'Employee created successfully',
-                'employee_id': employee.employee_id,
-                'email': employee.email,
-                'full_name': employee.full_name
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return StandardResponse.created(
+                message=ResponseMessages.DATA_CREATED,
+                data={
+                    'employee_id': employee.employee_id,
+                    'email': employee.email,
+                    'full_name': employee.full_name
+                }
+            )
+        return StandardResponse.validation_error(
+            message=ResponseMessages.VALIDATION_ERROR,
+            errors=serializer.errors
+        )
     
     def update(self, request, *args, **kwargs):
         """Update employee data (admin only)"""
@@ -122,21 +131,27 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         if serializer.is_valid():
             employee = serializer.save()
-            return Response({
-                'message': 'Employee updated successfully',
-                'employee_id': employee.employee_id,
-                'full_name': employee.full_name
-            })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return StandardResponse.success(
+                message=ResponseMessages.DATA_UPDATED,
+                data={
+                    'employee_id': employee.employee_id,
+                    'full_name': employee.full_name
+                }
+            )
+        return StandardResponse.validation_error(
+            message=ResponseMessages.VALIDATION_ERROR,
+            errors=serializer.errors
+        )
     
     def destroy(self, request, *args, **kwargs):
         """Soft delete employee (set inactive)"""
         instance = self.get_object()
         instance.is_active = False
         instance.save()
-        return Response({
-            'message': f'Employee {instance.full_name} has been deactivated'
-        }, status=status.HTTP_200_OK)
+        return StandardResponse.success(
+            message=f'Karyawan {instance.full_name} berhasil dinonaktifkan',
+            data={'employee_id': instance.employee_id, 'full_name': instance.full_name}
+        )
     
     @action(detail=True, methods=['post'])
     def activate(self, request, pk=None):
@@ -144,9 +159,10 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         employee = self.get_object()
         employee.is_active = True
         employee.save()
-        return Response({
-            'message': f'Employee {employee.full_name} has been activated'
-        })
+        return StandardResponse.success(
+            message=f'Karyawan {employee.full_name} berhasil diaktifkan',
+            data={'employee_id': employee.employee_id, 'full_name': employee.full_name}
+        )
     
     @action(detail=True, methods=['get'])
     def performance_data(self, request, pk=None):
@@ -155,11 +171,14 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         try:
             performance_data = employee.performance_data
             serializer = EmployeePerformanceDataSerializer(performance_data)
-            return Response(serializer.data)
+            return StandardResponse.success(
+                message=f"Data performa {employee.full_name} berhasil diambil",
+                data=serializer.data
+            )
         except EmployeePerformanceData.DoesNotExist:
-            return Response({
-                'message': 'No performance data found for this employee'
-            }, status=status.HTTP_404_NOT_FOUND)
+            return StandardResponse.not_found(
+                message=f'Data performa tidak ditemukan untuk {employee.full_name}'
+            )
     
     @action(detail=False, methods=['get'])
     def statistics(self, request):
@@ -182,13 +201,16 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             count=Count('id')
         ).order_by('-count')
         
-        return Response({
-            'total_employees': total_employees,
-            'active_employees': active_employees,
-            'inactive_employees': inactive_employees,
-            'department_breakdown': dept_stats,
-            'role_breakdown': list(role_stats)
-        })
+        return StandardResponse.success(
+            message="Statistik karyawan berhasil diambil",
+            data={
+                'total_employees': total_employees,
+                'active_employees': active_employees,
+                'inactive_employees': inactive_employees,
+                'department_breakdown': dept_stats,
+                'role_breakdown': list(role_stats)
+            }
+        )
 
 # ========================================
 # Existing Function-based Views
@@ -198,34 +220,39 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 @permission_classes([AllowAny])
 def health_check(request):
     """API health check endpoint"""
-    return Response({
-        'status': 'healthy',
-        'message': 'SMART-EN Turnover Prediction API berjalan',
-        'version': '2.0.0'
-    })
+    return StandardResponse.success(
+        message="SMART-EN Turnover Prediction API berjalan",
+        data={
+            'status': 'healthy',
+            'version': '2.0.0'
+        }
+    )
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def api_info(request):
     """Informasi API"""
-    return Response({
-        'api_name': 'SMART-EN Turnover Prediction API',
-        'version': '2.0.0',
-        'description': 'Sistem prediksi turnover karyawan dengan role-based access',
-        'features': [
-            'Registrasi dan manajemen karyawan',
-            'Role-based access control (Employee/Manager/HR/Admin)',
-            'Manajemen department',
-            'Data performance tracking (hanya admin)',
-            'Prediksi turnover berbasis ML (hanya admin)',
-            'Kategorisasi risiko dan alert'
-        ],
-        'data_separation': {
-            'registration_data': 'Data basic karyawan untuk admin info',
-            'ml_data': 'Data terpisah untuk machine learning (hanya admin)',
-            'shared_data': 'Department digunakan di kedua sistem'
+    return StandardResponse.success(
+        message="Informasi API berhasil diambil",
+        data={
+            'api_name': 'SMART-EN Turnover Prediction API',
+            'version': '2.0.0',
+            'description': 'Sistem prediksi turnover karyawan dengan role-based access',
+            'features': [
+                'Registrasi dan manajemen karyawan',
+                'Role-based access control (Employee/Manager/HR/Admin)',
+                'Manajemen department',
+                'Data performance tracking (hanya admin)',
+                'Prediksi turnover berbasis ML (hanya admin)',
+                'Kategorisasi risiko dan alert'
+            ],
+            'data_separation': {
+                'registration_data': 'Data basic karyawan untuk admin info',
+                'ml_data': 'Data terpisah untuk machine learning (hanya admin)',
+                'shared_data': 'Department digunakan di kedua sistem'
+            }
         }
-    })
+    )
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -233,7 +260,10 @@ def list_departments(request):
     """List all departments"""
     departments = Department.objects.all()
     serializer = DepartmentSerializer(departments, many=True)
-    return Response(serializer.data)
+    return StandardResponse.list_response(
+        data=serializer.data,
+        message=ResponseMessages.DEPARTMENTS_RETRIEVED
+    )
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -249,11 +279,14 @@ def register_employee(request):
         # Use response serializer untuk data lengkap dengan token
         response_serializer = EmployeeRegistrationResponseSerializer(employee)
         
-        return Response({
-            'message': 'Registrasi berhasil',
-            'employee': response_serializer.data
-        }, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return StandardResponse.created(
+            message=ResponseMessages.REGISTRATION_SUCCESS,
+            data={'employee': response_serializer.data}
+        )
+    return StandardResponse.validation_error(
+        message=ResponseMessages.VALIDATION_ERROR,
+        errors=serializer.errors
+    )
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -266,25 +299,31 @@ def login_employee(request):
         
         # Use login response serializer untuk data lengkap dengan token
         response_serializer = LoginResponseSerializer(user)
-        return Response({
-            'message': 'Login berhasil',
-            'user': response_serializer.data
-        })
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return StandardResponse.success(
+            message=ResponseMessages.LOGIN_SUCCESS,
+            data={'user': response_serializer.data}
+        )
+    return StandardResponse.validation_error(
+        message=ResponseMessages.INVALID_CREDENTIALS,
+        errors=serializer.errors
+    )
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_employee(request):
     """Logout current user"""
     logout(request)
-    return Response({'message': 'Logout berhasil'})
+    return StandardResponse.success(message=ResponseMessages.LOGOUT_SUCCESS)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_profile(request):
     """Get current user profile with token"""
     serializer = LoginResponseSerializer(request.user)
-    return Response(serializer.data)
+    return StandardResponse.success(
+        message="Profil pengguna berhasil diambil",
+        data=serializer.data
+    )
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -297,18 +336,27 @@ def manage_performance_data(request):
         # List all performance data
         performance_data = EmployeePerformanceData.objects.all()
         serializer = EmployeePerformanceDataSerializer(performance_data, many=True)
-        return Response(serializer.data)
+        return StandardResponse.list_response(
+            data=serializer.data,
+            message=ResponseMessages.PERFORMANCE_DATA_RETRIEVED
+        )
     
     elif request.method == 'POST':
         # Create new performance data
         serializer = EmployeePerformanceDataSerializer(data=request.data)
         if serializer.is_valid():
             performance_data = serializer.save()
-            return Response({
-                'message': 'Data performance berhasil ditambahkan',
-                'employee_name': performance_data.employee.full_name
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return StandardResponse.created(
+                message=ResponseMessages.DATA_CREATED,
+                data={
+                    'employee_name': performance_data.employee.full_name,
+                    'performance_data': serializer.data
+                }
+            )
+        return StandardResponse.validation_error(
+            message=ResponseMessages.VALIDATION_ERROR,
+            errors=serializer.errors
+        )
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -330,10 +378,10 @@ def list_employees(request):
         }
         data.append(emp_data)
     
-    return Response({
-        'employees': data,
-        'total': len(data)
-    })
+    return StandardResponse.list_response(
+        data=data,
+        message=ResponseMessages.EMPLOYEES_RETRIEVED
+    )
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -343,18 +391,20 @@ def data_separation_stats(request):
     department_count = Department.objects.count()
     performance_data_count = EmployeePerformanceData.objects.count()
     
-    return Response({
-        'message': 'Data separation berhasil diimplementasikan',
-        'statistics': {
-            'employees_registered': employee_count,
-            'departments_available': department_count,
-            'performance_data_records': performance_data_count,
-            'employees_with_ml_data': performance_data_count,
-            'employees_without_ml_data': employee_count - performance_data_count
-        },
-        'data_separation_info': {
-            'registration_table': 'predictions_employee (basic data only)',
-            'ml_table': 'predictions_employeeperformancedata (ML features only)',
-            'shared_table': 'predictions_department (used by both systems)'
+    return StandardResponse.success(
+        message="Statistik data separation berhasil diambil",
+        data={
+            'statistics': {
+                'employees_registered': employee_count,
+                'departments_available': department_count,
+                'performance_data_records': performance_data_count,
+                'employees_with_ml_data': performance_data_count,
+                'employees_without_ml_data': employee_count - performance_data_count
+            },
+            'data_separation_info': {
+                'registration_table': 'predictions_employee (basic data only)',
+                'ml_table': 'predictions_employeeperformancedata (ML features only)',
+                'shared_table': 'predictions_department (used by both systems)'
+            }
         }
-    })
+    )
