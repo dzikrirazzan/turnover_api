@@ -267,9 +267,9 @@ def list_departments(request):
         message=ResponseMessages.DEPARTMENTS_RETRIEVED
     )
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_exempt
 def register_employee(request):
     """
     Register new employee with COMPLETE DATA response
@@ -295,9 +295,9 @@ def register_employee(request):
         errors=serializer.errors
     )
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_exempt
 def login_employee(request):
     """Login with email and password - returns complete user data with token"""
     serializer = LoginSerializer(data=request.data)

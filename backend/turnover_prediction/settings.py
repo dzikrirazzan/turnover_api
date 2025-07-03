@@ -82,6 +82,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'predictions.csrf_middleware.CSRFExemptAPIMiddleware',  # Custom CSRF exempt for API
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -168,6 +169,14 @@ CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = False
 CSRF_USE_SESSIONS = False
 CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
+
+# Additional CSRF settings untuk API compatibility
+CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_AGE = None
+CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_PATH = '/'
 
 
 # REST Framework settings
