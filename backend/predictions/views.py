@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .models import Department, Employee, EmployeePerformanceData
 from .serializers import (
     EmployeeRegistrationSerializer, 
@@ -267,6 +269,7 @@ def list_departments(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@csrf_exempt
 def register_employee(request):
     """
     Register new employee with COMPLETE DATA response
@@ -290,6 +293,7 @@ def register_employee(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@csrf_exempt
 def login_employee(request):
     """Login with email and password - returns complete user data with token"""
     serializer = LoginSerializer(data=request.data)

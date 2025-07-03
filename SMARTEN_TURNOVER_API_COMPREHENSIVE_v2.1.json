@@ -1,0 +1,1108 @@
+{
+  "info": {
+    "name": "SMARTEN Turnover API - Comprehensive v2.1",
+    "description": "Complete API collection for SMARTEN Employee Turnover Prediction System with all endpoints including Authentication, CRUD operations, Performance Management, Analytics and more.",
+    "version": "2.1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employee_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "department_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication & Core",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", ""]
+            },
+            "description": "Check API health status"
+          },
+          "response": []
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/info/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "info", ""]
+            },
+            "description": "Get API information and available endpoints"
+          },
+          "response": []
+        },
+        {
+          "name": "Register Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.employee && response.data.employee.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.data.employee.token);",
+                  "        pm.collectionVariables.set('employee_id', response.data.employee.id);",
+                  "        console.log('Token saved:', response.data.employee.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRFToken",
+                "value": "{{csrf_token}}",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@smarten.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirm\": \"SecurePass123!\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"phone_number\": \"+6281234567890\",\n  \"date_of_birth\": \"1990-05-15\",\n  \"gender\": \"M\",\n  \"marital_status\": \"single\",\n  \"education_level\": \"bachelor\",\n  \"address\": \"Jl. Sudirman No. 123, Jakarta\",\n  \"position\": \"Software Developer\",\n  \"department\": 1,\n  \"hire_date\": \"2024-01-15\",\n  \"salary\": \"monthly\",\n  \"salary_amount\": 15000000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "register", ""]
+            },
+            "description": "Register new employee with complete data and authentication token"
+          },
+          "response": []
+        },
+        {
+          "name": "Login Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.employee && response.data.employee.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.data.employee.token);",
+                  "        pm.collectionVariables.set('employee_id', response.data.employee.id);",
+                  "        console.log('Login successful, token saved:', response.data.employee.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@smarten.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login", ""]
+            },
+            "description": "Login employee and get authentication token"
+          },
+          "response": []
+        },
+        {
+          "name": "User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile", ""]
+            },
+            "description": "Get current user profile information"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/logout/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "logout", ""]
+            },
+            "description": "Logout current user and invalidate token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏢 Department Management",
+      "item": [
+        {
+          "name": "List Departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departments/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", ""]
+            },
+            "description": "Get list of all departments"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Department",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.id) {",
+                  "        pm.collectionVariables.set('department_id', response.data.id);",
+                  "        console.log('Department created with ID:', response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Information Technology\",\n  \"description\": \"Department responsible for IT infrastructure, software development, and digital transformation initiatives\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/departments/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", ""]
+            },
+            "description": "Create new department (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Department Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departments/{{department_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", "{{department_id}}", ""]
+            },
+            "description": "Get specific department details"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Information Technology & Digital Innovation\",\n  \"description\": \"Department responsible for IT infrastructure, software development, digital transformation initiatives, and innovation projects\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/departments/{{department_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", "{{department_id}}", ""]
+            },
+            "description": "Update department information (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departments/{{department_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", "{{department_id}}", ""]
+            },
+            "description": "Delete department (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Department Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departments/{{department_id}}/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", "{{department_id}}", "employees", ""]
+            },
+            "description": "Get all employees in specific department"
+          },
+          "response": []
+        },
+        {
+          "name": "List Departments (Legacy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/departments-list/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments-list", ""]
+            },
+            "description": "Legacy endpoint for listing departments (public access)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👥 Employee Management",
+      "item": [
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""]
+            },
+            "description": "Get list of all employees (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "List Employees with Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/?department={{department_id}}&role=employee&is_active=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""],
+              "query": [
+                {
+                  "key": "department",
+                  "value": "{{department_id}}"
+                },
+                {
+                  "key": "role",
+                  "value": "employee"
+                },
+                {
+                  "key": "is_active",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get filtered list of employees by department, role, and status"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane.smith@smarten.com\",\n  \"password\": \"SecurePass456!\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Smith\",\n  \"phone_number\": \"+6281234567891\",\n  \"date_of_birth\": \"1992-08-20\",\n  \"gender\": \"F\",\n  \"marital_status\": \"married\",\n  \"education_level\": \"master\",\n  \"address\": \"Jl. Thamrin No. 456, Jakarta\",\n  \"position\": \"Data Analyst\",\n  \"department\": 1,\n  \"hire_date\": \"2024-02-01\",\n  \"salary\": \"monthly\",\n  \"salary_amount\": 12000000,\n  \"role\": \"employee\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""]
+            },
+            "description": "Create new employee (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employee Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{employee_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{employee_id}}", ""]
+            },
+            "description": "Get specific employee details (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"phone_number\": \"+6281234567890\",\n  \"position\": \"Senior Software Developer\",\n  \"salary_amount\": 18000000,\n  \"address\": \"Jl. Sudirman No. 123, Jakarta Selatan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{employee_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{employee_id}}", ""]
+            },
+            "description": "Update employee information (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Partial Update Employee",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position\": \"Lead Software Developer\",\n  \"salary_amount\": 20000000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{employee_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{employee_id}}", ""]
+            },
+            "description": "Partially update employee information (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{employee_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{employee_id}}", ""]
+            },
+            "description": "Soft delete employee (set inactive) - Admin only"
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{employee_id}}/activate/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{employee_id}}", "activate", ""]
+            },
+            "description": "Reactivate employee (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Employee Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/statistics/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "statistics", ""]
+            },
+            "description": "Get employee statistics (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Employee Performance Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{employee_id}}/performance_data/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{employee_id}}", "performance_data", ""]
+            },
+            "description": "Get employee's performance data (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "List Employees (Legacy)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees-list/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees-list", ""]
+            },
+            "description": "Legacy endpoint for listing employees (Admin only)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🤖 Admin ML & Data",
+      "item": [
+        {
+          "name": "Manage Performance Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{employee_id}},\n  \"satisfaction_level\": 0.85,\n  \"last_evaluation\": 0.92,\n  \"number_project\": 4,\n  \"average_montly_hours\": 180,\n  \"time_spend_company\": 3,\n  \"work_accident\": 0,\n  \"promotion_last_5years\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            },
+            "description": "Add or update employee performance data for ML model"
+          },
+          "response": []
+        },
+        {
+          "name": "Data Separation Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/stats/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", ""]
+            },
+            "description": "Get data separation statistics for ML model"
+          },
+          "response": []
+        },
+        {
+          "name": "Turnover Prediction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Predict employee turnover probability using ML model"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🎯 Performance Goals",
+      "item": [
+        {
+          "name": "List Goals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/goals/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "goals", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get list of goals for specific employee"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Goal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete API Documentation\",\n  \"description\": \"Create comprehensive API documentation for all endpoints\",\n  \"owner\": {{employee_id}},\n  \"priority\": \"high\",\n  \"status\": \"in_progress\",\n  \"due_date\": \"2024-12-31\",\n  \"key_results\": [\n    {\n      \"title\": \"Document all authentication endpoints\",\n      \"description\": \"Complete documentation for login, register, logout endpoints\"\n    },\n    {\n      \"title\": \"Document CRUD operations\",\n      \"description\": \"Document all employee and department CRUD endpoints\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/performance/api/goals/",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "goals", ""]
+            },
+            "description": "Create new performance goal"
+          },
+          "response": []
+        },
+        {
+          "name": "Goal Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/goals/statistics/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "goals", "statistics", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get goal completion statistics for employee"
+          },
+          "response": []
+        },
+        {
+          "name": "Key Results",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/key-results/",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "key-results", ""]
+            },
+            "description": "Get list of key results"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💬 Feedback & Reviews",
+      "item": [
+        {
+          "name": "List Feedback",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/feedback/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "feedback", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get feedback for specific employee"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to_employee\": {{employee_id}},\n  \"feedback_type\": \"positive\",\n  \"title\": \"Excellent work on API development\",\n  \"content\": \"Great job implementing the authentication system. The code is clean and well-documented.\",\n  \"rating\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/performance/api/feedback/",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "feedback", ""]
+            },
+            "description": "Create new feedback for employee"
+          },
+          "response": []
+        },
+        {
+          "name": "Performance Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/performance-reviews/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "performance-reviews", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get performance reviews for employee"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Analytics & Dashboard",
+      "item": [
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/dashboard/stats/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "dashboard", "stats", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get dashboard statistics for employee"
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Activities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/dashboard/activities/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "dashboard", "activities", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get recent activities for dashboard"
+          },
+          "response": []
+        },
+        {
+          "name": "Analytics Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/analytics/overview/",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "analytics", "overview", ""]
+            },
+            "description": "Get analytics overview"
+          },
+          "response": []
+        },
+        {
+          "name": "Team Performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/analytics/team-performance/",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "analytics", "team-performance", ""]
+            },
+            "description": "Get team performance analytics"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📚 Learning & Development",
+      "item": [
+        {
+          "name": "Learning Modules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/learning-modules/",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "learning-modules", ""]
+            },
+            "description": "Get available learning modules"
+          },
+          "response": []
+        },
+        {
+          "name": "Learning Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/learning-progress/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "learning-progress", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get learning progress for employee"
+          },
+          "response": []
+        },
+        {
+          "name": "Learning Goals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance/api/learning-goals/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["performance", "api", "learning-goals", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get learning goals for employee"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔧 Testing & Debug",
+      "item": [
+        {
+          "name": "Test Registration without CSRF",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Requested-With",
+                "value": "XMLHttpRequest"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"debug.user@test.com\",\n  \"password\": \"TestPass123!\",\n  \"password_confirm\": \"TestPass123!\",\n  \"first_name\": \"Debug\",\n  \"last_name\": \"User\",\n  \"phone_number\": \"+6281234567999\",\n  \"date_of_birth\": \"1995-01-01\",\n  \"gender\": \"M\",\n  \"marital_status\": \"single\",\n  \"education_level\": \"bachelor\",\n  \"address\": \"Test Address\",\n  \"position\": \"Test Position\",\n  \"department\": 1,\n  \"hire_date\": \"2024-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "register", ""]
+            },
+            "description": "Test registration endpoint without CSRF token to debug the error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get CSRF Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const cookieJar = pm.cookies;",
+                  "const csrfCookie = cookieJar.get('csrftoken');",
+                  "if (csrfCookie) {",
+                  "    pm.collectionVariables.set('csrf_token', csrfCookie);",
+                  "    console.log('CSRF token saved:', csrfCookie);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/info/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "info", ""]
+            },
+            "description": "Get CSRF token from cookies for subsequent requests"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
