@@ -82,7 +82,8 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # CSRF DISABLED FOR API ENDPOINTS - SIMPLE SOLUTION
+    # 'django.middleware.csrf.CsrfViewMiddleware',  # COMMENTED OUT - NO MORE CSRF ISSUES!
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -135,19 +136,20 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS and CSRF from env
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if os.getenv('CORS_ALLOWED_ORIGINS') else [
+# CORS and CSRF - SIMPLIFIED AND PERMISSIVE FOR API TESTING
+CORS_ALLOWED_ORIGINS = [
     "https://smart-en-system.vercel.app",
     "https://turnover-api-hd7ze.ondigitalocean.app",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
-CORS_ALLOW_CREDENTIALS = os.getenv('CORS_ALLOW_CREDENTIALS', 'True').lower() == 'true'
-CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'False').lower() == 'true'
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True  # ALLOW ALL FOR API TESTING
 
-# Add CORS headers for better API compatibility
+# CORS headers for better API compatibility
 CORS_ALLOW_HEADERS = [
     'accept',
-    'accept-encoding',
+    'accept-encoding', 
     'authorization',
     'content-type',
     'dnt',
@@ -155,27 +157,22 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'access-control-allow-origin',
+    'access-control-allow-headers',
+    'access-control-allow-methods',
 ]
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if os.getenv('CSRF_TRUSTED_ORIGINS') else [
-    "https://smart-en-system.vercel.app",
-    "https://turnover-api-hd7ze.ondigitalocean.app",
-    "https://turnover-api-smarten-5b2de744e5e1.herokuapp.com",
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH', 
+    'POST',
+    'PUT',
 ]
 
-# For API endpoints, disable CSRF for better Postman/API client compatibility
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_HTTPONLY = False
-CSRF_USE_SESSIONS = False
-CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
-
-# Additional CSRF settings untuk API compatibility
-CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
-CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_COOKIE_AGE = None
-CSRF_COOKIE_DOMAIN = None
-CSRF_COOKIE_PATH = '/'
+# CSRF COMPLETELY DISABLED - NO MORE CSRF ISSUES!
+# (CSRF middleware already commented out above)
 
 
 # REST Framework settings

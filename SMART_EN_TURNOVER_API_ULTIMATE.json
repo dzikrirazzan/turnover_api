@@ -1,0 +1,445 @@
+{
+  "info": {
+    "name": "SMART-EN Turnover API - Ultimate Collection",
+    "description": "🚀 Complete API collection - CSRF & CORS fully disabled for easy testing!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app"
+    },
+    {
+      "key": "auth_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "📊 System Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health/"
+          }
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/info/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.employee && response.data.employee.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.data.employee.token);",
+                  "        console.log('Token saved from registration');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test.user@smarten.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirm\": \"SecurePass123!\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"phone_number\": \"+6281234567890\",\n  \"date_of_birth\": \"1990-05-15\",\n  \"gender\": \"M\",\n  \"marital_status\": \"single\",\n  \"education_level\": \"bachelor\",\n  \"address\": \"Test Address Jakarta\",\n  \"position\": \"Test Position\",\n  \"department\": 1,\n  \"hire_date\": \"2024-01-15\",\n  \"salary\": \"middle\",\n  \"salary_amount\": 8000000\n}"
+            },
+            "url": "{{base_url}}/api/register/"
+          }
+        },
+        {
+          "name": "Login Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.user && response.data.user.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.data.user.token);",
+                  "        console.log('Token saved from login');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test.user@smarten.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": "{{base_url}}/api/login/"
+          }
+        },
+        {
+          "name": "User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/profile/"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/logout/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏢 Department Management",
+      "item": [
+        {
+          "name": "List All Departments",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/departments/"
+          }
+        },
+        {
+          "name": "Get Department by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/departments/1/"
+          }
+        },
+        {
+          "name": "Create Department (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Department\",\n  \"description\": \"Description of the new department\"\n}"
+            },
+            "url": "{{base_url}}/api/departments/"
+          }
+        },
+        {
+          "name": "Update Department (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Department\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": "{{base_url}}/api/departments/1/"
+          }
+        },
+        {
+          "name": "Delete Department (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/departments/1/"
+          }
+        },
+        {
+          "name": "Get Department Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/departments/1/employees/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Employee Management",
+      "item": [
+        {
+          "name": "List All Employees (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/"
+          }
+        },
+        {
+          "name": "Get Employee by ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/1/"
+          }
+        },
+        {
+          "name": "Update Employee (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"Name\",\n  \"position\": \"Updated Position\",\n  \"role\": \"employee\"\n}"
+            },
+            "url": "{{base_url}}/api/employees/1/"
+          }
+        },
+        {
+          "name": "Delete Employee (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/1/"
+          }
+        },
+        {
+          "name": "Employee Statistics (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/statistics/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 Performance Data (ML)",
+      "item": [
+        {
+          "name": "List Performance Data (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/performance-data/"
+          }
+        },
+        {
+          "name": "Create Performance Data (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": 1,\n  \"satisfaction_level\": 0.75,\n  \"last_evaluation\": 0.85,\n  \"number_project\": 3,\n  \"average_monthly_hours\": 180,\n  \"time_spend_company\": 2,\n  \"work_accident\": 0,\n  \"promotion_last_5years\": 0,\n  \"left\": 0\n}"
+            },
+            "url": "{{base_url}}/api/performance-data/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Additional Endpoints",
+      "item": [
+        {
+          "name": "List Employees (Public)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/list-employees/"
+          }
+        },
+        {
+          "name": "List Departments (Public)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/list-departments/"
+          }
+        },
+        {
+          "name": "Data Separation Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/data-separation-stats/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 CSRF & CORS Tests",
+      "item": [
+        {
+          "name": "Test CSRF Bypass (Should Work)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('CSRF should be bypassed', function () {",
+                  "    pm.expect(pm.response.code).to.not.equal(403);",
+                  "});",
+                  "",
+                  "pm.test('No CSRF error in response', function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText).to.not.include('CSRF');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.29.2"
+              },
+              {
+                "key": "Referer",
+                "value": "https://web.postman.co/"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"csrf.test@example.com\",\n  \"password\": \"TestPass123!\",\n  \"password_confirm\": \"TestPass123!\",\n  \"first_name\": \"CSRF\",\n  \"last_name\": \"Test\",\n  \"department\": 1\n}"
+            },
+            "url": "{{base_url}}/api/register/"
+          }
+        },
+        {
+          "name": "Test CORS Preflight",
+          "request": {
+            "method": "OPTIONS",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "https://web.postman.co"
+              },
+              {
+                "key": "Access-Control-Request-Method",
+                "value": "POST"
+              },
+              {
+                "key": "Access-Control-Request-Headers",
+                "value": "content-type"
+              }
+            ],
+            "url": "{{base_url}}/api/register/"
+          }
+        }
+      ]
+    }
+  ]
+}

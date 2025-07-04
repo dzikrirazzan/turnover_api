@@ -1,0 +1,115 @@
+{
+  "info": {
+    "_postman_id": "smart-en-api-collection-2025",
+    "name": "SMART-EN Turnover API (DigitalOcean)",
+    "description": "All main endpoints for SMART-EN Turnover Prediction & Performance API (DigitalOcean deployment)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/health/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "health", ""] }
+          }
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/info/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "info", ""] }
+          }
+        },
+        {
+          "name": "Departments",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/departments/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "departments", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@company.com\",\n  \"password\": \"TestPass123!\",\n  \"password_confirm\": \"TestPass123!\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"department\": 1\n}"
+            },
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/register/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "register", ""] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@company.com\",\n  \"password\": \"TestPass123!\"\n}"
+            },
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/login/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "login", ""] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/logout/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "logout", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/profile/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "profile", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin/HR Only",
+      "item": [
+        {
+          "name": "Employees (List)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/employees/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "employees", ""] }
+          }
+        },
+        {
+          "name": "Performance Data (List/Add)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/performance/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "performance", ""] }
+          }
+        },
+        {
+          "name": "Stats (Data Separation)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/stats/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "stats", ""] }
+          }
+        }
+      ]
+    }
+  ]
+}
