@@ -1,0 +1,63 @@
+{
+  "info": {
+    "name": "SMART-EN API (All Endpoints, Auto-Generated)",
+    "description": "All API endpoints (method, path, handler) for SMART-EN Turnover & Performance System, ready for Postman import.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Predictions & Auth (Main)",
+      "item": [
+        { "name": "Health Check", "request": { "method": "GET", "url": { "raw": "/api/health/" } } },
+        { "name": "API Info", "request": { "method": "GET", "url": { "raw": "/api/info/" } } },
+        { "name": "Departments", "request": { "method": "GET", "url": { "raw": "/api/departments/" } } },
+        { "name": "Register", "request": { "method": "POST", "url": { "raw": "/api/register/" } } },
+        { "name": "Login", "request": { "method": "POST", "url": { "raw": "/api/login/" } } },
+        { "name": "Logout", "request": { "method": "POST", "url": { "raw": "/api/logout/" } } },
+        { "name": "Profile", "request": { "method": "GET", "url": { "raw": "/api/profile/" } } },
+        { "name": "Employees (List)", "request": { "method": "GET", "url": { "raw": "/api/employees/" } } },
+        { "name": "Performance Data (List/Add)", "request": { "method": "GET", "url": { "raw": "/api/performance/" } } },
+        { "name": "Performance Data (Add)", "request": { "method": "POST", "url": { "raw": "/api/performance/" } } },
+        { "name": "Stats (Data Separation)", "request": { "method": "GET", "url": { "raw": "/api/stats/" } } }
+      ]
+    },
+    {
+      "name": "Performance & Analytics",
+      "item": [
+        { "name": "Dashboard Stats", "request": { "method": "GET", "url": { "raw": "/performance/api/dashboard/stats/" } } },
+        { "name": "Dashboard Activities", "request": { "method": "GET", "url": { "raw": "/performance/api/dashboard/activities/" } } },
+        { "name": "Dashboard User Info", "request": { "method": "GET", "url": { "raw": "/performance/api/dashboard/user_info/" } } },
+        { "name": "Analytics Dashboard", "request": { "method": "GET", "url": { "raw": "/performance/api/analytics/dashboard/" } } },
+        { "name": "Analytics Performance Matrix", "request": { "method": "GET", "url": { "raw": "/performance/api/analytics/performance_matrix/" } } },
+        { "name": "Analytics Team Engagement", "request": { "method": "GET", "url": { "raw": "/performance/api/analytics/team_engagement/" } } },
+        { "name": "Analytics Risk Trends", "request": { "method": "GET", "url": { "raw": "/performance/api/analytics/risk_trends/" } } },
+        { "name": "Goals", "request": { "method": "GET", "url": { "raw": "/performance/api/goals/" } } },
+        { "name": "Goals (Create)", "request": { "method": "POST", "url": { "raw": "/performance/api/goals/" } } },
+        { "name": "Goals Statistics", "request": { "method": "GET", "url": { "raw": "/performance/api/goals/statistics/" } } },
+        { "name": "Goals Sample", "request": { "method": "GET", "url": { "raw": "/performance/api/goals/sample_goals/" } } },
+        { "name": "Key Results", "request": { "method": "GET", "url": { "raw": "/performance/api/key-results/" } } },
+        { "name": "Feedback", "request": { "method": "GET", "url": { "raw": "/performance/api/feedback/" } } },
+        { "name": "Feedback (Create)", "request": { "method": "POST", "url": { "raw": "/performance/api/feedback/" } } },
+        { "name": "Feedback Received", "request": { "method": "GET", "url": { "raw": "/performance/api/feedback/received/" } } },
+        { "name": "Feedback Sent", "request": { "method": "GET", "url": { "raw": "/performance/api/feedback/sent/" } } },
+        { "name": "Feedback Sample", "request": { "method": "GET", "url": { "raw": "/performance/api/feedback/sample_feedback/" } } },
+        { "name": "Feedback Stats", "request": { "method": "GET", "url": { "raw": "/performance/api/feedback/stats/" } } },
+        { "name": "Performance Reviews", "request": { "method": "GET", "url": { "raw": "/performance/api/performance-reviews/" } } },
+        { "name": "Performance Review Update Progress", "request": { "method": "POST", "url": { "raw": "/performance/api/performance-reviews/:id/update_progress/" } } },
+        { "name": "Performance Review Current", "request": { "method": "GET", "url": { "raw": "/performance/api/performance-reviews/current_review/" } } },
+        { "name": "Performance Review History", "request": { "method": "GET", "url": { "raw": "/performance/api/performance-reviews/history/" } } },
+        { "name": "One-on-One Meetings", "request": { "method": "GET", "url": { "raw": "/performance/api/oneonone-meetings/" } } },
+        { "name": "One-on-One Meetings Statistics", "request": { "method": "GET", "url": { "raw": "/performance/api/oneonone-meetings/statistics/" } } },
+        { "name": "Shoutouts", "request": { "method": "GET", "url": { "raw": "/performance/api/shoutouts/" } } },
+        { "name": "Shoutout Like", "request": { "method": "POST", "url": { "raw": "/performance/api/shoutouts/:id/like/" } } },
+        { "name": "Shoutout Statistics", "request": { "method": "GET", "url": { "raw": "/performance/api/shoutouts/statistics/" } } },
+        { "name": "Learning Modules", "request": { "method": "GET", "url": { "raw": "/performance/api/learning-modules/" } } },
+        { "name": "Learning Module Recommendations", "request": { "method": "GET", "url": { "raw": "/performance/api/learning-modules/recommendations/" } } },
+        { "name": "Learning Module Categories", "request": { "method": "GET", "url": { "raw": "/performance/api/learning-modules/categories/" } } },
+        { "name": "Learning Progress", "request": { "method": "GET", "url": { "raw": "/performance/api/learning-progress/" } } },
+        { "name": "Learning Progress Statistics", "request": { "method": "GET", "url": { "raw": "/performance/api/learning-progress/statistics/" } } },
+        { "name": "Learning Goals", "request": { "method": "GET", "url": { "raw": "/performance/api/learning-goals/" } } }
+      ]
+    }
+  ]
+}

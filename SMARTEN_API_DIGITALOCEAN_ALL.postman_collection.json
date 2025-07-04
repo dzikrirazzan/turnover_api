@@ -1,0 +1,64 @@
+{
+  "info": {
+    "_postman_id": "smart-en-api-complete-2025",
+    "name": "SMART-EN API (DigitalOcean, ALL Endpoints)",
+    "description": "All endpoints for SMART-EN Turnover Prediction & Performance API (DigitalOcean deployment)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Predictions (Main)",
+      "item": [
+        { "name": "Health Check", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/health/" } } },
+        { "name": "API Info", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/info/" } } },
+        { "name": "Departments", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/departments/" } } },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@company.com\",\n  \"password\": \"TestPass123!\",\n  \"password_confirm\": \"TestPass123!\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"department\": 1\n}"
+            },
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/register/" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"testuser@company.com\",\n  \"password\": \"TestPass123!\"\n}" },
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/login/" }
+          }
+        },
+        { "name": "Logout", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/logout/" } } },
+        { "name": "Profile", "request": { "method": "GET", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/profile/" } } },
+        { "name": "Employees (List)", "request": { "method": "GET", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/employees/" } } },
+        { "name": "Performance Data (List/Add)", "request": { "method": "GET", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/performance/" } } },
+        { "name": "Stats (Data Separation)", "request": { "method": "GET", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/stats/" } } }
+      ]
+    },
+    {
+      "name": "Performance & Analytics (Full)",
+      "item": [
+        { "name": "Dashboard Stats", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/dashboard/stats/" } } },
+        { "name": "Dashboard Activities", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/dashboard/activities/" } } },
+        { "name": "Dashboard User Info", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/dashboard/user_info/" } } },
+        { "name": "Analytics Dashboard", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/analytics/dashboard/" } } },
+        { "name": "Analytics Performance Matrix", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/analytics/performance_matrix/" } } },
+        { "name": "Analytics Team Engagement", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/analytics/team_engagement/" } } },
+        { "name": "Analytics Risk Trends", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/analytics/risk_trends/" } } },
+        { "name": "Goals", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/goals/" } } },
+        { "name": "Feedback", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/feedback/" } } },
+        { "name": "Performance Reviews", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/performance-reviews/" } } },
+        { "name": "One-on-One Meetings", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/oneonone-meetings/" } } },
+        { "name": "Shoutouts", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/shoutouts/" } } },
+        { "name": "Learning Modules", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/learning-modules/" } } },
+        { "name": "Learning Progress", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/learning-progress/" } } },
+        { "name": "Learning Goals", "request": { "method": "GET", "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/performance/api/learning-goals/" } } }
+      ]
+    }
+  ]
+}
