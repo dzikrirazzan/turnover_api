@@ -43,7 +43,12 @@ class Command(BaseCommand):
             
             # Show training results
             for model_name, metrics in results.items():
-                self.stdout.write(self.style.NOTICE(f"{model_name}: Accuracy={metrics['accuracy']:.3f}, F1={metrics['f1']:.3f}"))
+                accuracy = metrics.get('accuracy', 0)
+                f1_score = metrics.get('f1_score', 0)
+                auc_score = metrics.get('auc_score', 0)
+                self.stdout.write(self.style.NOTICE(
+                    f"{model_name}: Accuracy={accuracy:.3f}, F1={f1_score:.3f}, AUC={auc_score:.3f}"
+                ))
                 
         except Exception as e:
             self.stderr.write(self.style.ERROR(f"Training failed: {str(e)}"))
