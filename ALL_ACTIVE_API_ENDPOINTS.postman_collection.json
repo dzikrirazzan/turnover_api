@@ -1,0 +1,204 @@
+{
+  "info": {
+    "_postman_id": "all-active-api-endpoints",
+    "name": "ALL ACTIVE API ENDPOINTS - SMARTEN TURNOVER API",
+    "description": "All active endpoints in the project (predictions app)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/health/", "host": ["{{base_url}}"], "path": ["api", "health", ""] } },
+          "response": []
+        },
+        {
+          "name": "API Info",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/info/", "host": ["{{base_url}}"], "path": ["api", "info", ""] } },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Employee",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test.user@smarten.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirm\": \"SecurePass123!\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"department\": 1,\n  \"position\": \"Developer\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/register/", "host": ["{{base_url}}"], "path": ["api", "register", ""] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Employee",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test.user@smarten.com\",\n  \"password\": \"SecurePass123!\"\n}" },
+            "url": { "raw": "{{base_url}}/api/login/", "host": ["{{base_url}}"], "path": ["api", "login", ""] }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout Employee",
+          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/logout/", "host": ["{{base_url}}"], "path": ["api", "logout", ""] } },
+          "response": []
+        },
+        {
+          "name": "User Profile",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/profile/", "host": ["{{base_url}}"], "path": ["api", "profile", ""] } },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Departments (ViewSet)",
+      "item": [
+        {
+          "name": "List Departments",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/departments/", "host": ["{{base_url}}"], "path": ["api", "departments", ""] } },
+          "response": []
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"New Department\",\n  \"description\": \"Department description\"\n}" },
+            "url": { "raw": "{{base_url}}/api/departments/", "host": ["{{base_url}}"], "path": ["api", "departments", ""] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Department",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/departments/1/", "host": ["{{base_url}}"], "path": ["api", "departments", "1", ""] } },
+          "response": []
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Department\",\n  \"description\": \"Updated description\"\n}" },
+            "url": { "raw": "{{base_url}}/api/departments/1/", "host": ["{{base_url}}"], "path": ["api", "departments", "1", ""] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Department",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/departments/1/", "host": ["{{base_url}}"], "path": ["api", "departments", "1", ""] } },
+          "response": []
+        },
+        {
+          "name": "Department Employees",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/departments/1/employees/", "host": ["{{base_url}}"], "path": ["api", "departments", "1", "employees", ""] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employees (ViewSet)",
+      "item": [
+        {
+          "name": "List Employees",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/employees/", "host": ["{{base_url}}"], "path": ["api", "employees", ""] } },
+          "response": []
+        },
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new.employee@smarten.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirm\": \"SecurePass123!\",\n  \"first_name\": \"New\",\n  \"last_name\": \"Employee\",\n  \"department\": 1,\n  \"position\": \"Staff\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/employees/", "host": ["{{base_url}}"], "path": ["api", "employees", ""] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employee",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/employees/1/", "host": ["{{base_url}}"], "path": ["api", "employees", "1", ""] } },
+          "response": []
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"Employee\",\n  \"position\": \"Senior Staff\"\n}" },
+            "url": { "raw": "{{base_url}}/api/employees/1/", "host": ["{{base_url}}"], "path": ["api", "employees", "1", ""] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Employee",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/employees/1/", "host": ["{{base_url}}"], "path": ["api", "employees", "1", ""] } },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Legacy & Stats Endpoints",
+      "item": [
+        { "name": "List Departments (Legacy)", "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/departments-list/", "host": ["{{base_url}}"], "path": ["api", "departments-list", ""] } }, "response": [] },
+        { "name": "List Employees (Legacy)", "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/employees-list/", "host": ["{{base_url}}"], "path": ["api", "employees-list", ""] } }, "response": [] },
+        {
+          "name": "Performance Data (Admin Only)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/performance/", "host": ["{{base_url}}"], "path": ["api", "performance", ""] } },
+          "response": []
+        },
+        {
+          "name": "Create Performance Data (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": 1,\n  \"satisfaction_level\": 0.8,\n  \"last_evaluation\": 0.9,\n  \"number_project\": 5,\n  \"average_monthly_hours\": 160,\n  \"time_spend_company\": 3,\n  \"work_accident\": false,\n  \"promotion_last_5years\": true,\n  \"left\": false\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/performance/", "host": ["{{base_url}}"], "path": ["api", "performance", ""] }
+          },
+          "response": []
+        },
+        {
+          "name": "Data Separation Stats",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Token {{auth_token}}" }], "url": { "raw": "{{base_url}}/api/stats/", "host": ["{{base_url}}"], "path": ["api", "stats", ""] } },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "https://turnover-api-hd7ze.ondigitalocean.app" },
+    { "key": "auth_token", "value": "" }
+  ]
+}

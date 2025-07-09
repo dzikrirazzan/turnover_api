@@ -173,19 +173,6 @@ CORS_ALLOW_METHODS = [
 
 # CSRF COMPLETELY DISABLED - NO MORE CSRF ISSUES!
 # (CSRF middleware already commented out above)
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-CSRF_USE_SESSIONS = False
-CSRF_COOKIE_SAMESITE = None
-CSRF_TRUSTED_ORIGINS = [
-    'https://smart-en-system.vercel.app',
-    'https://turnover-api-hd7ze.ondigitalocean.app',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'https://postman.com',  # Allow Postman
-    'https://www.postman.com',  # Allow Postman
-    'https://app.postman.com',  # Allow Postman
-]
 
 
 # REST Framework settings

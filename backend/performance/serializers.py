@@ -13,7 +13,7 @@ class KeyResultSerializer(serializers.ModelSerializer):
 
 class GoalSerializer(serializers.ModelSerializer):
     key_results = KeyResultSerializer(many=True, read_only=True)
-    owner_name = serializers.CharField(source='owner.name', read_only=True)
+    owner_name = serializers.CharField(source='owner.full_name', read_only=True)
     
     class Meta:
         model = Goal
@@ -39,8 +39,8 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         return goal
 
 class FeedbackSerializer(serializers.ModelSerializer):
-    from_employee_name = serializers.CharField(source='from_employee.name', read_only=True)
-    to_employee_name = serializers.CharField(source='to_employee.name', read_only=True)
+    from_employee_name = serializers.CharField(source='from_employee.full_name', read_only=True)
+    to_employee_name = serializers.CharField(source='to_employee.full_name', read_only=True)
     
     class Meta:
         model = Feedback
@@ -49,8 +49,8 @@ class FeedbackSerializer(serializers.ModelSerializer):
                  'rating', 'is_helpful', 'created_at']
 
 class PerformanceReviewSerializer(serializers.ModelSerializer):
-    employee_name = serializers.CharField(source='employee.name', read_only=True)
-    reviewer_name = serializers.CharField(source='reviewer.name', read_only=True)
+    employee_name = serializers.CharField(source='employee.full_name', read_only=True)
+    reviewer_name = serializers.CharField(source='reviewer.full_name', read_only=True)
     peer_reviews_progress = serializers.SerializerMethodField()
     
     class Meta:
@@ -67,8 +67,8 @@ class PerformanceReviewSerializer(serializers.ModelSerializer):
         return min(100, (obj.peer_reviews_received / obj.peer_reviews_target) * 100)
 
 class OneOnOneMeetingSerializer(serializers.ModelSerializer):
-    employee_name = serializers.CharField(source='employee.name', read_only=True)
-    manager_name = serializers.CharField(source='manager.name', read_only=True)
+    employee_name = serializers.CharField(source='employee.full_name', read_only=True)
+    manager_name = serializers.CharField(source='manager.full_name', read_only=True)
     
     class Meta:
         model = OneOnOneMeeting
@@ -77,9 +77,9 @@ class OneOnOneMeetingSerializer(serializers.ModelSerializer):
                  'status', 'satisfaction_rating', 'created_at', 'updated_at']
 
 class ShoutoutSerializer(serializers.ModelSerializer):
-    from_employee_name = serializers.CharField(source='from_employee.name', read_only=True)
+    from_employee_name = serializers.CharField(source='from_employee.full_name', read_only=True)
     from_employee_initials = serializers.SerializerMethodField()
-    to_employee_name = serializers.CharField(source='to_employee.name', read_only=True)
+    to_employee_name = serializers.CharField(source='to_employee.full_name', read_only=True)
     to_team_name = serializers.CharField(source='to_team.name', read_only=True)
     
     class Meta:
@@ -90,7 +90,7 @@ class ShoutoutSerializer(serializers.ModelSerializer):
                  'shared_to_slack', 'shared_to_teams', 'created_at']
     
     def get_from_employee_initials(self, obj):
-        name_parts = obj.from_employee.name.split()
+        name_parts = obj.from_employee.full_name.split()
         if len(name_parts) >= 2:
             return f"{name_parts[0][0]}{name_parts[1][0]}"
         return name_parts[0][:2] if name_parts else "??"
@@ -121,7 +121,7 @@ class LearningGoalSerializer(serializers.ModelSerializer):
                  'unit', 'week_start', 'is_completed', 'progress_percentage']
 
 class AnalyticsMetricSerializer(serializers.ModelSerializer):
-    employee_name = serializers.CharField(source='employee.name', read_only=True)
+    employee_name = serializers.CharField(source='employee.full_name', read_only=True)
     department_name = serializers.CharField(source='department.name', read_only=True)
     
     class Meta:

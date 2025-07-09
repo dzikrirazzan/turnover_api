@@ -6,7 +6,7 @@ from .views import (
     # Function-based views
     health_check, api_info, register_employee,
     login_employee, logout_employee, user_profile, manage_performance_data,
-    list_employees, list_departments, data_separation_stats
+    list_employees, list_departments, data_separation_stats, predict_turnover
 )
 
 # Create router for ViewSets
@@ -33,4 +33,5 @@ urlpatterns = [
     
     path('api/performance/', manage_performance_data, name='manage_performance_data'),
     path('api/stats/', data_separation_stats, name='data_separation_stats'),
+    path('api/predict/', predict_turnover, name='predict_turnover'),
 ]

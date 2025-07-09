@@ -31,7 +31,7 @@ class Goal(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.title} - {self.owner.name}"
+        return f"{self.title} - {self.owner.full_name}"
 
 class KeyResult(models.Model):
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='key_results')
@@ -44,7 +44,7 @@ class KeyResult(models.Model):
         ordering = ['order']
     
     def __str__(self):
-        return f"{self.goal.title} - {self.title}"
+        return f"{self.title} - {self.goal.title}"
 
 class Feedback(models.Model):
     FEEDBACK_TYPE_CHOICES = [
@@ -67,7 +67,7 @@ class Feedback(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"Feedback from {self.from_employee.name} to {self.to_employee.name}"
+        return f"Feedback from {self.from_employee.full_name} to {self.to_employee.full_name}"
 
 class PerformanceReview(models.Model):
     REVIEW_STATUS_CHOICES = [
@@ -101,7 +101,7 @@ class PerformanceReview(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.employee.name} - {self.review_period_start.year} Review"
+        return f"{self.employee.full_name} - {self.review_period_start.year} Review"
 
 class OneOnOneMeeting(models.Model):
     MEETING_STATUS_CHOICES = [
@@ -127,7 +127,7 @@ class OneOnOneMeeting(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.employee.name} - {self.manager.name} ({self.meeting_date.date()})"
+        return f"{self.employee.full_name} - {self.manager.full_name} ({self.meeting_date.date()})"
 
 class Shoutout(models.Model):
     VALUE_CHOICES = [
@@ -152,8 +152,8 @@ class Shoutout(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        target = self.to_employee.name if self.to_employee else self.to_team.name
-        return f"Shoutout from {self.from_employee.name} to {target}"
+        target = self.to_employee.full_name if self.to_employee else self.to_team.name
+        return f"Shoutout from {self.from_employee.full_name} to {target}"
 
 class ShoutoutLike(models.Model):
     shoutout = models.ForeignKey(Shoutout, on_delete=models.CASCADE, related_name='likes')
@@ -210,7 +210,7 @@ class LearningProgress(models.Model):
         unique_together = ['employee', 'module']
     
     def __str__(self):
-        return f"{self.employee.name} - {self.module.title}"
+        return f"{self.employee.full_name} - {self.module.title}"
 
 class LearningGoal(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='learning_goals')
@@ -228,7 +228,7 @@ class LearningGoal(models.Model):
         return min(100, (self.current_value / self.target_value) * 100)
     
     def __str__(self):
-        return f"{self.employee.name} - {self.title}"
+        return f"{self.employee.full_name} - {self.title}"
 
 class AnalyticsMetric(models.Model):
     METRIC_TYPE_CHOICES = [
@@ -252,7 +252,7 @@ class AnalyticsMetric(models.Model):
         unique_together = ['employee', 'department', 'metric_type', 'date']
     
     def __str__(self):
-        target = self.employee.name if self.employee else self.department.name
+        target = self.employee.full_name if self.employee else self.department.name
         return f"{target} - {self.metric_type} ({self.date})"
 
 class DashboardActivity(models.Model):
@@ -268,4 +268,4 @@ class DashboardActivity(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.employee.name} - {self.title}"
+        return f"{self.employee.full_name} - {self.activity_type}: {self.title}"

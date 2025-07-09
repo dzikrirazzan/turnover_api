@@ -108,6 +108,36 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/stats/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "stats", ""] }
           }
+        },
+        {
+          "name": "Turnover Prediction (ML)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token YOUR_ADMIN_TOKEN" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 1\n}"
+            },
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/predict/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "predict", ""] }
+          }
+        },
+        {
+          "name": "Add Performance Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Token YOUR_ADMIN_TOKEN" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 1,\n  \"satisfaction_level\": 0.65,\n  \"last_evaluation\": 0.82,\n  \"number_project\": 4,\n  \"average_monthly_hours\": 185,\n  \"time_spend_company\": 5,\n  \"work_accident\": false,\n  \"promotion_last_5years\": false\n}"
+            },
+            "url": { "raw": "https://turnover-api-hd7ze.ondigitalocean.app/api/performance/", "host": ["https://turnover-api-hd7ze.ondigitalocean.app"], "path": ["api", "performance", ""] }
+          }
         }
       ]
     }

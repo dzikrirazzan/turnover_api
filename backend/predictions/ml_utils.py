@@ -11,249 +11,462 @@ from sklearn.pipeline import make_pipeline
 import joblib
 import os
 from django.conf import settings
+import warnings
+warnings.filterwarnings('ignore')
 
 class TurnoverPredictor:
     def __init__(self):
         self.models = {
-            'RandomForest': RandomForestClassifier(random_state=42),
-            'GradientBoosting': GradientBoostingClassifier(random_state=42),
-            'LogisticRegression': LogisticRegression(random_state=42, max_iter=1000),
-            'SVM': SVC(random_state=42, probability=True),
-            'KNN': KNeighborsClassifier()
+            'RandomForest': RandomForestClassifier(n_estimators=100, random_state=42),
+            'GradientBoosting': GradientBoostingClassifier(n_estimators=100, random_state=42),
+            'LogisticRegression': LogisticRegression(random_state=42, max_iter=1000)
         }
-        self.best_model = None
         self.scaler = StandardScaler()
         self.label_encoders = {}
-        self.feature_names = []
+        self.best_model = None
+        self.best_model_name = None
         
-    def prepare_data(self, employees_data):
-        """
-        Prepare data for ML model based on the Medium article features
-        """
-        df = pd.DataFrame(employees_data)
-
-        # Auto-rename columns from CSV if needed
-        rename_map = {
-            'sales': 'department',
-            'average_montly_hours': 'average_monthly_hours',
-            'Work_accident': 'work_accident',
-        }
-        for old, new in rename_map.items():
-            if old in df.columns:
-                df[new] = df[old]
-        
-        # Features from the article
-        feature_columns = [
-            'satisfaction_level', 'last_evaluation', 'number_project',
-            'average_monthly_hours', 'time_spend_company', 'work_accident',
-            'promotion_last_5years', 'salary', 'department'
-        ]
-        
-        # Handle categorical variables
-        # Convert salary to ordinal (as mentioned in the article)
-        salary_mapping = {'low': 0, 'medium': 1, 'high': 2}
-        df['salary_ordinal'] = df['salary'].map(salary_mapping)
-        
-        # Create dummy variables for department
-        department_dummies = pd.get_dummies(df['department'], prefix='department')
-        
-        # Combine all features
-        features_df = df[['satisfaction_level', 'last_evaluation', 'number_project',
-                         'average_monthly_hours', 'time_spend_company', 'work_accident',
-                         'promotion_last_5years', 'salary_ordinal']].copy()
-        
-        # Add department dummies (drop first to avoid multicollinearity)
-        features_df = pd.concat([features_df, department_dummies.iloc[:, 1:]], axis=1)
-        
-        # Store feature names if not already stored
-        if not self.feature_names:
-            self.feature_names = features_df.columns.tolist()
-        else:
-            # Ensure we have all the expected features
-            for feature in self.feature_names:
-                if feature not in features_df.columns:
-                    features_df[feature] = 0
+    def prepare_data(self, data):
+        """Prepare data for training"""
+        if not data:
+            return None, None
             
-            # Reorder columns to match training data
-            features_df = features_df[self.feature_names]
+        df = pd.DataFrame(data)
         
-        # Return target if available, otherwise return None
+        # Handle missing values
+        numeric_columns = ['satisfaction_level', 'last_evaluation', 'number_project', 
+                          'average_monthly_hours', 'time_spend_company']
+        for col in numeric_columns:
+            if col in df.columns:
+                df[col] = df[col].fillna(df[col].median())
+        
+        # Encode categorical variables
+        categorical_columns = ['salary', 'department']
+        for col in categorical_columns:
+            if col in df.columns:
+                if col not in self.label_encoders:
+                    self.label_encoders[col] = LabelEncoder()
+                df[col] = self.label_encoders[col].fit_transform(df[col].astype(str))
+        
+        # Prepare features
+        feature_columns = ['satisfaction_level', 'last_evaluation', 'number_project',
+                         'average_monthly_hours', 'time_spend_company', 'work_accident',
+                         'promotion_last_5years']
+        
+        if 'salary' in df.columns:
+            feature_columns.append('salary')
+        if 'department' in df.columns:
+            feature_columns.append('department')
+            
+        X = df[feature_columns].values
+        
+        # Scale features
+        X = self.scaler.fit_transform(X)
+        
+        # Prepare target variable
         if 'left' in df.columns:
-            return features_df, df['left']
+            y = df['left'].values
         else:
-            return features_df, None
+            # If no target variable, create synthetic one based on satisfaction and evaluation
+            y = ((df['satisfaction_level'] < 0.4) | (df['last_evaluation'] < 0.4)).astype(int)
+        
+        return X, y
     
     def train_models(self, X, y):
-        """
-        Train models optimized for production environments with limited resources
-        """
+        """Train multiple models and select the best one"""
+        if X is None or y is None:
+            raise ValueError("Invalid training data")
+            
+        results = {}
+        
         # Split data
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, random_state=42, stratify=y
         )
         
-        # Handle class imbalance with upsampling (as suggested in the article)
-        X_train_upsampled, y_train_upsampled = self._upsample_minority_class(X_train, y_train)
+        # Train each model
+        for name, model in self.models.items():
+            try:
+                # Train model
+                model.fit(X_train, y_train)
+                
+                # Make predictions
+                y_pred = model.predict(X_test)
+                y_pred_proba = model.predict_proba(X_test)[:, 1]
+                
+                # Calculate metrics
+                accuracy = accuracy_score(y_test, y_pred)
+                f1 = f1_score(y_test, y_pred, average='weighted')
+                auc = roc_auc_score(y_test, y_pred_proba)
+                
+                results[name] = {
+                    'model': model,
+                    'accuracy': accuracy,
+                    'f1_score': f1,
+                    'auc_score': auc,
+                    'predictions': y_pred,
+                    'probabilities': y_pred_proba
+                }
+                
+            except Exception as e:
+                print(f"Error training {name}: {str(e)}")
+                continue
         
-        results = {}
+        # Select best model based on F1 score
+        if results:
+            self.best_model_name = max(results.keys(), key=lambda k: results[k]['f1_score'])
+            self.best_model = results[self.best_model_name]['model']
         
-        # Use simpler, faster models for production
-        print("🚀 Training RandomForest with optimized parameters...")
-        rf_model = RandomForestClassifier(
-            n_estimators=100,
-            max_depth=10,
-            min_samples_split=5,
-            min_samples_leaf=2,
-            random_state=42,
-            n_jobs=1  # Use single core to avoid OOM
-        )
-        rf_pipeline = make_pipeline(StandardScaler(), rf_model)
-        rf_pipeline.fit(X_train_upsampled, y_train_upsampled)
-        
-        print("🚀 Training LogisticRegression...")
-        lr_pipeline = make_pipeline(StandardScaler(), LogisticRegression(
-            random_state=42, 
-            max_iter=1000,
-            solver='lbfgs'  # Faster solver
-        ))
-        lr_pipeline.fit(X_train_upsampled, y_train_upsampled)
-        
-        print("🚀 Training simplified GradientBoosting...")
-        gb_model = GradientBoostingClassifier(
-            n_estimators=50,  # Reduced from 100-200
-            max_depth=5,
-            learning_rate=0.1,
-            random_state=42
-        )
-        gb_pipeline = make_pipeline(StandardScaler(), gb_model)
-        gb_pipeline.fit(X_train_upsampled, y_train_upsampled)
-        
-        # Evaluate models
-        models_to_evaluate = {
-            'RandomForest': rf_pipeline,
-            'LogisticRegression': lr_pipeline,
-            'GradientBoosting': gb_pipeline
-        }
-        
-        print("📊 Evaluating models...")
-        for name, model in models_to_evaluate.items():
-            y_pred = model.predict(X_test)
-            y_pred_proba = model.predict_proba(X_test)[:, 1]
-            
-            results[name] = {
-                'model': model,
-                'accuracy': accuracy_score(y_test, y_pred),
-                'f1_score': f1_score(y_test, y_pred),
-                'auc_score': roc_auc_score(y_test, y_pred_proba),
-                'hyperparameters': model.get_params()
-            }
-            
-            print(f"✅ {name}: Accuracy={results[name]['accuracy']:.3f}, F1={results[name]['f1_score']:.3f}")
-        
-        # Select best model based on f1-score
-        best_model_name = max(results.keys(), key=lambda k: results[k]['f1_score'])
-        self.best_model = results[best_model_name]['model']
-        
-        print(f"🏆 Best model: {best_model_name}")
-        return results, best_model_name
+        return results, self.best_model_name
     
-    def _upsample_minority_class(self, X, y):
-        """
-        Upsample minority class to handle imbalanced data
-        """
-        from sklearn.utils import resample
-        
-        # Combine X and y
-        data = pd.concat([pd.DataFrame(X), pd.Series(y, name='target')], axis=1)
-        
-        # Separate majority and minority classes
-        majority = data[data.target == 0]
-        minority = data[data.target == 1]
-        
-        # Upsample minority class
-        minority_upsampled = resample(minority,
-                                    replace=True,
-                                    n_samples=len(majority),
-                                    random_state=42)
-        
-        # Combine majority class with upsampled minority class
-        upsampled = pd.concat([majority, minority_upsampled])
-        
-        # Separate features and target
-        X_upsampled = upsampled.drop('target', axis=1)
-        y_upsampled = upsampled['target']
-        
-        return X_upsampled, y_upsampled
-    
-    def predict_single(self, employee_data):
-        """
-        Predict turnover for a single employee
-        """
+    def predict(self, features):
+        """Make prediction using the best model"""
         if self.best_model is None:
-            raise ValueError("Model not trained yet. Please train the model first.")
+            raise ValueError("No trained model available")
         
-        # Prepare single employee data - make sure it's in list format
-        X, _ = self.prepare_data([employee_data])
+        # Ensure features are in the right format
+        if isinstance(features, dict):
+            # Convert dict to array
+            feature_array = np.array([[
+                features.get('satisfaction_level', 0.5),
+                features.get('last_evaluation', 0.5),
+                features.get('number_project', 2),
+                features.get('average_monthly_hours', 160),
+                features.get('time_spend_company', 2),
+                features.get('work_accident', 0),
+                features.get('promotion_last_5years', 0)
+            ]])
+        else:
+            feature_array = np.array(features).reshape(1, -1)
+        
+        # Scale features
+        feature_array = self.scaler.transform(feature_array)
         
         # Make prediction
-        prediction_proba = self.best_model.predict_proba(X)[0, 1]
-        prediction = self.best_model.predict(X)[0]
+        prediction = self.best_model.predict(feature_array)[0]
+        probability = self.best_model.predict_proba(feature_array)[0, 1]
         
-        return {
-            'prediction': bool(prediction),
-            'probability': float(prediction_proba),
-            'confidence': float(abs(prediction_proba - 0.5) * 2)  # Distance from decision boundary
-        }
+        return prediction, probability
     
-    def get_feature_importance(self):
-        """
-        Get feature importance from the best model
-        """
+    def save_model(self, file_path):
+        """Save the trained model and preprocessing objects"""
         if self.best_model is None:
-            return None
-        
-        # Get the actual classifier from the pipeline
-        classifier = self.best_model.named_steps[list(self.best_model.named_steps.keys())[-1]]
-        
-        if hasattr(classifier, 'feature_importances_'):
-            importance_dict = dict(zip(self.feature_names, classifier.feature_importances_))
-            # Sort by importance
-            return dict(sorted(importance_dict.items(), key=lambda x: x[1], reverse=True))
-        
-        return None
-    
-    def save_model(self, filepath):
-        """
-        Save the trained model
-        """
-        if self.best_model is None:
-            raise ValueError("No model to save. Please train the model first.")
+            raise ValueError("No trained model to save")
         
         model_data = {
             'model': self.best_model,
-            'feature_names': self.feature_names,
-            'scaler': self.scaler
+            'scaler': self.scaler,
+            'label_encoders': self.label_encoders,
+            'best_model_name': self.best_model_name,
+            'feature_names': ['satisfaction_level', 'last_evaluation', 'number_project',
+                            'average_monthly_hours', 'time_spend_company', 'work_accident',
+                            'promotion_last_5years']
         }
         
-        joblib.dump(model_data, filepath)
+        joblib.dump(model_data, file_path)
+        print(f"Model saved to {file_path}")
     
-    def load_model(self, filepath):
-        """
-        Load a trained model
-        """
-        if os.path.exists(filepath):
-            try:
-                model_data = joblib.load(filepath)
-                self.best_model = model_data['model']
-                self.feature_names = model_data['feature_names']
-                self.scaler = model_data['scaler']
-                return True
-            except Exception as e:
-                print(f"[ERROR] Failed to load model from {filepath}: {e}")
-                return False
+    def load_model(self, file_path):
+        """Load a trained model"""
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Model file not found: {file_path}")
+        
+        model_data = joblib.load(file_path)
+        self.best_model = model_data['model']
+        self.scaler = model_data['scaler']
+        self.label_encoders = model_data['label_encoders']
+        self.best_model_name = model_data['best_model_name']
+        
+        return model_data
+
+class PerformanceAnalyzer:
+    """Analyze employee performance patterns"""
+    
+    def __init__(self):
+        self.risk_thresholds = {
+            'low': 0.3,
+            'medium': 0.7,
+            'high': 1.0
+        }
+    
+    def analyze_performance_trends(self, performance_data_list):
+        """Analyze performance trends across employees"""
+        if not performance_data_list:
+            return {}
+        
+        df = pd.DataFrame(performance_data_list)
+        
+        analysis = {
+            'total_employees': len(df),
+            'average_satisfaction': df['satisfaction_level'].mean(),
+            'average_evaluation': df['last_evaluation'].mean(),
+            'average_projects': df['number_project'].mean(),
+            'average_hours': df['average_monthly_hours'].mean(),
+            'average_tenure': df['time_spend_company'].mean(),
+            'accident_rate': df['work_accident'].mean(),
+            'promotion_rate': df['promotion_last_5years'].mean(),
+            'turnover_rate': df['left'].mean() if 'left' in df.columns else 0,
+            'risk_distribution': self._calculate_risk_distribution(df),
+            'department_analysis': self._analyze_by_department(df),
+            'salary_analysis': self._analyze_by_salary(df)
+        }
+        
+        return analysis
+    
+    def _calculate_risk_distribution(self, df):
+        """Calculate risk distribution based on performance metrics"""
+        # Calculate risk score based on multiple factors
+        risk_scores = []
+        
+        for _, row in df.iterrows():
+            risk_score = 0
+            
+            # Low satisfaction increases risk
+            if row['satisfaction_level'] < 0.4:
+                risk_score += 0.3
+            elif row['satisfaction_level'] < 0.6:
+                risk_score += 0.1
+            
+            # Low evaluation increases risk
+            if row['last_evaluation'] < 0.4:
+                risk_score += 0.3
+            elif row['last_evaluation'] < 0.6:
+                risk_score += 0.1
+            
+            # High hours can increase risk
+            if row['average_monthly_hours'] > 200:
+                risk_score += 0.2
+            elif row['average_monthly_hours'] > 180:
+                risk_score += 0.1
+            
+            # Long tenure without promotion increases risk
+            if row['time_spend_company'] > 4 and row['promotion_last_5years'] == 0:
+                risk_score += 0.2
+            
+            # Work accidents increase risk
+            if row['work_accident'] == 1:
+                risk_score += 0.1
+            
+            risk_scores.append(min(risk_score, 1.0))
+        
+        df['risk_score'] = risk_scores
+        
+        # Categorize risk levels
+        risk_distribution = {
+            'low': len(df[df['risk_score'] < 0.3]),
+            'medium': len(df[(df['risk_score'] >= 0.3) & (df['risk_score'] < 0.7)]),
+            'high': len(df[df['risk_score'] >= 0.7])
+        }
+        
+        return risk_distribution
+    
+    def _analyze_by_department(self, df):
+        """Analyze performance by department"""
+        if 'department' not in df.columns:
+            return {}
+        
+        dept_analysis = {}
+        for dept in df['department'].unique():
+            dept_data = df[df['department'] == dept]
+            dept_analysis[dept] = {
+                'employee_count': len(dept_data),
+                'avg_satisfaction': dept_data['satisfaction_level'].mean(),
+                'avg_evaluation': dept_data['last_evaluation'].mean(),
+                'avg_projects': dept_data['number_project'].mean(),
+                'avg_hours': dept_data['average_monthly_hours'].mean(),
+                'accident_rate': dept_data['work_accident'].mean(),
+                'promotion_rate': dept_data['promotion_last_5years'].mean()
+            }
+        
+        return dept_analysis
+    
+    def _analyze_by_salary(self, df):
+        """Analyze performance by salary level"""
+        if 'salary' not in df.columns:
+            return {}
+        
+        salary_analysis = {}
+        for salary in df['salary'].unique():
+            salary_data = df[df['salary'] == salary]
+            salary_analysis[salary] = {
+                'employee_count': len(salary_data),
+                'avg_satisfaction': salary_data['satisfaction_level'].mean(),
+                'avg_evaluation': salary_data['last_evaluation'].mean(),
+                'avg_projects': salary_data['number_project'].mean(),
+                'avg_hours': salary_data['average_monthly_hours'].mean(),
+                'accident_rate': salary_data['work_accident'].mean(),
+                'promotion_rate': salary_data['promotion_last_5years'].mean()
+            }
+        
+        return salary_analysis
+
+class TurnoverRiskCalculator:
+    """Calculate turnover risk based on multiple factors"""
+    
+    def __init__(self):
+        self.risk_factors = {
+            'satisfaction_level': {
+                'weight': 0.25,
+                'thresholds': {'low': 0.4, 'medium': 0.6}
+            },
+            'last_evaluation': {
+                'weight': 0.20,
+                'thresholds': {'low': 0.4, 'medium': 0.6}
+            },
+            'number_project': {
+                'weight': 0.15,
+                'thresholds': {'low': 2, 'high': 6}
+            },
+            'average_monthly_hours': {
+                'weight': 0.15,
+                'thresholds': {'low': 160, 'high': 200}
+            },
+            'time_spend_company': {
+                'weight': 0.10,
+                'thresholds': {'low': 2, 'high': 5}
+            },
+            'work_accident': {
+                'weight': 0.05,
+                'thresholds': {'risk': 1}
+            },
+            'promotion_last_5years': {
+                'weight': 0.10,
+                'thresholds': {'risk': 0}
+            }
+        }
+    
+    def calculate_risk_score(self, performance_data):
+        """Calculate comprehensive risk score"""
+        risk_score = 0
+        risk_details = {}
+        
+        for factor, config in self.risk_factors.items():
+            value = getattr(performance_data, factor, 0)
+            weight = config['weight']
+            thresholds = config['thresholds']
+            
+            factor_risk = 0
+            
+            if factor == 'satisfaction_level':
+                if value < thresholds['low']:
+                    factor_risk = 1.0
+                elif value < thresholds['medium']:
+                    factor_risk = 0.5
+                else:
+                    factor_risk = 0.0
+                    
+            elif factor == 'last_evaluation':
+                if value < thresholds['low']:
+                    factor_risk = 1.0
+                elif value < thresholds['medium']:
+                    factor_risk = 0.5
+                else:
+                    factor_risk = 0.0
+                    
+            elif factor == 'number_project':
+                if value < thresholds['low']:
+                    factor_risk = 0.3
+                elif value > thresholds['high']:
+                    factor_risk = 0.7
+                else:
+                    factor_risk = 0.0
+                    
+            elif factor == 'average_monthly_hours':
+                if value < thresholds['low']:
+                    factor_risk = 0.3
+                elif value > thresholds['high']:
+                    factor_risk = 0.8
+                else:
+                    factor_risk = 0.0
+                    
+            elif factor == 'time_spend_company':
+                if value < thresholds['low']:
+                    factor_risk = 0.2
+                elif value > thresholds['high']:
+                    factor_risk = 0.6
+                else:
+                    factor_risk = 0.0
+                    
+            elif factor == 'work_accident':
+                if value == thresholds['risk']:
+                    factor_risk = 0.3
+                else:
+                    factor_risk = 0.0
+                    
+            elif factor == 'promotion_last_5years':
+                if value == thresholds['risk']:
+                    factor_risk = 0.4
+                else:
+                    factor_risk = 0.0
+            
+            risk_score += factor_risk * weight
+            risk_details[factor] = {
+                'value': value,
+                'risk': factor_risk,
+                'weight': weight,
+                'contribution': factor_risk * weight
+            }
+        
+        # Determine risk level
+        if risk_score < 0.3:
+            risk_level = 'low'
+        elif risk_score < 0.7:
+            risk_level = 'medium'
         else:
-            print(f"[ERROR] Model file not found at: {filepath}")
-            return False
+            risk_level = 'high'
+        
+        return {
+            'overall_risk_score': risk_score,
+            'risk_level': risk_level,
+            'risk_details': risk_details
+        }
+    
+    def get_risk_recommendations(self, risk_analysis):
+        """Get recommendations based on risk analysis"""
+        recommendations = []
+        risk_details = risk_analysis['risk_details']
+        
+        if risk_details['satisfaction_level']['risk'] > 0.5:
+            recommendations.append({
+                'category': 'Employee Satisfaction',
+                'issue': 'Low satisfaction level detected',
+                'recommendation': 'Conduct one-on-one meetings to understand concerns and improve work environment',
+                'priority': 'high'
+            })
+        
+        if risk_details['last_evaluation']['risk'] > 0.5:
+            recommendations.append({
+                'category': 'Performance',
+                'issue': 'Low performance evaluation',
+                'recommendation': 'Provide additional training and support to improve performance',
+                'priority': 'high'
+            })
+        
+        if risk_details['average_monthly_hours']['risk'] > 0.5:
+            recommendations.append({
+                'category': 'Workload',
+                'issue': 'Excessive working hours detected',
+                'recommendation': 'Review workload distribution and consider hiring additional staff',
+                'priority': 'medium'
+            })
+        
+        if risk_details['promotion_last_5years']['risk'] > 0.3:
+            recommendations.append({
+                'category': 'Career Growth',
+                'issue': 'No promotion in the last 5 years',
+                'recommendation': 'Review career progression opportunities and create development plans',
+                'priority': 'medium'
+            })
+        
+        if risk_details['work_accident']['risk'] > 0.2:
+            recommendations.append({
+                'category': 'Safety',
+                'issue': 'Work accident recorded',
+                'recommendation': 'Review safety protocols and provide additional training',
+                'priority': 'medium'
+            })
+        
+        return recommendations
 
 # Utility functions for Django integration
 def get_model_save_path(model_name):

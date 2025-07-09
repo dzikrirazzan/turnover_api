@@ -20,5 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('predictions.urls')),
-    # path('performance/', include('performance.urls')),  # Temporarily disabled
+    path('performance/', include('performance.urls')),  # Aktifkan performance endpoints
 ]

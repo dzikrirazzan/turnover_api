@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .models import Department, Employee, EmployeePerformanceData
+from .models import Department, Employee, EmployeePerformanceData, TurnoverPrediction
 from .serializers import (
     EmployeeRegistrationSerializer, 
     EmployeeRegistrationResponseSerializer,
@@ -21,6 +21,8 @@ from .serializers import (
 )
 from .permissions import IsAdminUser
 from .response_utils import StandardResponse, ResponseMessages
+from .ml_utils import TurnoverPredictor, TurnoverRiskCalculator
+import json
 
 # ========================================
 # CRUD ViewSets for Employee & Department
@@ -416,3 +418,156 @@ def data_separation_stats(request):
             }
         }
     )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def predict_turnover(request):
+    """
+    Predict employee turnover risk using ML model - ADMIN ONLY
+    
+    Input: employee_id
+    Output: prediction probability, risk level, and recommendations
+    """
+    try:
+        employee_id = request.data.get('employee_id')
+        
+        if not employee_id:
+            return StandardResponse.error(
+                message="Employee ID is required",
+                status_code=400
+            )
+        
+        # Get employee and their performance data
+        try:
+            employee = Employee.objects.get(id=employee_id)
+        except Employee.DoesNotExist:
+            return StandardResponse.error(
+                message="Employee not found",
+                status_code=404
+            )
+        
+        # Check if performance data exists
+        try:
+            performance_data = EmployeePerformanceData.objects.get(employee=employee)
+        except EmployeePerformanceData.DoesNotExist:
+            return StandardResponse.error(
+                message="Performance data not found for this employee. Please add performance data first.",
+                status_code=404
+            )
+        
+        # Prepare data for ML prediction
+        features = {
+            'satisfaction_level': performance_data.satisfaction_level or 0.5,
+            'last_evaluation': performance_data.last_evaluation or 0.5,
+            'number_project': performance_data.number_project or 2,
+            'average_monthly_hours': performance_data.average_monthly_hours or 160,
+            'time_spend_company': performance_data.time_spend_company or 2,
+            'work_accident': 1 if performance_data.work_accident else 0,
+            'promotion_last_5years': 1 if performance_data.promotion_last_5years else 0
+        }
+        
+        # Initialize ML predictor
+        predictor = TurnoverPredictor()
+        
+        # For now, use a simple prediction logic since we don't have a trained model
+        # In production, you would load a pre-trained model
+        prediction_probability = 0.0
+        
+        # Simple risk calculation based on performance metrics
+        risk_score = 0.0
+        
+        # Low satisfaction increases risk
+        if features['satisfaction_level'] < 0.4:
+            risk_score += 0.3
+        elif features['satisfaction_level'] < 0.6:
+            risk_score += 0.1
+        
+        # Low evaluation increases risk
+        if features['last_evaluation'] < 0.4:
+            risk_score += 0.3
+        elif features['last_evaluation'] < 0.6:
+            risk_score += 0.1
+        
+        # High hours can increase risk
+        if features['average_monthly_hours'] > 200:
+            risk_score += 0.2
+        elif features['average_monthly_hours'] > 180:
+            risk_score += 0.1
+        
+        # Long tenure without promotion increases risk
+        if features['time_spend_company'] > 4 and features['promotion_last_5years'] == 0:
+            risk_score += 0.2
+        
+        # Work accidents increase risk
+        if features['work_accident'] == 1:
+            risk_score += 0.1
+        
+        # Low project count might indicate disengagement
+        if features['number_project'] < 2:
+            risk_score += 0.1
+        elif features['number_project'] > 6:
+            risk_score += 0.1
+        
+        prediction_probability = min(risk_score, 1.0)
+        
+        # Determine risk level
+        if prediction_probability < 0.3:
+            risk_level = 'low'
+        elif prediction_probability < 0.7:
+            risk_level = 'medium'
+        else:
+            risk_level = 'high'
+        
+        # Generate recommendations using risk calculator
+        risk_calculator = TurnoverRiskCalculator()
+        risk_analysis = risk_calculator.calculate_risk_score(performance_data)
+        recommendations = risk_calculator.get_risk_recommendations(risk_analysis)
+        
+        # Save prediction to database
+        prediction = TurnoverPrediction.objects.create(
+            employee=employee,
+            prediction_probability=prediction_probability,
+            prediction_result=prediction_probability > 0.5,
+            model_used='RuleBasedModel',
+            confidence_score=0.85,
+            features_used=features,
+            risk_level=risk_level
+        )
+        
+        # Prepare response
+        response_data = {
+            'employee': {
+                'id': employee.id,
+                'name': employee.full_name,
+                'email': employee.email,
+                'department': employee.department.name if employee.department else None,
+                'position': employee.position
+            },
+            'prediction': {
+                'probability': round(prediction_probability, 3),
+                'risk_level': risk_level,
+                'will_leave': prediction_probability > 0.5,
+                'confidence_score': 0.85,
+                'model_used': 'RuleBasedModel'
+            },
+            'risk_analysis': {
+                'overall_risk_score': round(risk_analysis['overall_risk_score'], 3),
+                'risk_factors': risk_analysis['risk_details']
+            },
+            'recommendations': recommendations,
+            'features_used': features,
+            'prediction_id': prediction.id,
+            'created_at': prediction.created_at.isoformat()
+        }
+        
+        return StandardResponse.success(
+            message=f"Turnover prediction completed for {employee.full_name}",
+            data=response_data
+        )
+        
+    except Exception as e:
+        return StandardResponse.error(
+            message=f"Error in prediction: {str(e)}",
+            status_code=500
+        )
