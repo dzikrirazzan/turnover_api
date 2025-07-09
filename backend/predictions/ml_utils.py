@@ -35,10 +35,18 @@ class TurnoverPredictor:
         
         # Handle missing values
         numeric_columns = ['satisfaction_level', 'last_evaluation', 'number_project', 
-                          'average_monthly_hours', 'time_spend_company']
+                          'average_montly_hours', 'time_spend_company']  # Note: montly not monthly in CSV
         for col in numeric_columns:
             if col in df.columns:
                 df[col] = df[col].fillna(df[col].median())
+        
+        # Normalize column names to match expected format
+        if 'average_montly_hours' in df.columns:
+            df['average_monthly_hours'] = df['average_montly_hours']
+        if 'Work_accident' in df.columns:
+            df['work_accident'] = df['Work_accident']
+        if 'sales' in df.columns:
+            df['department'] = df['sales']  # Map sales column to department
         
         # Encode categorical variables
         categorical_columns = ['salary', 'department']
@@ -48,10 +56,15 @@ class TurnoverPredictor:
                     self.label_encoders[col] = LabelEncoder()
                 df[col] = self.label_encoders[col].fit_transform(df[col].astype(str))
         
-        # Prepare features
-        feature_columns = ['satisfaction_level', 'last_evaluation', 'number_project',
-                         'average_monthly_hours', 'time_spend_company', 'work_accident',
-                         'promotion_last_5years']
+        # Prepare features (only use columns that exist)
+        base_features = ['satisfaction_level', 'last_evaluation', 'number_project',
+                        'average_monthly_hours', 'time_spend_company', 'work_accident',
+                        'promotion_last_5years']
+        
+        feature_columns = []
+        for col in base_features:
+            if col in df.columns:
+                feature_columns.append(col)
         
         if 'salary' in df.columns:
             feature_columns.append('salary')
