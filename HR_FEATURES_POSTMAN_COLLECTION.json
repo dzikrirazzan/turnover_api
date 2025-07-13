@@ -1,0 +1,573 @@
+{
+  "info": {
+    "name": "SMART-EN HR Features API",
+    "description": "Complete API collection for 1-on-1 Meetings, Performance Reviews, and Analytics features",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "b42b585b90fbb149294bf041aaef5085c1ca4935",
+      "type": "string"
+    },
+    {
+      "key": "employee_id",
+      "value": "39",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "📅 1-on-1 Meetings",
+      "item": [
+        {
+          "name": "Create Meeting (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": {{employee_id}},\n  \"title\": \"Follow-up Meeting: High Risk Employee\",\n  \"meeting_type\": \"followup\",\n  \"scheduled_date\": \"2025-01-20T10:00:00Z\",\n  \"duration_minutes\": 60,\n  \"meeting_link\": \"https://zoom.us/j/123456789\",\n  \"agenda\": \"Discuss ML prediction results, understand concerns, create action plan\",\n  \"prediction_id\": \"pred_20250115_123456\",\n  \"ml_probability\": 0.85,\n  \"ml_risk_level\": \"high\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/meetings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", ""]
+            },
+            "description": "Schedule a new 1-on-1 meeting based on ML prediction results"
+          }
+        },
+        {
+          "name": "Get All Meetings (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/meetings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", ""]
+            },
+            "description": "Get list of all meetings for admin"
+          }
+        },
+        {
+          "name": "Get Employee Meetings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/meetings/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get meetings for specific employee"
+          }
+        },
+        {
+          "name": "Get Upcoming Meetings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/meetings/upcoming/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "upcoming", ""]
+            },
+            "description": "Get upcoming scheduled meetings"
+          }
+        },
+        {
+          "name": "Update Meeting",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated: Follow-up Meeting\",\n  \"meeting_link\": \"https://meet.google.com/abc-defg-hij\",\n  \"agenda\": \"Updated agenda: Review progress and next steps\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/meetings/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "1", ""]
+            },
+            "description": "Update existing meeting details"
+          }
+        },
+        {
+          "name": "Complete Meeting",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Great discussion. Employee seems more engaged. Discussed career development opportunities.\",\n  \"action_items\": \"1. Schedule skills training\\n2. Review workload distribution\\n3. Follow-up in 2 weeks\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/meetings/1/complete/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "1", "complete", ""]
+            },
+            "description": "Mark meeting as completed with notes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ Performance Reviews",
+      "item": [
+        {
+          "name": "Create Performance Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": {{employee_id}},\n  \"review_period\": \"quarterly\",\n  \"review_date\": \"2025-01-15\",\n  \"period_start\": \"2024-10-01\",\n  \"period_end\": \"2024-12-31\",\n  \"overall_rating\": 4,\n  \"technical_skills\": 4,\n  \"communication\": 3,\n  \"teamwork\": 4,\n  \"leadership\": 3,\n  \"initiative\": 3,\n  \"problem_solving\": 4,\n  \"strengths\": \"Strong technical skills, good problem-solving abilities, reliable team member\",\n  \"areas_for_improvement\": \"Could improve communication with stakeholders, needs to take more initiative on projects\",\n  \"goals_for_next_period\": \"1. Lead one project independently\\n2. Improve presentation skills\\n3. Mentor junior team member\",\n  \"additional_notes\": \"Overall good performance. Ready for more responsibility.\",\n  \"triggered_by_ml\": true,\n  \"ml_prediction_id\": \"pred_20250115_123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reviews/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", ""]
+            },
+            "description": "Create a new performance review with star ratings"
+          }
+        },
+        {
+          "name": "Get All Reviews (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reviews/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", ""]
+            },
+            "description": "Get list of all performance reviews for admin"
+          }
+        },
+        {
+          "name": "Get Employee Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reviews/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get performance reviews for specific employee"
+          }
+        },
+        {
+          "name": "Get Review Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reviews/summary/?employee={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", "summary", ""],
+              "query": [
+                {
+                  "key": "employee",
+                  "value": "{{employee_id}}"
+                }
+              ]
+            },
+            "description": "Get performance review summary and trends for employee"
+          }
+        },
+        {
+          "name": "Update Performance Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"overall_rating\": 5,\n  \"additional_notes\": \"Updated: Showed excellent improvement in leadership skills\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reviews/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", "1", ""]
+            },
+            "description": "Update existing performance review"
+          }
+        },
+        {
+          "name": "Employee Acknowledge Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{employee_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reviews/1/acknowledge/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", "1", "acknowledge", ""]
+            },
+            "description": "Employee acknowledges their performance review"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Analytics & Charts",
+      "item": [
+        {
+          "name": "Get Analytics Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/analytics/dashboard/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analytics", "dashboard", ""]
+            },
+            "description": "Get complete analytics dashboard with all metrics"
+          }
+        },
+        {
+          "name": "Get Chart Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/analytics/charts/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analytics", "charts", ""]
+            },
+            "description": "Get chart data for frontend visualization (Chart.js format)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"AdminPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login", ""]
+            },
+            "description": "Login as admin to get authentication token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.success && responseJson.data.user.token) {",
+                  "        pm.collectionVariables.set('admin_token', responseJson.data.user.token);",
+                  "        console.log('Admin token saved:', responseJson.data.user.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🧪 Test Scenarios",
+      "item": [
+        {
+          "name": "Complete HR Workflow",
+          "item": [
+            {
+              "name": "1. Login as Admin",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"AdminPass123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/login/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "login", ""]
+                }
+              }
+            },
+            {
+              "name": "2. Get ML Prediction",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee_id\": {{employee_id}}\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/predict/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "predict", ""]
+                }
+              }
+            },
+            {
+              "name": "3. Schedule Follow-up Meeting",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee\": {{employee_id}},\n  \"title\": \"High Risk Follow-up Meeting\",\n  \"meeting_type\": \"followup\",\n  \"scheduled_date\": \"2025-01-25T14:00:00Z\",\n  \"duration_minutes\": 60,\n  \"meeting_link\": \"https://zoom.us/j/987654321\",\n  \"agenda\": \"Discuss ML prediction results and create retention plan\",\n  \"ml_risk_level\": \"high\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/meetings/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "meetings", ""]
+                }
+              }
+            },
+            {
+              "name": "4. Create Performance Review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee\": {{employee_id}},\n  \"review_period\": \"adhoc\",\n  \"review_date\": \"2025-01-15\",\n  \"period_start\": \"2024-10-01\",\n  \"period_end\": \"2024-12-31\",\n  \"overall_rating\": 3,\n  \"technical_skills\": 4,\n  \"communication\": 2,\n  \"teamwork\": 3,\n  \"leadership\": 2,\n  \"initiative\": 2,\n  \"problem_solving\": 3,\n  \"strengths\": \"Good technical abilities, meets deadlines\",\n  \"areas_for_improvement\": \"Communication needs improvement, low initiative, limited leadership skills\",\n  \"goals_for_next_period\": \"Improve communication with team, take on leadership role in small project\",\n  \"triggered_by_ml\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/reviews/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "reviews", ""]
+                }
+              }
+            },
+            {
+              "name": "5. Get Analytics Dashboard",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/analytics/dashboard/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "analytics", "dashboard", ""]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set Authorization header if token exists",
+          "if (pm.collectionVariables.get('admin_token')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Token ' + pm.collectionVariables.get('admin_token')",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

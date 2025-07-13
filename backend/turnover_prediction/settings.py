@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'predictions',
     'performance',
+    'hr_features',
 ]
 
 # Custom user model

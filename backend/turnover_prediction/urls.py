@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('predictions.urls')),
     path('performance/', include('performance.urls')),  # Aktifkan performance endpoints
+    path('api/hr/', include('hr_features.urls')),  # HR Features endpoints
 ]

@@ -1,0 +1,692 @@
+{
+  "info": {
+    "_postman_id": "ml-api-ready-2025",
+    "name": "🚀 SMART-EN ML API - Ready to Test Collection",
+    "description": "Complete ML API endpoints dengan admin token siap pakai untuk testing langsung",
+    "version": "3.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Auto-add token to all requests",
+          "const token = pm.collectionVariables.get('admin_token');",
+          "if (token) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Token ' + token",
+          "    });",
+          "    console.log('✅ Token added automatically');",
+          "} else {",
+          "    console.log('⚠️ No token found');",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "b42b585b90fbb149294bf041aaef5085c1ca4935",
+      "type": "string"
+    },
+    {
+      "key": "test_employee_id",
+      "value": "39",
+      "type": "string"
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@company.com",
+      "type": "string"
+    },
+    {
+      "key": "admin_password",
+      "value": "AdminPass123!",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 1. AUTHENTICATION",
+      "item": [
+        {
+          "name": "Admin Login (Get New Token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"AdminPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login", ""]
+            }
+          }
+        },
+        {
+          "name": "Test Token Validation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏥 2. SYSTEM HEALTH",
+      "item": [
+        {
+          "name": "API Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", ""]
+            }
+          }
+        },
+        {
+          "name": "API Information",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/info/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "info", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 3. EMPLOYEE MANAGEMENT",
+      "item": [
+        {
+          "name": "List All Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Employee Performance Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{test_employee_id}}/performance_data/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{test_employee_id}}", "performance_data", ""]
+            }
+          }
+        },
+        {
+          "name": "Employee Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/statistics/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "statistics", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 4. PERFORMANCE DATA",
+      "item": [
+        {
+          "name": "List All Performance Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Performance Data (Normal Risk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": 39,\n  \"satisfaction_level\": 0.75,\n  \"last_evaluation\": 0.88,\n  \"number_project\": 5,\n  \"average_monthly_hours\": 170,\n  \"time_spend_company\": 4,\n  \"work_accident\": false,\n  \"promotion_last_5years\": true,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Performance Data (Low Risk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": 39,\n  \"satisfaction_level\": 0.90,\n  \"last_evaluation\": 0.95,\n  \"number_project\": 3,\n  \"average_monthly_hours\": 160,\n  \"time_spend_company\": 2,\n  \"work_accident\": false,\n  \"promotion_last_5years\": true,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Performance Data (High Risk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": 39,\n  \"satisfaction_level\": 0.15,\n  \"last_evaluation\": 0.25,\n  \"number_project\": 8,\n  \"average_monthly_hours\": 320,\n  \"time_spend_company\": 7,\n  \"work_accident\": true,\n  \"promotion_last_5years\": false,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Performance Data (Medium Risk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": 39,\n  \"satisfaction_level\": 0.55,\n  \"last_evaluation\": 0.65,\n  \"number_project\": 6,\n  \"average_monthly_hours\": 220,\n  \"time_spend_company\": 4,\n  \"work_accident\": false,\n  \"promotion_last_5years\": false,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧠 5. ML PREDICTION (MAIN)",
+      "item": [
+        {
+          "name": "🎯 Predict Turnover Risk (MAIN ENDPOINT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 39\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            }
+          }
+        },
+        {
+          "name": "Predict with Employee ID 38",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 38\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            }
+          }
+        },
+        {
+          "name": "Predict with Employee ID 37",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 37\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            }
+          }
+        },
+        {
+          "name": "Predict with Employee ID 36",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 36\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 6. STATISTICS & ANALYTICS",
+      "item": [
+        {
+          "name": "Data Separation Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/stats/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔬 7. VALIDATION TESTS",
+      "item": [
+        {
+          "name": "Test - Prediction Without Auth (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 39\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            }
+          }
+        },
+        {
+          "name": "Test - Missing Employee ID (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invalid_field\": \"test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            }
+          }
+        },
+        {
+          "name": "Test - Non-existent Employee (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 999999\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎮 8. QUICK TESTING SCENARIOS",
+      "item": [
+        {
+          "name": "🟢 Scenario: Create Low Risk + Predict",
+          "item": [
+            {
+              "name": "Step 1: Create Low Risk Performance",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee\": 39,\n  \"satisfaction_level\": 0.90,\n  \"last_evaluation\": 0.95,\n  \"number_project\": 3,\n  \"average_monthly_hours\": 160,\n  \"time_spend_company\": 2,\n  \"work_accident\": false,\n  \"promotion_last_5years\": true,\n  \"left\": false\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/performance/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "performance", ""]
+                }
+              }
+            },
+            {
+              "name": "Step 2: Predict (Should be Low Risk)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee_id\": 39\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/predict/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "predict", ""]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "🔴 Scenario: Create High Risk + Predict",
+          "item": [
+            {
+              "name": "Step 1: Create High Risk Performance",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee\": 39,\n  \"satisfaction_level\": 0.15,\n  \"last_evaluation\": 0.25,\n  \"number_project\": 8,\n  \"average_monthly_hours\": 320,\n  \"time_spend_company\": 7,\n  \"work_accident\": true,\n  \"promotion_last_5years\": false,\n  \"left\": false\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/performance/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "performance", ""]
+                }
+              }
+            },
+            {
+              "name": "Step 2: Predict (Should be High Risk)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee_id\": 39\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/predict/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "predict", ""]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "🟡 Scenario: Create Medium Risk + Predict",
+          "item": [
+            {
+              "name": "Step 1: Create Medium Risk Performance",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee\": 39,\n  \"satisfaction_level\": 0.55,\n  \"last_evaluation\": 0.65,\n  \"number_project\": 6,\n  \"average_monthly_hours\": 220,\n  \"time_spend_company\": 4,\n  \"work_accident\": false,\n  \"promotion_last_5years\": false,\n  \"left\": false\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/performance/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "performance", ""]
+                }
+              }
+            },
+            {
+              "name": "Step 2: Predict (Should be Medium Risk)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Token {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"employee_id\": 39\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/predict/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "predict", ""]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

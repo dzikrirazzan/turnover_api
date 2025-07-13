@@ -11,7 +11,7 @@ from datetime import datetime
 
 # API Configuration
 BASE_URL = "https://turnover-api-hd7ze.ondigitalocean.app"
-ADMIN_EMAIL = "admin@company.com"
+ADMIN_EMAIL = "y.coadmin@companm"
 ADMIN_PASSWORD = "admin123"
 
 def test_ml_prediction_api():

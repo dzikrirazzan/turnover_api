@@ -1,0 +1,688 @@
+{
+  "info": {
+    "_postman_id": "ml-prediction-api-2025",
+    "name": "🧠 SMART-EN ML Prediction API Collection",
+    "description": "Complete collection for Machine Learning & Prediction endpoints including performance data management, turnover prediction, and analytics",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Auto-set admin token if available",
+          "if (pm.globals.get('admin_token')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Token ' + pm.globals.get('admin_token')",
+          "    });",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "b42b585b90fbb149294bf041aaef5085c1ca4935",
+      "type": "string"
+    },
+    {
+      "key": "test_employee_id",
+      "value": "39",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.token) {",
+                  "        pm.globals.set('admin_token', response.data.token);",
+                  "        pm.collectionVariables.set('admin_token', response.data.token);",
+                  "        console.log('✅ Admin token saved:', response.data.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"AdminPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login", ""]
+            },
+            "description": "Login as admin to get authentication token for ML endpoints"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Performance Data Management",
+      "item": [
+        {
+          "name": "List All Performance Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            },
+            "description": "Get all ML performance data records (Admin only)"
+          }
+        },
+        {
+          "name": "Create Performance Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    console.log('✅ Performance data created successfully');",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        console.log('Employee:', response.data.employee_name);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": {{test_employee_id}},\n  \"satisfaction_level\": 0.75,\n  \"last_evaluation\": 0.88,\n  \"number_project\": 5,\n  \"average_monthly_hours\": 170,\n  \"time_spend_company\": 4,\n  \"work_accident\": false,\n  \"promotion_last_5years\": true,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            },
+            "description": "Create ML performance data for employee (required before prediction)"
+          }
+        },
+        {
+          "name": "Create High-Risk Performance Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": {{test_employee_id}},\n  \"satisfaction_level\": 0.25,\n  \"last_evaluation\": 0.35,\n  \"number_project\": 7,\n  \"average_monthly_hours\": 280,\n  \"time_spend_company\": 6,\n  \"work_accident\": true,\n  \"promotion_last_5years\": false,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            },
+            "description": "Create high-risk performance data to test high turnover prediction"
+          }
+        },
+        {
+          "name": "Data Separation Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/stats/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", ""]
+            },
+            "description": "Get statistics about ML data vs registration data separation"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧠 ML Prediction Engine",
+      "item": [
+        {
+          "name": "Predict Turnover Risk",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        const prediction = response.data.prediction;",
+                  "        const employee = response.data.employee;",
+                  "        const recommendations = response.data.recommendations;",
+                  "        ",
+                  "        console.log('🎯 PREDICTION RESULTS:');",
+                  "        console.log('Employee:', employee.name);",
+                  "        console.log('Probability:', (prediction.probability * 100).toFixed(1) + '%');",
+                  "        console.log('Risk Level:', prediction.risk_level.toUpperCase());",
+                  "        console.log('Will Leave:', prediction.will_leave ? 'YES' : 'NO');",
+                  "        console.log('Confidence:', (prediction.confidence_score * 100).toFixed(1) + '%');",
+                  "        console.log('');",
+                  "        console.log('💡 Recommendations:', recommendations.length);",
+                  "        recommendations.forEach((rec, i) => {",
+                  "            console.log(`${i+1}. [${rec.priority.toUpperCase()}] ${rec.category}: ${rec.recommendation}`);",
+                  "        });",
+                  "        ",
+                  "        // Save prediction ID for future reference",
+                  "        pm.collectionVariables.set('last_prediction_id', response.data.prediction_id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🎯 MAIN ML ENDPOINT: Predict employee turnover risk using trained ML model"
+          }
+        },
+        {
+          "name": "Predict Multiple Employees",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Test multiple employee IDs",
+                  "const employeeIds = [39, 38, 37, 36, 35];",
+                  "const randomId = employeeIds[Math.floor(Math.random() * employeeIds.length)];",
+                  "pm.collectionVariables.set('random_employee_id', randomId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{random_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Test prediction with random employee (for batch testing)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Employee Management (ML Context)",
+      "item": [
+        {
+          "name": "List All Employees",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.results && response.results.length > 0) {",
+                  "        const firstEmployee = response.results[0];",
+                  "        pm.collectionVariables.set('test_employee_id', firstEmployee.id);",
+                  "        console.log('✅ Found', response.count, 'employees');",
+                  "        console.log('Using employee ID:', firstEmployee.id, 'for tests');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""]
+            },
+            "description": "Get all employees - automatically sets test_employee_id for ML testing"
+          }
+        },
+        {
+          "name": "Get Employee Performance Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{test_employee_id}}/performance_data/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{test_employee_id}}", "performance_data", ""]
+            },
+            "description": "Get specific employee's ML performance data"
+          }
+        },
+        {
+          "name": "Employee Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/statistics/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "statistics", ""]
+            },
+            "description": "Get employee statistics including ML data coverage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔬 ML Testing & Validation",
+      "item": [
+        {
+          "name": "Test API Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", ""]
+            },
+            "description": "Check if API is running and healthy"
+          }
+        },
+        {
+          "name": "Test API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/info/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "info", ""]
+            },
+            "description": "Get API information including ML features"
+          }
+        },
+        {
+          "name": "Test Prediction Without Performance Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 999999\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Test error handling - employee not found"
+          }
+        },
+        {
+          "name": "Test Prediction Without Auth",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Test authentication requirement - should return 401"
+          }
+        },
+        {
+          "name": "Test Prediction Missing Employee ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invalid_field\": \"test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Test validation - missing employee_id should return 400"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 ML Performance Scenarios",
+      "item": [
+        {
+          "name": "Scenario 1: Low Risk Employee",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Create low-risk performance data",
+                  "pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('base_url') + '/api/performance/',",
+                  "    method: 'POST',",
+                  "    header: {",
+                  "        'Authorization': 'Token ' + pm.collectionVariables.get('admin_token'),",
+                  "        'Content-Type': 'application/json'",
+                  "    },",
+                  "    body: {",
+                  "        mode: 'raw',",
+                  "        raw: JSON.stringify({",
+                  "            employee: parseInt(pm.collectionVariables.get('test_employee_id')),",
+                  "            satisfaction_level: 0.85,",
+                  "            last_evaluation: 0.90,",
+                  "            number_project: 3,",
+                  "            average_monthly_hours: 160,",
+                  "            time_spend_company: 2,",
+                  "            work_accident: false,",
+                  "            promotion_last_5years: true",
+                  "        })",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (!err) {",
+                  "        console.log('✅ Low-risk performance data created');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Test prediction for employee with low turnover risk (high satisfaction, good evaluation, recent promotion)"
+          }
+        },
+        {
+          "name": "Scenario 2: High Risk Employee",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Create high-risk performance data",
+                  "pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('base_url') + '/api/performance/',",
+                  "    method: 'POST',",
+                  "    header: {",
+                  "        'Authorization': 'Token ' + pm.collectionVariables.get('admin_token'),",
+                  "        'Content-Type': 'application/json'",
+                  "    },",
+                  "    body: {",
+                  "        mode: 'raw',",
+                  "        raw: JSON.stringify({",
+                  "            employee: parseInt(pm.collectionVariables.get('test_employee_id')),",
+                  "            satisfaction_level: 0.20,",
+                  "            last_evaluation: 0.30,",
+                  "            number_project: 8,",
+                  "            average_monthly_hours: 300,",
+                  "            time_spend_company: 7,",
+                  "            work_accident: true,",
+                  "            promotion_last_5years: false",
+                  "        })",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (!err) {",
+                  "        console.log('✅ High-risk performance data created');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Test prediction for employee with high turnover risk (low satisfaction, poor evaluation, overworked, no promotion)"
+          }
+        },
+        {
+          "name": "Scenario 3: Medium Risk Employee",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Create medium-risk performance data",
+                  "pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('base_url') + '/api/performance/',",
+                  "    method: 'POST',",
+                  "    header: {",
+                  "        'Authorization': 'Token ' + pm.collectionVariables.get('admin_token'),",
+                  "        'Content-Type': 'application/json'",
+                  "    },",
+                  "    body: {",
+                  "        mode: 'raw',",
+                  "        raw: JSON.stringify({",
+                  "            employee: parseInt(pm.collectionVariables.get('test_employee_id')),",
+                  "            satisfaction_level: 0.55,",
+                  "            last_evaluation: 0.65,",
+                  "            number_project: 5,",
+                  "            average_monthly_hours: 220,",
+                  "            time_spend_company: 4,",
+                  "            work_accident: false,",
+                  "            promotion_last_5years: false",
+                  "        })",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (!err) {",
+                  "        console.log('✅ Medium-risk performance data created');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "Test prediction for employee with medium turnover risk (moderate satisfaction, average evaluation, some concerns)"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,504 @@
+{
+	"info": {
+		"_postman_id": "hr-features-2025",
+		"name": "🚀 SMART-EN HR Features API - Complete Collection",
+		"description": "Complete API collection for HR Features: 1-on-1 Meetings, Performance Reviews, and Analytics Charts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{admin_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://turnover-api-hd7ze.ondigitalocean.app"
+		},
+		{
+			"key": "admin_token",
+			"value": ""
+		},
+		{
+			"key": "employee_id",
+			"value": "1"
+		},
+		{
+			"key": "meeting_id",
+			"value": "1"
+		},
+		{
+			"key": "review_id",
+			"value": "1"
+		}
+	],
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.data.token) {",
+									"        pm.collectionVariables.set('admin_token', response.data.token);",
+									"        console.log('Admin token set:', response.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@company.com\",\n    \"password\": \"AdminPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "login", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🤝 1-on-1 Meetings",
+			"item": [
+				{
+					"name": "Create Meeting",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee\": {{employee_id}},\n    \"title\": \"Follow-up Meeting: High Turnover Risk\",\n    \"meeting_type\": \"followup\",\n    \"scheduled_date\": \"2025-07-15T14:00:00Z\",\n    \"duration_minutes\": 45,\n    \"meeting_link\": \"https://meet.google.com/abc-defg-hij\",\n    \"agenda\": \"Discussion about career development and addressing concerns based on ML prediction results.\",\n    \"ml_probability\": 0.85,\n    \"ml_risk_level\": \"high\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/hr/meetings/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "meetings", ""]
+						}
+					}
+				},
+				{
+					"name": "Get All Meetings (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/meetings/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "meetings", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Employee Meetings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/meetings/?employee={{employee_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "meetings", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "{{employee_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Meetings by Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/meetings/?status=scheduled",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "meetings", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "scheduled"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Meeting",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"completed\",\n    \"notes\": \"Meeting completed successfully. Employee showed positive response to career development opportunities.\",\n    \"action_items\": \"1. Schedule training session for new skills\\n2. Review promotion criteria\\n3. Follow-up in 2 weeks\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/hr/meetings/{{meeting_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "meetings", "{{meeting_id}}", ""]
+						}
+					}
+				},
+				{
+					"name": "Mark Meeting Complete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notes\": \"Employee discussed concerns about workload and career growth. Agreed on development plan.\",\n    \"action_items\": \"Schedule skills training, review workload distribution, set quarterly goals\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/hr/meetings/{{meeting_id}}/complete/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "meetings", "{{meeting_id}}", "complete", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "⭐ Performance Reviews",
+			"item": [
+				{
+					"name": "Create Performance Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee\": {{employee_id}},\n    \"review_period\": \"quarterly\",\n    \"review_date\": \"2025-07-11\",\n    \"period_start\": \"2025-04-01\",\n    \"period_end\": \"2025-06-30\",\n    \"overall_rating\": 4,\n    \"technical_skills\": 4,\n    \"communication\": 3,\n    \"teamwork\": 5,\n    \"leadership\": 3,\n    \"initiative\": 4,\n    \"problem_solving\": 4,\n    \"strengths\": \"Excellent technical skills and strong collaboration with team members. Shows great problem-solving abilities.\",\n    \"areas_for_improvement\": \"Could improve communication skills, especially in presenting ideas to stakeholders.\",\n    \"goals_for_next_period\": \"1. Complete communication skills workshop\\n2. Lead at least one project presentation\\n3. Mentor a junior team member\",\n    \"additional_notes\": \"Employee has shown significant growth this quarter. Recommended for leadership training program.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/hr/reviews/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "reviews", ""]
+						}
+					}
+				},
+				{
+					"name": "Get All Performance Reviews (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/reviews/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "reviews", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Employee Performance Reviews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/reviews/?employee={{employee_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "reviews", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "{{employee_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Performance Review",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"overall_rating\": 5,\n    \"communication\": 4,\n    \"additional_notes\": \"Updated after follow-up discussion. Employee showed significant improvement in communication skills.\",\n    \"is_final\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/hr/reviews/{{review_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "reviews", "{{review_id}}", ""]
+						}
+					}
+				},
+				{
+					"name": "Employee Acknowledge Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/reviews/{{review_id}}/acknowledge/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "reviews", "{{review_id}}", "acknowledge", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Performance Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/reviews/summary/?employee={{employee_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "reviews", "summary", ""],
+							"query": [
+								{
+									"key": "employee",
+									"value": "{{employee_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📊 Analytics & Charts",
+			"item": [
+				{
+					"name": "Get Complete Analytics Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/analytics/dashboard/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "analytics", "dashboard", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Chart Data for Frontend",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/hr/analytics/charts/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "hr", "analytics", "charts", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🤖 ML Prediction Integration",
+			"item": [
+				{
+					"name": "Get ML Prediction for Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee_id\": {{employee_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/predict/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "predict", ""]
+						}
+					}
+				},
+				{
+					"name": "Add Performance Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee_id\": {{employee_id}},\n    \"satisfaction_level\": 0.65,\n    \"last_evaluation\": 0.82,\n    \"number_project\": 4,\n    \"average_monthly_hours\": 185,\n    \"time_spend_company\": 3,\n    \"work_accident\": false,\n    \"promotion_last_5years\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/performance/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "performance", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👥 Employee Management",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", ""]
+						}
+					}
+				},
+				{
+					"name": "Register New Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john.doe@company.com\",\n    \"password\": \"employee123\",\n    \"department\": \"Engineering\",\n    \"position\": \"Software Developer\",\n    \"hire_date\": \"2025-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "register", ""]
+						}
+					}
+				}
+			]
+		}
+	]
+}

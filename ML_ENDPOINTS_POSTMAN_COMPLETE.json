@@ -1,0 +1,1326 @@
+{
+  "info": {
+    "_postman_id": "ml-endpoints-complete-2025",
+    "name": "🚀 ML Prediction API - Complete Testing Collection",
+    "description": "Comprehensive collection untuk testing semua ML endpoints dengan troubleshooting authentication dan validation",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Auto-set token dari collection variables",
+          "const token = pm.collectionVariables.get('admin_token') || pm.environment.get('admin_token');",
+          "if (token) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Token ' + token",
+          "    });",
+          "    console.log('✅ Token added to request:', token.substring(0, 10) + '...');",
+          "} else {",
+          "    console.log('⚠️ No token found. Please run Admin Login first.');",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// Auto-handle authentication errors",
+          "if (pm.response.code === 401) {",
+          "    console.log('❌ Authentication failed. Please check your token.');",
+          "    console.log('Run \"Admin Login\" first to get a valid token.');",
+          "} else if (pm.response.code === 403) {",
+          "    console.log('❌ Permission denied. Admin access required.');",
+          "} else if (pm.response.code >= 200 && pm.response.code < 300) {",
+          "    console.log('✅ Request successful');",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://turnover-api-hd7ze.ondigitalocean.app",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "b42b585b90fbb149294bf041aaef5085c1ca4935",
+      "type": "string"
+    },
+    {
+      "key": "test_employee_id",
+      "value": "39",
+      "type": "string"
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@company.com",
+      "type": "string"
+    },
+    {
+      "key": "admin_password",
+      "value": "AdminPass123!",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 1. AUTHENTICATION (Start Here)",
+      "item": [
+        {
+          "name": "Admin Login (Get Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔐 ADMIN LOGIN TEST');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Login successful');",
+                  "    ",
+                  "    if (response.success && response.data.user.token) {",
+                  "        const token = response.data.user.token;",
+                  "        ",
+                  "        // Save token to collection variables",
+                  "        pm.collectionVariables.set('admin_token', token);",
+                  "        pm.environment.set('admin_token', token);",
+                  "        pm.globals.set('admin_token', token);",
+                  "        ",
+                  "        // Save user info",
+                  "        pm.collectionVariables.set('admin_id', response.data.user.id);",
+                  "        pm.collectionVariables.set('admin_name', response.data.user.full_name);",
+                  "        ",
+                  "        console.log('✅ Token saved:', token.substring(0, 20) + '...');",
+                  "        console.log('✅ Admin ID:', response.data.user.id);",
+                  "        console.log('✅ Admin Name:', response.data.user.full_name);",
+                  "        console.log('✅ Role:', response.data.user.role);",
+                  "        console.log('✅ Department:', response.data.user.department_name);",
+                  "        console.log('');",
+                  "        console.log('🎯 TOKEN READY FOR ML ENDPOINTS!');",
+                  "    } else {",
+                  "        console.log('❌ Token not found in response');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Login failed with code:', pm.response.code);",
+                  "    console.log('Response:', pm.response.text());",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login", ""]
+            },
+            "description": "🔐 Login sebagai admin dan dapatkan token untuk ML endpoints"
+          }
+        },
+        {
+          "name": "Test Token Validation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 TOKEN VALIDATION TEST');",
+                  "console.log('=' * 50);",
+                  "",
+                  "const token = pm.collectionVariables.get('admin_token');",
+                  "console.log('Current token:', token ? token.substring(0, 20) + '...' : 'NOT SET');",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Token valid');",
+                  "    console.log('✅ User:', response.data.full_name);",
+                  "    console.log('✅ Role:', response.data.role);",
+                  "    console.log('✅ Is Admin:', response.data.is_admin);",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Token invalid or expired');",
+                  "    console.log('Please run \"Admin Login\" again');",
+                  "} else {",
+                  "    console.log('❌ Unexpected response code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile", ""]
+            },
+            "description": "🔍 Test apakah token masih valid"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏥 2. SYSTEM HEALTH CHECK",
+      "item": [
+        {
+          "name": "API Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🏥 API HEALTH CHECK');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ API Status:', response.data.status);",
+                  "    console.log('✅ API Version:', response.data.version);",
+                  "    console.log('✅ Message:', response.message);",
+                  "} else {",
+                  "    console.log('❌ API Health Check failed');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", ""]
+            },
+            "description": "🏥 Check API health status"
+          }
+        },
+        {
+          "name": "API Information",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('ℹ️ API INFORMATION');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ API Name:', response.data.api_name);",
+                  "    console.log('✅ Version:', response.data.version);",
+                  "    console.log('✅ Description:', response.data.description);",
+                  "    console.log('');",
+                  "    console.log('🎯 FEATURES:');",
+                  "    response.data.features.forEach((feature, i) => {",
+                  "        console.log(`  ${i+1}. ${feature}`);",
+                  "    });",
+                  "} else {",
+                  "    console.log('❌ API Info failed');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/info/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "info", ""]
+            },
+            "description": "ℹ️ Get API features and information"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 3. EMPLOYEE MANAGEMENT",
+      "item": [
+        {
+          "name": "List All Employees",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('👥 EMPLOYEE LIST');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Total Employees:', response.count);",
+                  "    ",
+                  "    if (response.results && response.results.length > 0) {",
+                  "        const firstEmployee = response.results[0];",
+                  "        pm.collectionVariables.set('test_employee_id', firstEmployee.id);",
+                  "        ",
+                  "        console.log('✅ First Employee ID:', firstEmployee.id, '(saved as test_employee_id)');",
+                  "        console.log('✅ Name:', firstEmployee.full_name);",
+                  "        console.log('✅ Email:', firstEmployee.email);",
+                  "        console.log('✅ Department:', firstEmployee.department_name);",
+                  "        console.log('✅ Position:', firstEmployee.position);",
+                  "        ",
+                  "        console.log('');",
+                  "        console.log('📋 ALL EMPLOYEES:');",
+                  "        response.results.slice(0, 5).forEach((emp, i) => {",
+                  "            console.log(`  ${i+1}. ID:${emp.id} - ${emp.full_name} (${emp.department_name})`);",
+                  "        });",
+                  "        ",
+                  "        if (response.results.length > 5) {",
+                  "            console.log(`  ... and ${response.results.length - 5} more`);",
+                  "        }",
+                  "    } else {",
+                  "        console.log('❌ No employees found');",
+                  "    }",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""]
+            },
+            "description": "👥 List all employees dan auto-set test_employee_id"
+          }
+        },
+        {
+          "name": "Get Employee Performance Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('📊 EMPLOYEE PERFORMANCE DATA');",
+                  "console.log('=' * 50);",
+                  "",
+                  "const empId = pm.collectionVariables.get('test_employee_id');",
+                  "console.log('Employee ID:', empId);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log('✅ Performance data found');",
+                  "        console.log('✅ Employee:', response.data.employee_name);",
+                  "        console.log('✅ Satisfaction Level:', response.data.satisfaction_level);",
+                  "        console.log('✅ Last Evaluation:', response.data.last_evaluation);",
+                  "        console.log('✅ Number of Projects:', response.data.number_project);",
+                  "        console.log('✅ Monthly Hours:', response.data.average_monthly_hours);",
+                  "        console.log('✅ Time in Company:', response.data.time_spend_company);",
+                  "        console.log('✅ Work Accident:', response.data.work_accident);",
+                  "        console.log('✅ Promotion (5y):', response.data.promotion_last_5years);",
+                  "        console.log('');",
+                  "        console.log('🎯 READY FOR ML PREDICTION!');",
+                  "    } else {",
+                  "        console.log('❌ No performance data found');",
+                  "        console.log('Create performance data first using \"Create Performance Data\" endpoint');",
+                  "    }",
+                  "} else if (pm.response.code === 404) {",
+                  "    console.log('❌ Performance data not found for this employee');",
+                  "    console.log('Use \"Create Performance Data\" endpoint first');",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/{{test_employee_id}}/performance_data/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "{{test_employee_id}}", "performance_data", ""]
+            },
+            "description": "📊 Get employee ML performance data"
+          }
+        },
+        {
+          "name": "Employee Statistics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('📈 EMPLOYEE STATISTICS');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log('✅ Total Employees:', response.data.total_employees);",
+                  "        console.log('✅ With Performance Data:', response.data.with_performance_data);",
+                  "        console.log('✅ Without Performance Data:', response.data.without_performance_data);",
+                  "        console.log('✅ Coverage Percentage:', response.data.coverage_percentage + '%');",
+                  "        ",
+                  "        if (response.data.by_department) {",
+                  "            console.log('');",
+                  "            console.log('📊 BY DEPARTMENT:');",
+                  "            Object.entries(response.data.by_department).forEach(([dept, count]) => {",
+                  "                console.log(`  ${dept}: ${count} employees`);",
+                  "            });",
+                  "        }",
+                  "    }",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/employees/statistics/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "statistics", ""]
+            },
+            "description": "📈 Get employee statistics including ML data coverage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 4. PERFORMANCE DATA MANAGEMENT",
+      "item": [
+        {
+          "name": "List All Performance Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('📊 ALL PERFORMANCE DATA');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log('✅ Total Records:', response.data.length);",
+                  "        ",
+                  "        if (response.data.length > 0) {",
+                  "            console.log('');",
+                  "            console.log('📋 PERFORMANCE DATA RECORDS:');",
+                  "            response.data.slice(0, 3).forEach((record, i) => {",
+                  "                console.log(`  ${i+1}. Employee: ${record.employee_name}`);",
+                  "                console.log(`     Satisfaction: ${record.satisfaction_level}`);",
+                  "                console.log(`     Evaluation: ${record.last_evaluation}`);",
+                  "                console.log(`     Projects: ${record.number_project}`);",
+                  "                console.log(`     Hours: ${record.average_monthly_hours}`);",
+                  "                console.log('');",
+                  "            });",
+                  "            ",
+                  "            if (response.data.length > 3) {",
+                  "                console.log(`  ... and ${response.data.length - 3} more records`);",
+                  "            }",
+                  "        } else {",
+                  "            console.log('❌ No performance data found');",
+                  "        }",
+                  "    }",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            },
+            "description": "📊 Get all ML performance data records"
+          }
+        },
+        {
+          "name": "Create Performance Data (Normal)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('📊 CREATE PERFORMANCE DATA');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        console.log('✅ Performance data created successfully');",
+                  "        console.log('✅ Employee:', response.data.employee_name);",
+                  "        console.log('✅ Employee ID:', response.data.employee);",
+                  "        console.log('✅ Satisfaction Level:', response.data.satisfaction_level);",
+                  "        console.log('✅ Last Evaluation:', response.data.last_evaluation);",
+                  "        console.log('✅ Number of Projects:', response.data.number_project);",
+                  "        console.log('✅ Monthly Hours:', response.data.average_monthly_hours);",
+                  "        console.log('');",
+                  "        console.log('🎯 READY FOR ML PREDICTION!');",
+                  "    }",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "    console.log('Response:', pm.response.text());",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": {{test_employee_id}},\n  \"satisfaction_level\": 0.75,\n  \"last_evaluation\": 0.88,\n  \"number_project\": 5,\n  \"average_monthly_hours\": 170,\n  \"time_spend_company\": 4,\n  \"work_accident\": false,\n  \"promotion_last_5years\": true,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            },
+            "description": "📊 Create normal performance data untuk ML prediction"
+          }
+        },
+        {
+          "name": "Create Performance Data (High Risk)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔥 CREATE HIGH-RISK PERFORMANCE DATA');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        console.log('✅ HIGH-RISK performance data created');",
+                  "        console.log('✅ Employee:', response.data.employee_name);",
+                  "        console.log('⚠️ Low Satisfaction:', response.data.satisfaction_level);",
+                  "        console.log('⚠️ Poor Evaluation:', response.data.last_evaluation);",
+                  "        console.log('⚠️ High Projects:', response.data.number_project);",
+                  "        console.log('⚠️ Long Hours:', response.data.average_monthly_hours);",
+                  "        console.log('⚠️ Work Accident:', response.data.work_accident);",
+                  "        console.log('⚠️ No Promotion:', response.data.promotion_last_5years);",
+                  "        console.log('');",
+                  "        console.log('🎯 READY FOR HIGH-RISK ML PREDICTION!');",
+                  "    }",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee\": {{test_employee_id}},\n  \"satisfaction_level\": 0.25,\n  \"last_evaluation\": 0.35,\n  \"number_project\": 7,\n  \"average_monthly_hours\": 280,\n  \"time_spend_company\": 6,\n  \"work_accident\": true,\n  \"promotion_last_5years\": false,\n  \"left\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/performance/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "performance", ""]
+            },
+            "description": "🔥 Create high-risk performance data untuk testing"
+          }
+        },
+        {
+          "name": "Data Separation Statistics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('📈 DATA SEPARATION STATISTICS');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log('✅ Registration Data:', response.data.registration_count);",
+                  "        console.log('✅ ML Performance Data:', response.data.ml_data_count);",
+                  "        console.log('✅ Overlap Count:', response.data.overlap_count);",
+                  "        console.log('✅ Coverage Percentage:', response.data.coverage_percentage + '%');",
+                  "        ",
+                  "        if (response.data.department_breakdown) {",
+                  "            console.log('');",
+                  "            console.log('📊 BY DEPARTMENT:');",
+                  "            Object.entries(response.data.department_breakdown).forEach(([dept, stats]) => {",
+                  "                console.log(`  ${dept}: ${stats.ml_data}/${stats.total_employees} (${stats.coverage}%)`);",
+                  "            });",
+                  "        }",
+                  "    }",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/stats/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", ""]
+            },
+            "description": "📈 Get statistics tentang data separation ML vs registrasi"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧠 5. ML PREDICTION ENGINE (MAIN)",
+      "item": [
+        {
+          "name": "🎯 Predict Turnover Risk (MAIN ENDPOINT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🧠 ML PREDICTION RESULTS');",
+                  "console.log('=' * 60);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        const prediction = response.data.prediction;",
+                  "        const employee = response.data.employee;",
+                  "        const recommendations = response.data.recommendations;",
+                  "        const riskAnalysis = response.data.risk_analysis;",
+                  "        ",
+                  "        console.log('🎯 PREDICTION RESULTS:');",
+                  "        console.log(`Employee: ${employee.name} (ID: ${employee.id})`);",
+                  "        console.log(`Email: ${employee.email}`);",
+                  "        console.log(`Department: ${employee.department}`);",
+                  "        console.log(`Position: ${employee.position}`);",
+                  "        console.log('');",
+                  "        ",
+                  "        console.log('📊 RISK ASSESSMENT:');",
+                  "        console.log(`Turnover Probability: ${(prediction.probability * 100).toFixed(1)}%`);",
+                  "        console.log(`Risk Level: ${prediction.risk_level.toUpperCase()}`);",
+                  "        console.log(`Will Leave: ${prediction.will_leave ? 'HIGH RISK ⚠️' : 'LOW RISK ✅'}`);",
+                  "        console.log(`Confidence Score: ${(prediction.confidence_score * 100).toFixed(1)}%`);",
+                  "        console.log(`Model Used: ${prediction.model_used}`);",
+                  "        console.log('');",
+                  "        ",
+                  "        if (riskAnalysis && riskAnalysis.risk_factors) {",
+                  "            console.log('🔍 RISK FACTORS:');",
+                  "            Object.entries(riskAnalysis.risk_factors).forEach(([factor, data]) => {",
+                  "                if (data.risk && data.risk > 0) {",
+                  "                    console.log(`  ⚠️ ${factor}: ${data.value} (risk: ${data.risk})`);",
+                  "                } else {",
+                  "                    console.log(`  ✅ ${factor}: ${data.value}`);",
+                  "                }",
+                  "            });",
+                  "            console.log('');",
+                  "        }",
+                  "        ",
+                  "        if (recommendations && recommendations.length > 0) {",
+                  "            console.log('💡 RECOMMENDATIONS:');",
+                  "            recommendations.forEach((rec, i) => {",
+                  "                const priority = rec.priority.toUpperCase();",
+                  "                const icon = priority === 'HIGH' ? '🔴' : priority === 'MEDIUM' ? '🟡' : '🟢';",
+                  "                console.log(`  ${icon} [${priority}] ${rec.category}`);",
+                  "                console.log(`    ${rec.recommendation}`);",
+                  "                console.log('');",
+                  "            });",
+                  "        }",
+                  "        ",
+                  "        // Save prediction ID for reference",
+                  "        if (response.data.prediction_id) {",
+                  "            pm.collectionVariables.set('last_prediction_id', response.data.prediction_id);",
+                  "            console.log('✅ Prediction ID saved:', response.data.prediction_id);",
+                  "        }",
+                  "        ",
+                  "        console.log('🎯 PREDICTION COMPLETE!');",
+                  "    }",
+                  "} else if (pm.response.code === 404) {",
+                  "    console.log('❌ Performance data not found for this employee');",
+                  "    console.log('Please create performance data first using \"Create Performance Data\"');",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else if (pm.response.code === 400) {",
+                  "    console.log('❌ Bad request. Check if employee_id is provided.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "    console.log('Response:', pm.response.text());",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🧠 MAIN ML ENDPOINT: Predict employee turnover risk menggunakan trained ML model"
+          }
+        },
+        {
+          "name": "Batch Prediction (Multiple Employees)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Test dengan multiple employee IDs",
+                  "const employeeIds = [39, 38, 37, 36, 35, 34, 33];",
+                  "const randomId = employeeIds[Math.floor(Math.random() * employeeIds.length)];",
+                  "pm.collectionVariables.set('random_employee_id', randomId);",
+                  "console.log('🎲 Testing with random employee ID:', randomId);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🎯 BATCH PREDICTION TEST');",
+                  "console.log('=' * 50);",
+                  "",
+                  "const empId = pm.collectionVariables.get('random_employee_id');",
+                  "console.log('Employee ID:', empId);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.prediction) {",
+                  "        const pred = response.data.prediction;",
+                  "        const emp = response.data.employee;",
+                  "        ",
+                  "        console.log('✅ Prediction successful');",
+                  "        console.log(`Employee: ${emp.name}`);",
+                  "        console.log(`Risk Level: ${pred.risk_level.toUpperCase()}`);",
+                  "        console.log(`Probability: ${(pred.probability * 100).toFixed(1)}%`);",
+                  "        console.log(`Will Leave: ${pred.will_leave ? 'YES ⚠️' : 'NO ✅'}`);",
+                  "    }",
+                  "} else if (pm.response.code === 404) {",
+                  "    console.log('❌ Performance data not found for employee ID:', empId);",
+                  "} else if (pm.response.code === 401) {",
+                  "    console.log('❌ Authentication failed. Please run \"Admin Login\" first.');",
+                  "} else {",
+                  "    console.log('❌ Request failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{random_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🎯 Test prediction dengan random employee untuk batch testing"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔬 6. TESTING & VALIDATION",
+      "item": [
+        {
+          "name": "Test - Prediction Without Auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔒 AUTH VALIDATION TEST');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 401) {",
+                  "    console.log('✅ Authentication validation working correctly');",
+                  "    console.log('✅ Unauthorized access blocked');",
+                  "} else {",
+                  "    console.log('❌ Authentication validation failed');",
+                  "    console.log('Expected 401, got:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🔒 Test authentication requirement - should return 401"
+          }
+        },
+        {
+          "name": "Test - Missing Employee ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 VALIDATION TEST - MISSING EMPLOYEE ID');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 400) {",
+                  "    console.log('✅ Input validation working correctly');",
+                  "    console.log('✅ Missing employee_id detected');",
+                  "} else {",
+                  "    console.log('❌ Input validation failed');",
+                  "    console.log('Expected 400, got:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invalid_field\": \"test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🔍 Test validation - missing employee_id should return 400"
+          }
+        },
+        {
+          "name": "Test - Non-existent Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 VALIDATION TEST - NON-EXISTENT EMPLOYEE');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 404) {",
+                  "    console.log('✅ Employee validation working correctly');",
+                  "    console.log('✅ Non-existent employee detected');",
+                  "} else {",
+                  "    console.log('❌ Employee validation failed');",
+                  "    console.log('Expected 404, got:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 999999\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🔍 Test error handling - employee not found should return 404"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 7. PERFORMANCE SCENARIOS",
+      "item": [
+        {
+          "name": "Scenario A: Low Risk Employee",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "console.log('📊 CREATING LOW-RISK SCENARIO...');",
+                  "// Create low-risk performance data",
+                  "pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('base_url') + '/api/performance/',",
+                  "    method: 'POST',",
+                  "    header: {",
+                  "        'Authorization': 'Token ' + pm.collectionVariables.get('admin_token'),",
+                  "        'Content-Type': 'application/json'",
+                  "    },",
+                  "    body: {",
+                  "        mode: 'raw',",
+                  "        raw: JSON.stringify({",
+                  "            employee: parseInt(pm.collectionVariables.get('test_employee_id')),",
+                  "            satisfaction_level: 0.85,",
+                  "            last_evaluation: 0.90,",
+                  "            number_project: 3,",
+                  "            average_monthly_hours: 160,",
+                  "            time_spend_company: 2,",
+                  "            work_accident: false,",
+                  "            promotion_last_5years: true",
+                  "        })",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (!err) {",
+                  "        console.log('✅ Low-risk performance data created');",
+                  "    } else {",
+                  "        console.log('❌ Failed to create performance data');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🟢 LOW-RISK SCENARIO RESULTS');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.prediction) {",
+                  "        const pred = response.data.prediction;",
+                  "        const emp = response.data.employee;",
+                  "        const recs = response.data.recommendations;",
+                  "        ",
+                  "        console.log('✅ LOW-RISK PREDICTION COMPLETE');",
+                  "        console.log(`Employee: ${emp.name}`);",
+                  "        console.log(`Risk Level: ${pred.risk_level.toUpperCase()}`);",
+                  "        console.log(`Probability: ${(pred.probability * 100).toFixed(1)}%`);",
+                  "        console.log(`Expected: LOW RISK ✅`);",
+                  "        console.log(`Actual: ${pred.risk_level === 'low' ? 'LOW RISK ✅' : 'NOT LOW RISK ❌'}`);",
+                  "        ",
+                  "        if (recs && recs.length > 0) {",
+                  "            console.log('');",
+                  "            console.log('💡 Recommendations:');",
+                  "            recs.forEach((rec, i) => {",
+                  "                console.log(`  ${i+1}. [${rec.priority}] ${rec.category}: ${rec.recommendation}`);",
+                  "            });",
+                  "        }",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Scenario failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🟢 Test prediction untuk employee dengan low turnover risk"
+          }
+        },
+        {
+          "name": "Scenario B: High Risk Employee",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "console.log('📊 CREATING HIGH-RISK SCENARIO...');",
+                  "// Create high-risk performance data",
+                  "pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('base_url') + '/api/performance/',",
+                  "    method: 'POST',",
+                  "    header: {",
+                  "        'Authorization': 'Token ' + pm.collectionVariables.get('admin_token'),",
+                  "        'Content-Type': 'application/json'",
+                  "    },",
+                  "    body: {",
+                  "        mode: 'raw',",
+                  "        raw: JSON.stringify({",
+                  "            employee: parseInt(pm.collectionVariables.get('test_employee_id')),",
+                  "            satisfaction_level: 0.20,",
+                  "            last_evaluation: 0.30,",
+                  "            number_project: 8,",
+                  "            average_monthly_hours: 300,",
+                  "            time_spend_company: 7,",
+                  "            work_accident: true,",
+                  "            promotion_last_5years: false",
+                  "        })",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (!err) {",
+                  "        console.log('✅ High-risk performance data created');",
+                  "    } else {",
+                  "        console.log('❌ Failed to create performance data');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔴 HIGH-RISK SCENARIO RESULTS');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.prediction) {",
+                  "        const pred = response.data.prediction;",
+                  "        const emp = response.data.employee;",
+                  "        const recs = response.data.recommendations;",
+                  "        ",
+                  "        console.log('⚠️ HIGH-RISK PREDICTION COMPLETE');",
+                  "        console.log(`Employee: ${emp.name}`);",
+                  "        console.log(`Risk Level: ${pred.risk_level.toUpperCase()}`);",
+                  "        console.log(`Probability: ${(pred.probability * 100).toFixed(1)}%`);",
+                  "        console.log(`Expected: HIGH RISK ⚠️`);",
+                  "        console.log(`Actual: ${pred.risk_level === 'high' ? 'HIGH RISK ⚠️' : 'NOT HIGH RISK ✅'}`);",
+                  "        ",
+                  "        if (recs && recs.length > 0) {",
+                  "            console.log('');",
+                  "            console.log('💡 Urgent Recommendations:');",
+                  "            recs.forEach((rec, i) => {",
+                  "                const priority = rec.priority.toUpperCase();",
+                  "                const icon = priority === 'HIGH' ? '🔴' : priority === 'MEDIUM' ? '🟡' : '🟢';",
+                  "                console.log(`  ${icon} [${priority}] ${rec.category}: ${rec.recommendation}`);",
+                  "            });",
+                  "        }",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Scenario failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🔴 Test prediction untuk employee dengan high turnover risk"
+          }
+        },
+        {
+          "name": "Scenario C: Medium Risk Employee",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "console.log('📊 CREATING MEDIUM-RISK SCENARIO...');",
+                  "// Create medium-risk performance data",
+                  "pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('base_url') + '/api/performance/',",
+                  "    method: 'POST',",
+                  "    header: {",
+                  "        'Authorization': 'Token ' + pm.collectionVariables.get('admin_token'),",
+                  "        'Content-Type': 'application/json'",
+                  "    },",
+                  "    body: {",
+                  "        mode: 'raw',",
+                  "        raw: JSON.stringify({",
+                  "            employee: parseInt(pm.collectionVariables.get('test_employee_id')),",
+                  "            satisfaction_level: 0.55,",
+                  "            last_evaluation: 0.65,",
+                  "            number_project: 5,",
+                  "            average_monthly_hours: 220,",
+                  "            time_spend_company: 4,",
+                  "            work_accident: false,",
+                  "            promotion_last_5years: false",
+                  "        })",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (!err) {",
+                  "        console.log('✅ Medium-risk performance data created');",
+                  "    } else {",
+                  "        console.log('❌ Failed to create performance data');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🟡 MEDIUM-RISK SCENARIO RESULTS');",
+                  "console.log('=' * 50);",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.prediction) {",
+                  "        const pred = response.data.prediction;",
+                  "        const emp = response.data.employee;",
+                  "        const recs = response.data.recommendations;",
+                  "        ",
+                  "        console.log('🟡 MEDIUM-RISK PREDICTION COMPLETE');",
+                  "        console.log(`Employee: ${emp.name}`);",
+                  "        console.log(`Risk Level: ${pred.risk_level.toUpperCase()}`);",
+                  "        console.log(`Probability: ${(pred.probability * 100).toFixed(1)}%`);",
+                  "        console.log(`Expected: MEDIUM RISK 🟡`);",
+                  "        console.log(`Actual: ${pred.risk_level === 'medium' ? 'MEDIUM RISK 🟡' : 'NOT MEDIUM RISK'}`);",
+                  "        ",
+                  "        if (recs && recs.length > 0) {",
+                  "            console.log('');",
+                  "            console.log('💡 Recommendations:');",
+                  "            recs.forEach((rec, i) => {",
+                  "                const priority = rec.priority.toUpperCase();",
+                  "                const icon = priority === 'HIGH' ? '🔴' : priority === 'MEDIUM' ? '🟡' : '🟢';",
+                  "                console.log(`  ${icon} [${priority}] ${rec.category}: ${rec.recommendation}`);",
+                  "            });",
+                  "        }",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Scenario failed with code:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{test_employee_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/predict/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "predict", ""]
+            },
+            "description": "🟡 Test prediction untuk employee dengan medium turnover risk"
+          }
+        }
+      ]
+    }
+  ]
+}
