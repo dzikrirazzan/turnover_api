@@ -1,9 +1,11 @@
 # serializers.py - Django REST Framework serializers
 
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import Meeting, HRPerformanceReview, MLPredictionHistory
 from django.utils import timezone
+
+User = get_user_model()
 
 
 class UserBasicSerializer(serializers.ModelSerializer):
