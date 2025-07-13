@@ -1,0 +1,110 @@
+{
+  "meeting_object": {
+    "id": 1,
+    "employee": 1,
+    "employee_name": "John Doe",
+    "title": "Follow-up Meeting: High Turnover Risk",
+    "meeting_type": "followup",
+    "scheduled_date": "2024-01-15T10:00:00Z",
+    "status": "scheduled",
+    "duration_minutes": 30,
+    "meeting_link": "https://meet.google.com/abc-def-ghi",
+    "agenda": "Discuss career development and address concerns",
+    "ml_probability": 0.75,
+    "ml_risk_level": "high",
+    "created_at": "2024-01-08T09:00:00Z"
+  },
+  "review_object": {
+    "id": 1,
+    "employee": 1,
+    "employee_name": "John Doe",
+    "review_period": "quarterly",
+    "review_date": "2024-01-08",
+    "period_start": "2023-10-01",
+    "period_end": "2023-12-31",
+    "overall_rating": 4,
+    "technical_skills": 4,
+    "communication": 5,
+    "teamwork": 4,
+    "leadership": 3,
+    "initiative": 4,
+    "problem_solving": 4,
+    "strengths": "Excellent communication skills and technical expertise",
+    "areas_for_improvement": "Leadership development needed",
+    "goals_for_next_period": "Lead a project team",
+    "additional_notes": "Shows high potential for growth",
+    "is_acknowledged": false,
+    "created_at": "2024-01-08T09:00:00Z"
+  },
+  "analytics_dashboard": {
+    "total_employees": 50,
+    "high_risk_count": 8,
+    "avg_performance": 3.8,
+    "pending_reviews": 5,
+    "recent_meetings": [
+      {
+        "id": 1,
+        "title": "Follow-up Meeting",
+        "employee_name": "John Doe",
+        "created_at": "2024-01-08T09:00:00Z"
+      }
+    ],
+    "recent_reviews": [
+      {
+        "id": 1,
+        "employee_name": "Jane Smith",
+        "overall_rating": 4,
+        "created_at": "2024-01-07T14:30:00Z"
+      }
+    ]
+  },
+  "chart_data": {
+    "risk_distribution": {
+      "low": 25,
+      "medium": 17,
+      "high": 8
+    },
+    "department_risk": [
+      {
+        "department": "Engineering",
+        "avg_risk": 0.65
+      },
+      {
+        "department": "Sales",
+        "avg_risk": 0.72
+      },
+      {
+        "department": "Marketing",
+        "avg_risk": 0.58
+      }
+    ],
+    "performance_trends": [
+      {
+        "month": "2023-10",
+        "avg_rating": 3.7
+      },
+      {
+        "month": "2023-11",
+        "avg_rating": 3.8
+      },
+      {
+        "month": "2023-12",
+        "avg_rating": 3.9
+      }
+    ],
+    "risk_performance_scatter": [
+      {
+        "risk_score": 0.3,
+        "performance_rating": 4.2
+      },
+      {
+        "risk_score": 0.7,
+        "performance_rating": 3.1
+      },
+      {
+        "risk_score": 0.5,
+        "performance_rating": 3.8
+      }
+    ]
+  }
+}

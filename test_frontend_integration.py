@@ -32,9 +32,17 @@ class HRFeaturesAPITester:
             response.raise_for_status()
             
             data = response.json()
-            # Check both possible response formats
-            if data.get('success') and data.get('data', {}).get('token'):
-                self.token = data['data']['token']
+            # Check different possible response formats
+            if data.get('success'):
+                # Check for token in data.data.token
+                if data.get('data', {}).get('token'):
+                    self.token = data['data']['token']
+                # Check for token in data.data.user.token  
+                elif data.get('data', {}).get('user', {}).get('token'):
+                    self.token = data['data']['user']['token']
+                else:
+                    print(f"❌ Token not found in response: {data}")
+                    return False
             elif 'token' in data:
                 self.token = data['token']
             else:
