@@ -1,11 +1,13 @@
-#!/usr/bin/e# API Configuration
-BASE_URL = "https://turnover-api-hd7ze.ondigitalocean.app"
-ADMIN_EMAIL = "admin@company.com"
-ADMIN_PASSWORD = "AdminPass123!"ython3
+#!/usr/bin/env python3
 """
 Complete HR Features API Test Script
 Tests 1-on-1 meetings, performance reviews, and analytics with chart data
 """
+
+# API Configuration
+BASE_URL = "https://turnover-api-hd7ze.ondigitalocean.app"
+ADMIN_EMAIL = "admin@company.com"
+ADMIN_PASSWORD = "AdminPass123!"
 
 import requests
 import json

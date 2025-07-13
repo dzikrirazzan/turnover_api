@@ -11,15 +11,15 @@ router.register(r'reviews', views.PerformanceReviewViewSet, basename='performanc
 router.register(r'analytics', views.AnalyticsViewSet, basename='analytics')
 
 urlpatterns = [
-    # Include all router URLs
-    path('api/', include(router.urls)),
+    # Include all router URLs (no 'api/' prefix since main urls.py already has it)
+    path('', include(router.urls)),
     
     # Additional custom endpoints
-    path('api/meetings/employee/<int:employee_id>/', 
+    path('meetings/employee/<int:employee_id>/', 
          views.MeetingViewSet.as_view({'get': 'list'}), 
          name='employee-meetings'),
     
-    path('api/reviews/employee/<int:employee_id>/', 
+    path('reviews/employee/<int:employee_id>/', 
          views.PerformanceReviewViewSet.as_view({'get': 'list'}), 
          name='employee-reviews'),
 ]
