@@ -76,23 +76,29 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """
         Hard delete department - remove from database completely
-        Based on actual table structure: id, name, description, created_at
+        Safe deletion with proper foreign key handling
         """
+        from django.db import transaction
+        
         try:
             instance = self.get_object()
             department_name = instance.name
             department_id = instance.id
             
-            # Count employees before deletion
-            employee_count = instance.employees.count()
-            
-            # Update employees to remove department reference first
-            # Set department to NULL for all employees in this department
-            if employee_count > 0:
-                instance.employees.update(department=None)
-            
-            # Now safely delete the department
-            instance.delete()
+            with transaction.atomic():
+                # Count employees before deletion
+                employee_count = instance.employees.count()
+                
+                # Update employees to remove department reference first
+                # Set department to NULL for all employees in this department
+                if employee_count > 0:
+                    instance.employees.update(department=None)
+                
+                # Safe delete: just use basic model delete without cascading issues
+                from django.db import connection
+                with connection.cursor() as cursor:
+                    # Delete department directly by ID to avoid FK constraint issues
+                    cursor.execute("DELETE FROM predictions_department WHERE id = %s", [department_id])
             
             return StandardResponse.success(
                 message=f'Departemen "{department_name}" berhasil dihapus dari sistem',
