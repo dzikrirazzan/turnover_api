@@ -76,24 +76,31 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """
         Hard delete department - remove from database completely
+        Based on actual table structure: id, name, description, created_at
         """
         try:
             instance = self.get_object()
             department_name = instance.name
+            department_id = instance.id
+            
+            # Count employees before deletion
             employee_count = instance.employees.count()
             
             # Update employees to remove department reference first
+            # Set department to NULL for all employees in this department
             if employee_count > 0:
                 instance.employees.update(department=None)
             
-            # Delete the department
+            # Now safely delete the department
             instance.delete()
             
             return StandardResponse.success(
                 message=f'Departemen "{department_name}" berhasil dihapus dari sistem',
                 data={
+                    'deleted_department_id': department_id,
                     'department_name': department_name,
-                    'affected_employees': employee_count
+                    'affected_employees': employee_count,
+                    'action': 'hard_delete'
                 }
             )
         except Exception as e:
