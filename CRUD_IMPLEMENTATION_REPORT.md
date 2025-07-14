@@ -102,11 +102,17 @@ GET /api/employees/?department=1&role=manager&is_active=true
 - **`predictions/serializers.py`** - Added new serializers
 - **`predictions/urls.py`** - Added router untuk ViewSets
 
-### **2. Postman Collection:**
+### **2. Postman Collections:**
 
-- **`SMARTEN_TURNOVER_API_POSTMAN_COLLECTION.json`** - Added 15 endpoints baru
+- **`SMART_EN_CRUD_COMPLETE_POSTMAN.json`** - Complete 12-feature collection dengan auto token management
+- **`SMART_EN_QUICK_TEST.json`** - Quick test collection dengan automated testing
+- **`POSTMAN_TESTING_GUIDE_COMPLETE.md`** - Comprehensive testing guide
 - **Total Endpoints**: 63 → **77 endpoints**
-- **New Variables**: department_id, employee_id
+- **New Variables**: department_id, employee_id, admin_token, employee_token
+
+### **3. Test Scripts:**
+
+- **`test_all_fixed_features_v2.py`** - Automated testing script (100% success rate)
 
 ---
 

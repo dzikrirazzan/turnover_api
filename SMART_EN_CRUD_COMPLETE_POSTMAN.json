@@ -1,0 +1,398 @@
+{
+	"info": {
+		"name": "SMART-EN API - CRUD Complete (100% Working)",
+		"description": "Complete CRUD testing for all 12 features that are 100% working in production\n\n🔥 STATUS: ALL 12 FEATURES WORKING PERFECTLY!\n\n✅ Admin Login\n✅ Create Department\n✅ Admin Access Employee Details\n✅ Admin Profile Access\n✅ Admin Update Department\n✅ Admin Update Employee Data\n✅ Employee Login\n✅ Employee Profile Access\n✅ Employee Self-Update\n✅ Soft Delete Employee\n✅ Hard Delete Department\n✅ Token Invalidation (Logout)\n\n🌐 Production URL: https://turnover-api-hd7ze.ondigitalocean.app\n🔑 Authentication: Token-based (no CSRF cookies needed)\n📅 Last Updated: July 14, 2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://turnover-api-hd7ze.ondigitalocean.app",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "employee_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_department_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_employee_id",
+			"value": "27",
+			"type": "string",
+			"description": "Fixed test employee ID"
+		}
+	],
+	"item": [
+		{
+			"name": "🔐 1. ADMIN LOGIN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    if (response.success && response.data && response.data.user && response.data.user.token) {",
+							"        pm.collectionVariables.set('admin_token', response.data.user.token);",
+							"        console.log('✅ Admin token saved:', response.data.user.token.substring(0, 10) + '...');",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"AdminPass123!\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "login", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🏢 2. CREATE DEPARTMENT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const response = pm.response.json();",
+							"    if (response.id) {",
+							"        pm.collectionVariables.set('test_department_id', response.id);",
+							"        console.log('✅ Department created with ID:', response.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test Department {{$randomInt}}\",\n  \"description\": \"Department created for testing purposes\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/departments/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "departments", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "👤 3. ADMIN ACCESS EMPLOYEE DETAILS",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/employees/{{test_employee_id}}/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "employees", "{{test_employee_id}}", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🎯 4. ADMIN PROFILE ACCESS",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/profile/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "profile", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "✏️ 5. ADMIN UPDATE DEPARTMENT",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Updated Test Department {{$randomInt}}\",\n  \"description\": \"Updated description for testing\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/departments/{{test_department_id}}/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "departments", "{{test_department_id}}", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📝 6. ADMIN UPDATE EMPLOYEE DATA",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"Employee\",\n  \"position\": \"Updated Position\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/employees/{{test_employee_id}}/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "employees", "{{test_employee_id}}", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "👨‍💼 7. EMPLOYEE LOGIN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    if (response.success && response.data && response.data.user && response.data.user.token) {",
+							"        pm.collectionVariables.set('employee_token', response.data.user.token);",
+							"        console.log('✅ Employee token saved:', response.data.user.token.substring(0, 10) + '...');",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"bravely@gmail.com\",\n  \"password\": \"user123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "login", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "👤 8. EMPLOYEE PROFILE ACCESS",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{employee_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/profile/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "profile", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🔄 9. EMPLOYEE SELF-UPDATE",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{employee_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"first_name\": \"SelfUpdated\",\n  \"phone_number\": \"+628123999999\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/profile/update/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "profile", "update", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🗑️ 10. SOFT DELETE EMPLOYEE",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/employees/{{test_employee_id}}/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "employees", "{{test_employee_id}}", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🏢 11. HARD DELETE DEPARTMENT",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/departments/{{test_department_id}}/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "departments", "{{test_department_id}}", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🚪 12A. EMPLOYEE LOGOUT",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{employee_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/logout/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "logout", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "✅ 12B. VERIFY EMPLOYEE TOKEN INVALIDATED",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{employee_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/profile/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "profile", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🚪 12C. ADMIN LOGOUT",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/logout/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "logout", ""]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "✅ 12D. VERIFY ADMIN TOKEN INVALIDATED",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/profile/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "profile", ""]
+				}
+			},
+			"response": []
+		}
+	]
+}

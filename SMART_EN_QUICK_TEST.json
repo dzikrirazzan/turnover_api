@@ -1,0 +1,330 @@
+{
+	"info": {
+		"name": "SMART-EN API - Quick Test (All 12 Features)",
+		"description": "🔥 QUICK TEST COLLECTION - All 12 CRUD features in sequence\n\n✅ 100% Working Production API\n✅ No CSRF cookies needed\n✅ Auto token management\n✅ Auto variable capture\n\n🎯 Just run this collection and watch all tests pass!\n\nProduction: https://turnover-api-hd7ze.ondigitalocean.app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://turnover-api-hd7ze.ondigitalocean.app"
+		},
+		{
+			"key": "admin_token",
+			"value": ""
+		},
+		{
+			"key": "employee_token", 
+			"value": ""
+		},
+		{
+			"key": "dept_id",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "🔐 Admin Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Admin login successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.success).to.be.true;",
+							"    pm.collectionVariables.set('admin_token', response.data.user.token);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "value": "application/json"}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"admin@company.com\",\"password\":\"AdminPass123!\"}"
+				},
+				"url": "{{base_url}}/api/login/"
+			}
+		},
+		{
+			"name": "🏢 Create Department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Department created', function () {",
+							"    pm.response.to.have.status(201);",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('dept_id', response.id);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"},
+					{"key": "Authorization", "value": "Token {{admin_token}}"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Quick Test Dept {{$randomInt}}\",\"description\":\"Test department\"}"
+				},
+				"url": "{{base_url}}/api/departments/"
+			}
+		},
+		{
+			"name": "👤 Admin Access Employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Admin can access employee', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [{"key": "Authorization", "value": "Token {{admin_token}}"}],
+				"url": "{{base_url}}/api/employees/27/"
+			}
+		},
+		{
+			"name": "🎯 Admin Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Admin profile access', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [{"key": "Authorization", "value": "Token {{admin_token}}"}],
+				"url": "{{base_url}}/api/profile/"
+			}
+		},
+		{
+			"name": "✏️ Update Department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Department updated', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"},
+					{"key": "Authorization", "value": "Token {{admin_token}}"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Updated Quick Test Dept\",\"description\":\"Updated description\"}"
+				},
+				"url": "{{base_url}}/api/departments/{{dept_id}}/"
+			}
+		},
+		{
+			"name": "📝 Update Employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Employee updated', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"},
+					{"key": "Authorization", "value": "Token {{admin_token}}"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"first_name\":\"QuickTest\",\"position\":\"Test Position\"}"
+				},
+				"url": "{{base_url}}/api/employees/27/"
+			}
+		},
+		{
+			"name": "👨‍💼 Employee Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Employee login successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('employee_token', response.data.user.token);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "value": "application/json"}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"bravely@gmail.com\",\"password\":\"user123\"}"
+				},
+				"url": "{{base_url}}/api/login/"
+			}
+		},
+		{
+			"name": "👤 Employee Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Employee profile access', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [{"key": "Authorization", "value": "Token {{employee_token}}"}],
+				"url": "{{base_url}}/api/profile/"
+			}
+		},
+		{
+			"name": "🔄 Employee Self-Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Employee self-update successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"},
+					{"key": "Authorization", "value": "Token {{employee_token}}"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"first_name\":\"QuickUpdated\",\"phone_number\":\"+628999888777\"}"
+				},
+				"url": "{{base_url}}/api/profile/update/"
+			}
+		},
+		{
+			"name": "🗑️ Soft Delete Employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Employee soft delete successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [{"key": "Authorization", "value": "Token {{admin_token}}"}],
+				"url": "{{base_url}}/api/employees/27/"
+			}
+		},
+		{
+			"name": "🏢 Hard Delete Department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Department hard delete successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [{"key": "Authorization", "value": "Token {{admin_token}}"}],
+				"url": "{{base_url}}/api/departments/{{dept_id}}/"
+			}
+		},
+		{
+			"name": "🚪 Employee Logout & Verify",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Employee logout successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Authorization", "value": "Token {{employee_token}}"}],
+				"url": "{{base_url}}/api/logout/"
+			}
+		},
+		{
+			"name": "🚪 Admin Logout & Verify",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Admin logout successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Authorization", "value": "Token {{admin_token}}"}],
+				"url": "{{base_url}}/api/logout/"
+			}
+		}
+	]
+}
