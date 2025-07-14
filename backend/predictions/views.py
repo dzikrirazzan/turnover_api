@@ -73,6 +73,35 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             }
         )
 
+    def destroy(self, request, *args, **kwargs):
+        """
+        Delete department and set employees' department to null
+        """
+        try:
+            instance = self.get_object()
+            department_name = instance.name
+            employee_count = instance.employees.count()
+            
+            # Update employees to remove department reference
+            if employee_count > 0:
+                instance.employees.update(department=None)
+            
+            # Delete the department
+            instance.delete()
+            
+            return StandardResponse.success(
+                message=f'Departemen "{department_name}" berhasil dihapus',
+                data={
+                    'department_name': department_name,
+                    'affected_employees': employee_count
+                }
+            )
+        except Exception as e:
+            return StandardResponse.error(
+                message=f'Gagal menghapus departemen: {str(e)}',
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 class EmployeeViewSet(viewsets.ModelViewSet):
     """
     Complete CRUD operations for Employee

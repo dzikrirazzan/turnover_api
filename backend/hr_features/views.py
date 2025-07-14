@@ -340,57 +340,91 @@ class AnalyticsViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def dashboard(self, request):
         """Get complete analytics dashboard data"""
-        if not (request.user.is_staff or request.user.is_superuser):
-            return Response(
-                {"error": "Admin access required for analytics"},
-                status=status.HTTP_403_FORBIDDEN
+        try:
+            # Check user permissions - more lenient check
+            user = request.user
+            if not user.is_authenticated:
+                return Response(
+                    {"error": "Authentication required"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+            
+            # Allow admin, manager, or HR users
+            has_permission = (
+                getattr(user, 'is_staff', False) or 
+                getattr(user, 'is_superuser', False) or
+                getattr(user, 'is_admin', False) or
+                getattr(user, 'is_manager', False) or
+                getattr(user, 'is_hr', False)
             )
-        
-        # Get summary stats
-        total_predictions = MLPredictionHistory.objects.count()
-        total_meetings = Meeting.objects.count()
-        total_reviews = HRPerformanceReview.objects.count()
-        
-        # High risk employees (probability > 0.7)
-        high_risk_employees = MLPredictionHistory.objects.filter(
-            probability__gt=0.7
-        ).values('employee').distinct().count()
-        
-        # Recent predictions (last 30 days)
-        thirty_days_ago = timezone.now() - timedelta(days=30)
-        recent_predictions = MLPredictionHistory.objects.filter(
-            created_at__gte=thirty_days_ago
-        ).count()
-        
-        # Risk distribution
-        risk_distribution = self._get_risk_distribution()
-        
-        # Department analysis
-        department_analysis = self._get_department_analysis()
-        
-        # Trend analysis
-        trend_analysis = self._get_trend_analysis()
-        
-        # Chart data
-        chart_data = self._get_chart_data(risk_distribution, department_analysis, trend_analysis)
-        
-        analytics_data = {
-            "total_predictions": total_predictions,
-            "total_meetings": total_meetings,
-            "total_reviews": total_reviews,
-            "high_risk_employees": high_risk_employees,
-            "recent_predictions": recent_predictions,
-            "risk_distribution": risk_distribution,
-            "department_analysis": department_analysis,
-            "trend_analysis": trend_analysis,
-            "chart_data": chart_data
-        }
-        
-        return Response({
-            "success": True,
-            "message": "Analytics dashboard data retrieved",
-            "data": analytics_data
-        })
+            
+            if not has_permission:
+                return Response(
+                    {"error": "Admin/Manager access required for analytics"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            # Get basic stats (with safe defaults)
+            try:
+                total_predictions = MLPredictionHistory.objects.count()
+            except:
+                total_predictions = 0
+                
+            try:
+                total_meetings = Meeting.objects.count()
+            except:
+                total_meetings = 0
+                
+            try:
+                total_reviews = HRPerformanceReview.objects.count()
+            except:
+                total_reviews = 0
+            
+            # Simple high risk count with fallback
+            try:
+                high_risk_employees = MLPredictionHistory.objects.filter(
+                    probability__gt=0.7
+                ).values('employee').distinct().count()
+            except:
+                high_risk_employees = 0
+            
+            # Recent predictions (last 30 days) with fallback
+            try:
+                thirty_days_ago = timezone.now() - timedelta(days=30)
+                recent_predictions = MLPredictionHistory.objects.filter(
+                    created_at__gte=thirty_days_ago
+                ).count()
+            except:
+                recent_predictions = 0
+            
+            # Basic analytics data
+            analytics_data = {
+                "summary": {
+                    "total_predictions": total_predictions,
+                    "total_meetings": total_meetings,
+                    "total_reviews": total_reviews,
+                    "high_risk_employees": high_risk_employees,
+                    "recent_predictions": recent_predictions
+                },
+                "status": "success",
+                "message": "Analytics data retrieved successfully"
+            }
+            
+            # Try to add advanced analytics (but don't fail if error)
+            try:
+                analytics_data["charts"] = self._get_safe_chart_data()
+            except Exception as e:
+                analytics_data["charts"] = {"error": f"Chart data unavailable: {str(e)}"}
+            
+            return Response(analytics_data, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            # Return safe error response
+            return Response({
+                "error": "Analytics service temporarily unavailable",
+                "detail": str(e),
+                "status": "error"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     @action(detail=False, methods=['get'])
     def charts(self, request):
@@ -534,3 +568,55 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 }
             }
         }
+    
+    def _get_safe_chart_data(self):
+        """Get chart data with safe fallbacks"""
+        try:
+            # Basic chart data that won't cause errors
+            chart_data = {
+                "meetings_chart": {
+                    "chart_type": "bar",
+                    "title": "Meetings Overview",
+                    "data": {
+                        "labels": ["Scheduled", "Completed", "Cancelled"],
+                        "datasets": [{
+                            "label": "Meetings Count",
+                            "data": [
+                                Meeting.objects.filter(status='scheduled').count(),
+                                Meeting.objects.filter(status='completed').count(),
+                                Meeting.objects.filter(status='cancelled').count()
+                            ],
+                            "backgroundColor": ["#007bff", "#28a745", "#dc3545"]
+                        }]
+                    }
+                },
+                "reviews_chart": {
+                    "chart_type": "line",
+                    "title": "Performance Reviews Trend",
+                    "data": {
+                        "labels": ["This Month", "Last Month"],
+                        "datasets": [{
+                            "label": "Reviews Count",
+                            "data": [
+                                HRPerformanceReview.objects.filter(
+                                    created_at__month=timezone.now().month
+                                ).count(),
+                                HRPerformanceReview.objects.filter(
+                                    created_at__month=timezone.now().month - 1
+                                ).count() if timezone.now().month > 1 else 0
+                            ],
+                            "borderColor": "#007bff",
+                            "backgroundColor": "rgba(0, 123, 255, 0.1)"
+                        }]
+                    }
+                }
+            }
+            return chart_data
+        except Exception as e:
+            return {
+                "error": f"Chart data generation failed: {str(e)}",
+                "fallback_data": {
+                    "message": "Using minimal chart data",
+                    "charts_available": False
+                }
+            }

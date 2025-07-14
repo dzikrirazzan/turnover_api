@@ -105,21 +105,54 @@ class PerformanceReviewSerializer(serializers.ModelSerializer):
 
 
 class PerformanceReviewCreateSerializer(serializers.ModelSerializer):
-    """Simplified serializer for creating performance reviews"""
+    """Simplified serializer for creating performance reviews with defaults"""
     
     class Meta:
         model = HRPerformanceReview
         fields = [
-            'employee', 'review_period', 'review_date', 'period_start', 'period_end',
-            'overall_rating', 'technical_skills', 'communication', 'teamwork',
+            'employee', 'review_period', 'review_date',
+            'period_start', 'period_end', 'overall_rating',
+            'technical_skills', 'communication', 'teamwork',
             'leadership', 'initiative', 'problem_solving',
             'strengths', 'areas_for_improvement', 'goals_for_next_period',
-            'additional_notes', 'triggered_by_ml', 'ml_prediction_id'
+            'additional_notes'
         ]
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make fields optional with default values
+        self.fields['technical_skills'].required = False
+        self.fields['communication'].required = False
+        self.fields['teamwork'].required = False
+        self.fields['leadership'].required = False
+        self.fields['initiative'].required = False
+        self.fields['problem_solving'].required = False
+        self.fields['strengths'].required = False
+        self.fields['areas_for_improvement'].required = False
+        self.fields['goals_for_next_period'].required = False
+        
     def create(self, validated_data):
-        """Auto-set reviewer to current user"""
+        """Auto-set reviewer and provide defaults for missing fields"""
         validated_data['reviewer'] = self.context['request'].user
+        
+        # Set default values for rating fields if not provided
+        rating_fields = ['technical_skills', 'communication', 'teamwork', 
+                        'leadership', 'initiative', 'problem_solving']
+        for field in rating_fields:
+            if field not in validated_data:
+                validated_data[field] = validated_data.get('overall_rating', 3)
+        
+        # Set default text fields if not provided
+        text_defaults = {
+            'strengths': 'To be updated in future reviews',
+            'areas_for_improvement': 'To be identified and documented',
+            'goals_for_next_period': 'Goals will be set during review discussion'
+        }
+        
+        for field, default_value in text_defaults.items():
+            if field not in validated_data or not validated_data[field]:
+                validated_data[field] = default_value
+                
         return super().create(validated_data)
 
 
