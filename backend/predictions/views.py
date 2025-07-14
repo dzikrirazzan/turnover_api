@@ -86,17 +86,6 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             if employee_count > 0:
                 instance.employees.update(department=None)
             
-            # Try to delete related performance objects safely
-            try:
-                # Remove any related shoutouts pointing to this department
-                from performance.models import Shoutout
-                Shoutout.objects.filter(to_team=instance).update(to_team=None)
-            except ImportError:
-                # performance app might not be available
-                pass
-            except Exception as e:
-                print(f"Warning: Could not clean up related shoutouts: {e}")
-            
             # Delete the department
             instance.delete()
             
@@ -109,12 +98,6 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             )
         except Exception as e:
             error_message = str(e)
-            # Handle specific database table errors
-            if "doesn't exist" in error_message or "no such table" in error_message:
-                return StandardResponse.error(
-                    message=f'Gagal menghapus departemen: Database tabel tidak ditemukan. Silakan jalankan migrasi database.',
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
             return StandardResponse.error(
                 message=f'Gagal menghapus departemen: {error_message}',
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
