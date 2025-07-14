@@ -75,30 +75,48 @@ class DepartmentViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         """
-        Delete department and set employees' department to null
+        Hard delete department - remove from database completely
         """
         try:
             instance = self.get_object()
             department_name = instance.name
             employee_count = instance.employees.count()
             
-            # Update employees to remove department reference
+            # Update employees to remove department reference first
             if employee_count > 0:
                 instance.employees.update(department=None)
+            
+            # Try to delete related performance objects safely
+            try:
+                # Remove any related shoutouts pointing to this department
+                from performance.models import Shoutout
+                Shoutout.objects.filter(to_team=instance).update(to_team=None)
+            except ImportError:
+                # performance app might not be available
+                pass
+            except Exception as e:
+                print(f"Warning: Could not clean up related shoutouts: {e}")
             
             # Delete the department
             instance.delete()
             
             return StandardResponse.success(
-                message=f'Departemen "{department_name}" berhasil dihapus',
+                message=f'Departemen "{department_name}" berhasil dihapus dari sistem',
                 data={
                     'department_name': department_name,
                     'affected_employees': employee_count
                 }
             )
         except Exception as e:
+            error_message = str(e)
+            # Handle specific database table errors
+            if "doesn't exist" in error_message or "no such table" in error_message:
+                return StandardResponse.error(
+                    message=f'Gagal menghapus departemen: Database tabel tidak ditemukan. Silakan jalankan migrasi database.',
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
             return StandardResponse.error(
-                message=f'Gagal menghapus departemen: {str(e)}',
+                message=f'Gagal menghapus departemen: {error_message}',
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -177,14 +195,29 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         )
     
     def destroy(self, request, *args, **kwargs):
-        """Soft delete employee (set inactive)"""
-        instance = self.get_object()
-        instance.is_active = False
-        instance.save()
-        return StandardResponse.success(
-            message=f'Karyawan {instance.full_name} berhasil dinonaktifkan',
-            data={'employee_id': instance.employee_id, 'full_name': instance.full_name}
-        )
+        """Soft delete employee (deactivate instead of removing from database)"""
+        try:
+            instance = self.get_object()
+            employee_id = instance.employee_id
+            full_name = instance.full_name
+            
+            # Soft delete: set is_active to False instead of deleting
+            instance.is_active = False
+            instance.save()
+            
+            return StandardResponse.success(
+                message=f'Karyawan {full_name} berhasil dinonaktifkan',
+                data={
+                    'employee_id': employee_id, 
+                    'full_name': full_name,
+                    'status': 'deactivated'
+                }
+            )
+        except Exception as e:
+            return StandardResponse.error(
+                message=f'Gagal menonaktifkan karyawan: {str(e)}',
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     @action(detail=True, methods=['post'])
     def activate(self, request, pk=None):
@@ -350,9 +383,25 @@ def login_employee(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_employee(request):
-    """Logout current user"""
-    logout(request)
-    return StandardResponse.success(message=ResponseMessages.LOGOUT_SUCCESS)
+    """Logout current user and invalidate token"""
+    try:
+        # Delete the user's token to invalidate it
+        token = Token.objects.get(user=request.user)
+        token.delete()
+        
+        # Also perform Django logout
+        logout(request)
+        
+        return StandardResponse.success(message=ResponseMessages.LOGOUT_SUCCESS)
+    except Token.DoesNotExist:
+        # Token already deleted or doesn't exist
+        logout(request)
+        return StandardResponse.success(message=ResponseMessages.LOGOUT_SUCCESS)
+    except Exception as e:
+        return StandardResponse.error(
+            message=f'Gagal logout: {str(e)}',
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -364,6 +413,51 @@ def user_profile(request):
         data=serializer.data
     )
 
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    """Allow employees to update their own profile data"""
+    try:
+        employee = request.user
+        
+        # Fields that employees can update themselves
+        allowed_fields = [
+            'first_name', 'last_name', 'phone_number', 
+            'address', 'position'
+        ]
+        
+        # Filter request data to only allowed fields
+        filtered_data = {
+            key: value for key, value in request.data.items() 
+            if key in allowed_fields
+        }
+        
+        if not filtered_data:
+            return StandardResponse.error(
+                message='Tidak ada field yang diizinkan untuk diupdate',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Update the employee
+        for field, value in filtered_data.items():
+            if hasattr(employee, field):
+                setattr(employee, field, value)
+        
+        employee.save()
+        
+        # Return updated profile
+        serializer = LoginResponseSerializer(employee)
+        return StandardResponse.success(
+            message='Profil berhasil diupdate',
+            data=serializer.data
+        )
+        
+    except Exception as e:
+        return StandardResponse.error(
+            message=f'Gagal mengupdate profil: {str(e)}',
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def manage_performance_data(request):

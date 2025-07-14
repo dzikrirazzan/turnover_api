@@ -5,7 +5,7 @@ from .views import (
     DepartmentViewSet, EmployeeViewSet,
     # Function-based views
     health_check, api_info, register_employee,
-    login_employee, logout_employee, user_profile, manage_performance_data,
+    login_employee, logout_employee, user_profile, update_profile, manage_performance_data,
     list_employees, list_departments, data_separation_stats, predict_turnover
 )
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/login/', login_employee, name='login_employee'),
     path('api/logout/', logout_employee, name='logout_employee'),
     path('api/profile/', user_profile, name='user_profile'),
+    path('api/profile/update/', update_profile, name='update_profile'),
     
     # Legacy endpoints (will be replaced by ViewSets)
     path('api/departments-list/', list_departments, name='list_departments_legacy'),
